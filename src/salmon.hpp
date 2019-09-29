@@ -44,9 +44,13 @@ public:
 	// Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
+	void change_color(float c);
+	float get_color_change();
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	bool m_is_alive; // True if the salmon is alive
+	float m_color_change;
 
   std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

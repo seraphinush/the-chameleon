@@ -8,6 +8,7 @@ in vec2 vpos; // Distance from local origin
 uniform sampler2D sampler0;
 uniform vec3 fcolor;
 uniform int light_up;
+uniform float color_change;
 
 // Output color
 layout(location = 0) out  vec4 color;
@@ -15,12 +16,15 @@ layout(location = 0) out  vec4 color;
 void main()
 {
 	color = vec4(fcolor * vcolor, 1.0);
-
-	// Salmon mesh is contained in a 2x2 square (see salmon.mesh for vertices)
-	float radius = distance(vec2(0.0), vpos);
-	if (light_up == 1 && radius < 1.0)
-	{
-		// 0.6 is just to make it not too strong
-		color.xyz += (1.0 - radius) * 0.6 * vec3(1.0, 1.0, 1.0);
+	vec3 salmon_color = vec3(1.0, 1.0, 1.0);
+	if (color_change == 1.0) {
+		salmon_color = vec3(1.0, 0.0, 0.0);
+	} else if (color_change == 2.0) {
+		salmon_color = vec3(1.0, 1.0, 0.0);
+	} else if (color_change == 3.0) {
+		salmon_color = vec3(0.0, 0.0, 1.0);
+	} else if (color_change == 4.0) {
+		salmon_color = vec3(0.0, 1.0, 0.0);
 	}
+	color.xyz = salmon_color;
 }
