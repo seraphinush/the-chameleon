@@ -416,6 +416,30 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 			m_salmon.set_direction('D', false);
 	}
 
+	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
+		// Up Red
+		m_salmon.change_color(1.0);
+		m_salmon.update(GL_TIME_ELAPSED);
+	}
+	
+	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
+		// Down Yellow
+		m_salmon.change_color(2.0);
+		m_salmon.update(GL_TIME_ELAPSED);
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
+		// Left Blue
+		m_salmon.change_color(3.0);
+		m_salmon.update(GL_TIME_ELAPSED);
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
+		// Right Green
+		m_salmon.change_color(4.0);
+		m_salmon.update(GL_TIME_ELAPSED);
+	}
+
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
