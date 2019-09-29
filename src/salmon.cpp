@@ -122,7 +122,7 @@ void Salmon::update(float ms)
 	{
 		// If dead we make it face upwards and sink deep down
 		//set_rotation(-1.5708f);
-		move({ 600.0f, 700.0f });
+		move({ 600.0f, 650.0f });
 	}
 
 	if (m_light_up_countdown_ms > 0.f)
@@ -134,7 +134,7 @@ void Salmon::draw(const mat3& projection)
 	transform.begin();
 
 	// Initial salmon position and rotation
-	transform.translate({500.0, 750.0});
+	transform.translate({600.0f, 650.0f});
 	//transform.rotate(-1.5708f);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
