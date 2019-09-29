@@ -9,7 +9,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t MAX_TURTLES = 15;
+	const size_t MAX_TURTLES = 5;
 	const size_t MAX_FISH = 5;
 	const size_t TURTLE_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
@@ -255,21 +255,11 @@ bool World::update(float elapsed_ms)
 		new_turtle.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
 
 		// Next spawn
-		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
+		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
 	}
 
 	// Spawning new fish
-	m_next_fish_spawn -= elapsed_ms * m_current_speed;
-	if (m_fish.size() <= MAX_FISH && m_next_fish_spawn < 0.f)
-	{
-		if (!spawn_fish())
-			return false;
-		Fish& new_fish = m_fish.back();
-
-		new_fish.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
-
-		m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
-	}
+	// REMOVED
 
 	// If salmon is dead, restart the game after the fading animation
 	if (!m_salmon.is_alive() &&
@@ -404,29 +394,26 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// key is of 'type' GLFW_KEY_
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
-		// Up Red
-		m_salmon.change_color(1.0);
-		m_salmon.update(GL_TIME_ELAPSED);
-	}
-	
-	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
-		// Down Yellow
-		m_salmon.change_color(2.0);
-		m_salmon.update(GL_TIME_ELAPSED);
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_D)
+			m_salmon.set_direction('R', true);
+		else if (key == GLFW_KEY_A)
+			m_salmon.set_direction('L', true);
+		else if (key == GLFW_KEY_W)
+			m_salmon.set_direction('U', true);
+		else if (key == GLFW_KEY_S)
+			m_salmon.set_direction('D', true);
 	}
 
-	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
-		// Left Blue
-		m_salmon.change_color(3.0);
-		m_salmon.update(GL_TIME_ELAPSED);
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
-		// Right Green
-		m_salmon.change_color(4.0);
-		m_salmon.update(GL_TIME_ELAPSED);
+	if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_D)
+			m_salmon.set_direction('R', false);
+		else if (key == GLFW_KEY_A)
+			m_salmon.set_direction('L', false);
+		else if (key == GLFW_KEY_W)
+			m_salmon.set_direction('U', false);
+		else if (key == GLFW_KEY_S)
+			m_salmon.set_direction('D', false);
 	}
 
 	// Resetting game
