@@ -10,7 +10,7 @@ bool Turtle::init()
 	// Load shared texture
 	if (!turtle_texture.is_valid())
 	{
-		if (!turtle_texture.load_from_file(textures_path("turtle.png")))
+		if (!turtle_texture.load_from_file(textures_path("theif.png")))
 		{
 			fprintf(stderr, "Failed to load turtle texture!");
 			return false;

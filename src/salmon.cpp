@@ -12,7 +12,7 @@
 bool Salmon::init()
 {
 	m_vertices.clear();
-  m_indices.clear();
+  	m_indices.clear();
 
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
 	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
@@ -81,8 +81,6 @@ bool Salmon::init()
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
 
-	m_color_change = 0.0;
-
 	return true;
 }
 
@@ -107,12 +105,24 @@ void Salmon::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (m_moving_right) { // Right
+			move({ step, 0.f });
+		}
+		if (m_moving_left) { // Left
+			move({ -step, 0.f });
+		}
+		if (m_moving_up) { // Up
+			move({ 0.f, -step });
+		}
+		if (m_moving_down) { // Down
+			move({ 0.f, step });
+		}
 	}
 	else
 	{
 		// If dead we make it face upwards and sink deep down
-		set_rotation(3.1415f);
-		move({ 0.f, step });
+		//set_rotation(-1.5708f);
+		move({ 600.0f, 700.0f });
 	}
 
 	if (m_light_up_countdown_ms > 0.f)
@@ -123,6 +133,10 @@ void Salmon::draw(const mat3& projection)
 {
 	transform.begin();
 
+	// Initial salmon position and rotation
+	transform.translate({500.0, 750.0});
+	//transform.rotate(-1.5708f);
+
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// SALMON TRANSFORMATION CODE HERE
 
@@ -131,11 +145,14 @@ void Salmon::draw(const mat3& projection)
 	// translate()
 	// rotate()
 	// scale()
+	transform.translate(get_position());
+	transform.rotate(motion.radians);
+	transform.scale(physics.scale);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform.translate({ 100.0f, 100.0f });
-	transform.scale(physics.scale);
+	// transform.translate({ 100.0f, 100.0f });
+	// transform.scale(physics.scale);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	transform.end();
@@ -152,7 +169,6 @@ void Salmon::draw(const mat3& projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
-	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
 
 	// Setting vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -180,9 +196,6 @@ void Salmon::draw(const mat3& projection)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int light_up = 0;
 	glUniform1iv(light_up_uloc, 1, &light_up);
-
-	float color_change = get_color_change();
-	glUniform1f(color_change_uloc, color_change);
 
 	// Get number of infices from buffer,
 	// we know our vbo contains both colour and position information, so...
@@ -250,6 +263,18 @@ void Salmon::set_rotation(float radians)
 	motion.radians = radians;
 }
 
+void Salmon::set_direction(char direction, bool value)
+{
+	if (direction == 'R')
+		m_moving_right = value;
+	else if (direction == 'L')
+		m_moving_left = value;
+	else if (direction == 'U')
+		m_moving_up = value;
+	else if (direction == 'D')
+		m_moving_down = value;
+}
+
 bool Salmon::is_alive() const
 {
 	return m_is_alive;
@@ -265,12 +290,4 @@ void Salmon::kill()
 void Salmon::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
-}
-
-void Salmon::change_color(float c) {
-	m_color_change = c;
-}
-
-float Salmon::get_color_change() {
-	return m_color_change;
 }

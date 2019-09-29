@@ -28,7 +28,7 @@ CMakeFiles/salmon.dir/src/main.cpp.o: ../src/salmon.hpp
 CMakeFiles/salmon.dir/src/main.cpp.o: ../src/turtle.hpp
 CMakeFiles/salmon.dir/src/main.cpp.o: ../src/water.hpp
 CMakeFiles/salmon.dir/src/main.cpp.o: ../src/world.hpp
-CMakeFiles/salmon.dir/src/main.cpp.o: /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+CMakeFiles/salmon.dir/src/main.cpp.o: /usr/local/include/GLFW/glfw3.h
 CMakeFiles/salmon.dir/src/main.cpp.o: /usr/local/include/SDL2/SDL.h
 CMakeFiles/salmon.dir/src/main.cpp.o: /usr/local/include/SDL2/SDL_assert.h
 CMakeFiles/salmon.dir/src/main.cpp.o: /usr/local/include/SDL2/SDL_atomic.h
@@ -92,7 +92,7 @@ CMakeFiles/salmon.dir/src/salmon.cpp.o: ../src/project_path.hpp
 CMakeFiles/salmon.dir/src/salmon.cpp.o: ../src/salmon.cpp
 CMakeFiles/salmon.dir/src/salmon.cpp.o: ../src/salmon.hpp
 CMakeFiles/salmon.dir/src/salmon.cpp.o: ../src/turtle.hpp
-CMakeFiles/salmon.dir/src/salmon.cpp.o: /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+CMakeFiles/salmon.dir/src/salmon.cpp.o: /usr/local/include/GLFW/glfw3.h
 
 CMakeFiles/salmon.dir/src/turtle.cpp.o: ../ext/gl3w/gl3w.h
 CMakeFiles/salmon.dir/src/turtle.cpp.o: ../ext/gl3w/glcorearb.h
@@ -121,7 +121,7 @@ CMakeFiles/salmon.dir/src/world.cpp.o: ../src/turtle.hpp
 CMakeFiles/salmon.dir/src/world.cpp.o: ../src/water.hpp
 CMakeFiles/salmon.dir/src/world.cpp.o: ../src/world.cpp
 CMakeFiles/salmon.dir/src/world.cpp.o: ../src/world.hpp
-CMakeFiles/salmon.dir/src/world.cpp.o: /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+CMakeFiles/salmon.dir/src/world.cpp.o: /usr/local/include/GLFW/glfw3.h
 CMakeFiles/salmon.dir/src/world.cpp.o: /usr/local/include/SDL2/SDL.h
 CMakeFiles/salmon.dir/src/world.cpp.o: /usr/local/include/SDL2/SDL_assert.h
 CMakeFiles/salmon.dir/src/world.cpp.o: /usr/local/include/SDL2/SDL_atomic.h

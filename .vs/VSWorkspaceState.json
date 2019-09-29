@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\data",
+    "\\data\\meshes",
+    "\\data\\textures",
+    "\\ext\\stb_image",
+    "\\out",
+    "\\src"
+  ],
+  "SelectedNode": "\\data\\meshes\\salmon.mesh",
+  "PreviewInSolutionExplorer": false
+}

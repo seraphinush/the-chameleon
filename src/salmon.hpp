@@ -35,6 +35,9 @@ public:
 	// Set salmon rotation in radians
 	void set_rotation(float radians);
 
+	// Set a particular salmon direction to true/false
+	void set_direction(char direction, bool value);
+
 	// True if the salmon is alive
 	bool is_alive()const;
 
@@ -44,13 +47,13 @@ public:
 	// Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
-	void change_color(float c);
-	float get_color_change();
-
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	bool m_is_alive; // True if the salmon is alive
-	float m_color_change;
+	bool m_moving_right; // True if the salmon is moving right (when right arrow is pressed)
+	bool m_moving_left; // True if the salmon is moving left (when left arrow is pressed)
+	bool m_moving_up; // True if the salmon is moving up (when up arrow is pressed)
+	bool m_moving_down; // True if the salmon is moving down (when down arrow is pressed)
 
   std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

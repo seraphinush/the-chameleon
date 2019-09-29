@@ -29,7 +29,7 @@ CMakeFiles/salmon.dir/src/main.cpp.o
  /Users/jvalanacarylshankar/Desktop/team9/src/turtle.hpp
  /Users/jvalanacarylshankar/Desktop/team9/src/water.hpp
  /Users/jvalanacarylshankar/Desktop/team9/src/world.hpp
- /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+ /usr/local/include/GLFW/glfw3.h
  /usr/local/include/SDL2/SDL.h
  /usr/local/include/SDL2/SDL_assert.h
  /usr/local/include/SDL2/SDL_atomic.h
@@ -93,7 +93,7 @@ CMakeFiles/salmon.dir/src/salmon.cpp.o
  /Users/jvalanacarylshankar/Desktop/team9/src/salmon.cpp
  /Users/jvalanacarylshankar/Desktop/team9/src/salmon.hpp
  /Users/jvalanacarylshankar/Desktop/team9/src/turtle.hpp
- /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+ /usr/local/include/GLFW/glfw3.h
 CMakeFiles/salmon.dir/src/turtle.cpp.o
  ../ext/gl3w/gl3w.h
  ../ext/gl3w/glcorearb.h
@@ -122,7 +122,7 @@ CMakeFiles/salmon.dir/src/world.cpp.o
  /Users/jvalanacarylshankar/Desktop/team9/src/water.hpp
  /Users/jvalanacarylshankar/Desktop/team9/src/world.cpp
  /Users/jvalanacarylshankar/Desktop/team9/src/world.hpp
- /usr/local/Cellar/glfw/3.3/include/GLFW/glfw3.h
+ /usr/local/include/GLFW/glfw3.h
  /usr/local/include/SDL2/SDL.h
  /usr/local/include/SDL2/SDL_assert.h
  /usr/local/include/SDL2/SDL_atomic.h
