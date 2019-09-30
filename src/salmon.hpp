@@ -38,6 +38,12 @@ public:
 	// Set a particular salmon direction to true/false
 	void set_direction(char direction, bool value);
 
+	// Change the game mode
+	void set_mode(bool value);
+
+	// Get the game mode
+	bool get_mode();
+
 	// True if the salmon is alive
 	bool is_alive()const;
 
@@ -57,6 +63,7 @@ private:
 	bool m_moving_left; // True if the salmon is moving left (when left arrow is pressed)
 	bool m_moving_up; // True if the salmon is moving up (when up arrow is pressed)
 	bool m_moving_down; // True if the salmon is moving down (when down arrow is pressed)
+	bool m_default_mode;
 	float m_color_change;
 
   std::vector<Vertex> m_vertices;

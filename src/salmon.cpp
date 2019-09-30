@@ -305,3 +305,13 @@ void Salmon::change_color(float c) {
 float Salmon::get_color_change() {
 	return m_color_change;
 }
+
+void Salmon::set_mode(bool value)
+{
+	m_default_mode = value;
+}
+
+bool Salmon::get_mode()
+{
+	return m_default_mode;
+}

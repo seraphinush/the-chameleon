@@ -395,49 +395,53 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_D)
+		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
 			m_salmon.set_direction('R', true);
-		else if (key == GLFW_KEY_A)
+		else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
 			m_salmon.set_direction('L', true);
-		else if (key == GLFW_KEY_W)
+		else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
 			m_salmon.set_direction('U', true);
-		else if (key == GLFW_KEY_S)
+		else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
 			m_salmon.set_direction('D', true);
+		else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
+		{
+			// Up Red
+			m_salmon.change_color(1.0);
+		}
+		else if ((key == GLFW_KEY_DOWN && !m_salmon.get_mode()) || (key == GLFW_KEY_S && m_salmon.get_mode()))
+		{
+			// Down Yellow
+			m_salmon.change_color(2.0);
+		}
+		else if ((key == GLFW_KEY_LEFT && !m_salmon.get_mode()) || (key == GLFW_KEY_A && m_salmon.get_mode()))
+		{
+			// Left Blue
+			m_salmon.change_color(3.0);
+		}
+		else if ((key == GLFW_KEY_RIGHT && !m_salmon.get_mode()) || (key == GLFW_KEY_D && m_salmon.get_mode()))
+		{
+			// Right Green
+			m_salmon.change_color(4.0);
+		}
 	}
 
 	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_D)
+		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
 			m_salmon.set_direction('R', false);
-		else if (key == GLFW_KEY_A)
+		else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
 			m_salmon.set_direction('L', false);
-		else if (key == GLFW_KEY_W)
+		else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
 			m_salmon.set_direction('U', false);
-		else if (key == GLFW_KEY_S)
+		else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
 			m_salmon.set_direction('D', false);
 	}
 
-	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
-		// Up Red
-		m_salmon.change_color(1.0);
-		m_salmon.update(GL_TIME_ELAPSED);
-	}
-	
-	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
-		// Down Yellow
-		m_salmon.change_color(2.0);
-		m_salmon.update(GL_TIME_ELAPSED);
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
-		// Left Blue
-		m_salmon.change_color(3.0);
-		m_salmon.update(GL_TIME_ELAPSED);
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
-		// Right Green
-		m_salmon.change_color(4.0);
-		m_salmon.update(GL_TIME_ELAPSED);
+	// Basic and Advanced mode
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_1)
+			m_salmon.set_mode(false);
+		else if (key == GLFW_KEY_2)
+			m_salmon.set_mode(true);
 	}
 
 	// Resetting game
