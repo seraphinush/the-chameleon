@@ -81,6 +81,8 @@ bool Salmon::init()
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
 
+	m_color_change = 0.0;
+
 	return true;
 }
 
@@ -169,6 +171,7 @@ void Salmon::draw(const mat3& projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
+	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
 
 	// Setting vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -196,6 +199,9 @@ void Salmon::draw(const mat3& projection)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int light_up = 0;
 	glUniform1iv(light_up_uloc, 1, &light_up);
+
+	float color_change = get_color_change();
+	glUniform1f(color_change_uloc, color_change);
 
 	// Get number of infices from buffer,
 	// we know our vbo contains both colour and position information, so...
@@ -290,4 +296,12 @@ void Salmon::kill()
 void Salmon::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+void Salmon::change_color(float c) {
+	m_color_change = c;
+}
+
+float Salmon::get_color_change() {
+	return m_color_change;
 }
