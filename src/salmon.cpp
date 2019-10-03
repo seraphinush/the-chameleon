@@ -12,10 +12,10 @@
 bool Salmon::init()
 {
 	m_vertices.clear();
-  	m_indices.clear();
+	m_indices.clear();
 
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
-	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
+	FILE *mesh_file = fopen(mesh_path("salmon.mesh"), "r");
 	if (mesh_file == nullptr)
 		return false;
 
@@ -27,10 +27,10 @@ bool Salmon::init()
 		float x, y, z;
 		float _u[3]; // unused
 		int r, g, b;
-		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u+1, _u+2, &r, &g, &b);
+		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u + 1, _u + 2, &r, &g, &b);
 		Vertex vertex;
-		vertex.position = { x, y, -z }; 
-		vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
+		vertex.position = {x, y, -z};
+		vertex.color = {(float)r / 255, (float)g / 255, (float)b / 255};
 		m_vertices.push_back(vertex);
 	}
 
@@ -70,18 +70,19 @@ bool Salmon::init()
 	// Loading shaders
 	if (!effect.load_from_file(shader_path("salmon.vs.glsl"), shader_path("salmon.fs.glsl")))
 		return false;
-	
+
 	// Setting initial values
-	motion.position = { 50.f, 100.f };
+	motion.position = {50.f, 100.f};
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	physics.scale = { -35.f, 35.f };
+	physics.scale = {-35.f, 35.f};
 
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
 
 	m_color_change = 0.0;
+	m_direction_change = 0.0;
 
 	return true;
 }
@@ -107,31 +108,35 @@ void Salmon::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (m_moving_right) { // Right
-			move({ step, 0.f });
+		if (m_moving_right)
+		{ // Right
+			move({step, 0.f});
 		}
-		if (m_moving_left) { // Left
-			move({ -step, 0.f });
+		if (m_moving_left)
+		{ // Left
+			move({-step, 0.f});
 		}
-		if (m_moving_up) { // Up
-			move({ 0.f, -step });
+		if (m_moving_up)
+		{ // Up
+			move({0.f, -step});
 		}
-		if (m_moving_down) { // Down
-			move({ 0.f, step });
+		if (m_moving_down)
+		{ // Down
+			move({0.f, step});
 		}
 	}
 	else
 	{
 		// If dead we make it face upwards and sink deep down
 		//set_rotation(-1.5708f);
-		move({ 600.0f, 650.0f });
+		move({600.0f, 650.0f});
 	}
 
 	if (m_light_up_countdown_ms > 0.f)
 		m_light_up_countdown_ms -= ms;
 }
 
-void Salmon::draw(const mat3& projection)
+void Salmon::draw(const mat3 &projection)
 {
 	transform.begin();
 
@@ -163,7 +168,8 @@ void Salmon::draw(const mat3& projection)
 	glUseProgram(effect.program);
 
 	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 
 	// Getting uniform locations
@@ -172,6 +178,7 @@ void Salmon::draw(const mat3& projection)
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
 	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
+	GLint direction_change_uloc = glGetUniformLocation(effect.program, "direction_change");
 
 	// Setting vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -183,16 +190,16 @@ void Salmon::draw(const mat3& projection)
 	GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_color_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)sizeof(vec3));
 
 	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
 	// !!! Salmon Color
-	float color[] = { 1.f, 1.f, 1.f };
+	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
@@ -203,6 +210,8 @@ void Salmon::draw(const mat3& projection)
 	float color_change = get_color_change();
 	glUniform1f(color_change_uloc, color_change);
 
+	float direction_change = get_direction_change();
+	glUniform1f(direction_change_uloc, direction_change);
 	// Get number of infices from buffer,
 	// we know our vbo contains both colour and position information, so...
 	GLint size = 0;
@@ -218,7 +227,7 @@ void Salmon::draw(const mat3& projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Salmon::collides_with(const Turtle& turtle)
+bool Salmon::collides_with(const Turtle &turtle)
 {
 	float dx = motion.position.x - turtle.get_position().x;
 	float dy = motion.position.y - turtle.get_position().y;
@@ -232,7 +241,7 @@ bool Salmon::collides_with(const Turtle& turtle)
 	return false;
 }
 
-bool Salmon::collides_with(const Fish& fish)
+bool Salmon::collides_with(const Fish &fish)
 {
 	float dx = motion.position.x - fish.get_position().x;
 	float dy = motion.position.y - fish.get_position().y;
@@ -249,7 +258,7 @@ bool Salmon::collides_with(const Fish& fish)
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // HANDLE SALMON - WALL COLLISIONS HERE
 // DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-// You will want to write new functions from scratch for checking/handling 
+// You will want to write new functions from scratch for checking/handling
 // salmon - wall collisions.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -260,8 +269,8 @@ vec2 Salmon::get_position() const
 
 void Salmon::move(vec2 off)
 {
-	motion.position.x += off.x; 
-	motion.position.y += off.y; 
+	motion.position.x += off.x;
+	motion.position.y += off.y;
 }
 
 void Salmon::set_rotation(float radians)
@@ -271,14 +280,34 @@ void Salmon::set_rotation(float radians)
 
 void Salmon::set_direction(char direction, bool value)
 {
+	m_direction_change = 0.0;
 	if (direction == 'R')
+	{
 		m_moving_right = value;
+		m_direction_change = 0.0;
+	}
 	else if (direction == 'L')
+	{
 		m_moving_left = value;
+		m_direction_change = 1.0;
+	}
 	else if (direction == 'U')
+	{
 		m_moving_up = value;
+		m_direction_change = 2.0;
+	}
 	else if (direction == 'D')
+	{
 		m_moving_down = value;
+		m_direction_change = 3.0;
+	}
+}
+
+float Salmon::get_direction_change()
+{
+	// if (m_direction_change == 1.0)
+	// 	fprintf(stderr, "%f", m_direction_change);
+	return m_direction_change;
 }
 
 bool Salmon::is_alive() const
@@ -298,11 +327,13 @@ void Salmon::light_up()
 	m_light_up_countdown_ms = 1500.f;
 }
 
-void Salmon::change_color(float c) {
+void Salmon::change_color(float c)
+{
 	m_color_change = c;
 }
 
-float Salmon::get_color_change() {
+float Salmon::get_color_change()
+{
 	return m_color_change;
 }
 

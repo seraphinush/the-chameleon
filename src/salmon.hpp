@@ -14,17 +14,17 @@ public:
 
 	// Releases all associated resources
 	void destroy();
-	
+
 	// Update salmon position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call
 	void update(float ms);
-	
+
 	// Renders the salmon
-	void draw(const mat3& projection)override;
+	void draw(const mat3 &projection) override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
-	bool collides_with(const Fish& fish);
+	bool collides_with(const Turtle &turtle);
+	bool collides_with(const Fish &fish);
 
 	// Returns the current salmon position
 	vec2 get_position() const;
@@ -45,7 +45,7 @@ public:
 	bool get_mode();
 
 	// True if the salmon is alive
-	bool is_alive()const;
+	bool is_alive() const;
 
 	// Kills the salmon, changing its alive state and triggering on death events
 	void kill();
@@ -56,16 +56,19 @@ public:
 	void change_color(float c);
 	float get_color_change();
 
+	float get_direction_change();
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
-	bool m_is_alive; // True if the salmon is alive
-	bool m_moving_right; // True if the salmon is moving right (when right arrow is pressed)
-	bool m_moving_left; // True if the salmon is moving left (when left arrow is pressed)
-	bool m_moving_up; // True if the salmon is moving up (when up arrow is pressed)
-	bool m_moving_down; // True if the salmon is moving down (when down arrow is pressed)
+	bool m_is_alive;			   // True if the salmon is alive
+	bool m_moving_right;		   // True if the salmon is moving right (when right arrow is pressed)
+	bool m_moving_left;			   // True if the salmon is moving left (when left arrow is pressed)
+	bool m_moving_up;			   // True if the salmon is moving up (when up arrow is pressed)
+	bool m_moving_down;			   // True if the salmon is moving down (when down arrow is pressed)
 	bool m_default_mode;
 	float m_color_change;
+	float m_direction_change;
 
-  std::vector<Vertex> m_vertices;
+	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 };
