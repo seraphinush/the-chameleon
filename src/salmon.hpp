@@ -5,6 +5,7 @@
 
 class Turtle;
 class Fish;
+class Wanderer;
 
 class Salmon : public Entity
 {
@@ -25,6 +26,7 @@ public:
 	// Collision routines for turtles and fish
 	bool collides_with(const Turtle &turtle);
 	bool collides_with(const Fish &fish);
+	bool collides_with(const Wanderer& wanderer);
 
 	// Returns the current salmon position
 	vec2 get_position() const;
@@ -60,6 +62,7 @@ public:
 	float get_color_change();
 	void change_direction(float c);
 	float get_direction_change();
+
 
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up

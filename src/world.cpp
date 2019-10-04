@@ -190,6 +190,20 @@ bool World::update(float elapsed_ms)
 		}
 	}
 
+	for (const auto &wanderer : m_wanderers)
+	{
+		if (m_salmon.collides_with(wanderer))
+		{
+			if (m_salmon.is_alive())
+			{
+				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_water.set_salmon_dead();
+			}
+			m_salmon.kill();
+			break;
+		}
+	}
+
 	// Checking Salmon - Fish collisions
 	auto fish_it = m_fish.begin();
 	while (fish_it != m_fish.end())
