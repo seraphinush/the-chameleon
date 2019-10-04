@@ -11,19 +11,12 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-<<<<<<< HEAD
-const size_t MAX_TURTLES = 3;
-const size_t MAX_FISH = 5;
-const size_t TURTLE_DELAY_MS = 2000;
-const size_t FISH_DELAY_MS = 5000;
-=======
 	const size_t MAX_TURTLES = 5;
 	const size_t MAX_WANDERERS = 5;
 	const size_t MAX_FISH = 5;
 	const size_t TURTLE_DELAY_MS = 2000;
 	const size_t WANDERER_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
->>>>>>> 5c0597d8ea8acb0b81db33141b84fe3598ab1d12
 
 namespace
 {
@@ -34,17 +27,11 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-<<<<<<< HEAD
-World::World() : m_points(0),
-				 m_next_turtle_spawn(0.f),
-				 m_next_fish_spawn(0.f)
-=======
 World::World() :
 	m_points(0),
 	m_next_turtle_spawn(0.f),
 	m_next_fish_spawn(0.f),
 	m_next_wanderer_spawn(0.f)
->>>>>>> 5c0597d8ea8acb0b81db33141b84fe3598ab1d12
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -129,15 +116,9 @@ bool World::init(vec2 screen)
 	if (m_background_music == nullptr || m_salmon_dead_sound == nullptr || m_salmon_eat_sound == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-<<<<<<< HEAD
-				audio_path("music.wav"),
-				audio_path("salmon_dead.wav"),
-				audio_path("salmon_eat.wav"));
-=======
 			audio_path("theRiver.wav"),
 			audio_path("salmon_dead.wav"),
 			audio_path("salmon_eat.wav"));
->>>>>>> 5c0597d8ea8acb0b81db33141b84fe3598ab1d12
 		return false;
 	}
 
