@@ -143,6 +143,7 @@ vec2 Turtle::get_position()const
 void Turtle::set_position(vec2 position)
 {
 	motion.position = position;
+	// fprintf(stderr, "Position: %f : %f\n", position.x, position.y);
 }
 
 vec2 Turtle::get_bounding_box() const
