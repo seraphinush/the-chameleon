@@ -81,6 +81,8 @@ private:
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;
 	float m_next_wanderer_spawn;
+
+	
 	
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_salmon_dead_sound;

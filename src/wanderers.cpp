@@ -82,8 +82,10 @@ void Wanderer::update(float ms)
 {
 	// Move fish along -X based on how much time has passed, this is to (partially) avoid
 	// having entities move at different speed based on the machine.
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
+	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
+	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
+	motion.position.x += step_in_x;
+	motion.position.y += step_in_y;
 }
 
 void Wanderer::draw(const mat3& projection)

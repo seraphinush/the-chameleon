@@ -206,7 +206,7 @@ bool World::update(float elapsed_ms)
 	// HANDLE PEBBLE COLLISIONS HERE
 	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 3
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current.
 	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
@@ -216,8 +216,22 @@ bool World::update(float elapsed_ms)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
 		fish.update(elapsed_ms * m_current_speed);
-	for (auto& wanderer : m_wanderers)
+	for (auto& wanderer : m_wanderers) {
+		int w = wanderer.get_position().x;
+		if (wanderer.m_direction_wanderer.x > 0) {
+			if (w > screen.x) {
+				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+			}
+		}
+		else {
+			if (w < (screen.x / 2)) {
+				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+			}
+		}
 		wanderer.update(elapsed_ms * m_current_speed);
+	}
+
+
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE PEBBLE SPAWN/UPDATES HERE
@@ -238,6 +252,8 @@ bool World::update(float elapsed_ms)
 		++turtle_it;
 	}
 
+
+
 	// REMOVING OUT OF SCREEN WANDERERS
 	auto wanderer_it = m_wanderers.begin();
 	while (wanderer_it != m_wanderers.end())
@@ -251,6 +267,8 @@ bool World::update(float elapsed_ms)
 
 		++wanderer_it;
 	}
+
+	
 
 	// Removing out of screen fish
 	fish_it = m_fish.begin();
@@ -289,7 +307,6 @@ bool World::update(float elapsed_ms)
 		if (!spawn_wanderer())
 			return false;
 		
-		std::cout << "I got here";
 
 		Wanderer& new_wanderer = m_wanderers.back();
 
@@ -299,6 +316,8 @@ bool World::update(float elapsed_ms)
 		// Next spawn
 		m_next_wanderer_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
 	}
+
+	
 
 	// Spawning new fish
 	// REMOVED
