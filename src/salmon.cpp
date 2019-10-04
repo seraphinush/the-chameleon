@@ -83,6 +83,12 @@ bool Salmon::init()
 
 	m_color_change = 0.0;
 
+	// Bound
+	m_bound_up = false;
+	m_bound_down = false;
+	m_bound_left = false;
+	m_bound_right = false;
+
 	return true;
 }
 
@@ -104,21 +110,10 @@ void Salmon::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (m_moving_right) { // Right
-			move({ step, 0.f });
-		}
-		if (m_moving_left) { // Left
-			move({ -step, 0.f });
-		}
-		if (m_moving_up) { // Up
-			move({ 0.f, -step });
-		}
-		if (m_moving_down) { // Down
-			move({ 0.f, step });
-		}
+		if (m_moving_right && !m_bound_right) move({ step, 0.f });
+		if (m_moving_left && !m_bound_left) move({ -step, 0.f });
+		if (m_moving_up && !m_bound_up) move({ 0.f, -step });
+		if (m_moving_down && !m_bound_down) move({ 0.f, step });
 	}
 	else
 	{
@@ -136,7 +131,7 @@ void Salmon::draw(const mat3& projection)
 	transform.begin();
 
 	// Initial salmon position and rotation
-	transform.translate({600.0f, 650.0f});
+	//transform.translate({600.0f, 650.0f});
 	//transform.rotate(-1.5708f);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -267,6 +262,27 @@ void Salmon::move(vec2 off)
 void Salmon::set_rotation(float radians)
 {
 	motion.radians = radians;
+}
+
+// Bound
+void Salmon::set_bound(char direction, bool state)
+{
+	switch (direction) {
+		case 'R':
+			m_bound_right = state;
+			break;
+		case 'L':
+		  m_bound_left = state;
+			break;
+		case 'U':
+		  m_bound_up = state;
+			break;
+		case 'D':
+		  m_bound_down = state;
+			break;
+		default:
+			break;
+	}
 }
 
 void Salmon::set_direction(char direction, bool value)
