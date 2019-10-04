@@ -216,16 +216,25 @@ bool World::update(float elapsed_ms)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
 		fish.update(elapsed_ms * m_current_speed);
+
+
+
 	for (auto& wanderer : m_wanderers) {
-		int w = wanderer.get_position().x;
-		if (wanderer.m_direction_wanderer.x > 0) {
-			if (w > screen.x) {
+		int xPos = wanderer.get_position().x;
+		int yPos = wanderer.get_position().y;
+		if ((wanderer.m_direction_wanderer.x > 0) || (wanderer.m_direction_wanderer.y > 0)) {
+			if (xPos > screen.x) {
 				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+			}
+			else if (yPos > screen.y) {
+				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+				wanderer.m_direction_wanderer.y = 0;
 			}
 		}
 		else {
-			if (w < (screen.x / 2)) {
-				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+			if (xPos < (screen.x / 2)) {
+				wanderer.m_direction_wanderer.x = 0;
+				wanderer.m_direction_wanderer.y = -1;
 			}
 		}
 		wanderer.update(elapsed_ms * m_current_speed);
