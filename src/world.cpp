@@ -11,7 +11,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t MAX_TURTLES = 5;
+	const size_t MAX_TURTLES = 4;
 	const size_t MAX_WANDERERS = 5;
 	const size_t MAX_FISH = 5;
 	const size_t TURTLE_DELAY_MS = 2000;
@@ -313,8 +313,8 @@ bool World::update(float elapsed_ms)
 	}
 
 	// Spawning new turtles
-	m_next_turtle_spawn -= elapsed_ms * m_current_speed;
-	if (m_turtles.size() <= MAX_TURTLES && m_next_turtle_spawn < 0.f)
+	//m_next_turtle_spawn -= elapsed_ms * m_current_speed;
+	if (m_turtles.size() <= MAX_TURTLES) // && m_next_turtle_spawn < 0.f)
 	{
 		if (!spawn_turtle())
 			return false;
@@ -325,7 +325,7 @@ bool World::update(float elapsed_ms)
 		new_turtle.set_position({50 + m_dist(m_rng) * (screen.y - 100), 90 + m_dist(m_rng) * (screen.y - 100)});
 
 		// Next spawn
-		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
+		//m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
 	}
 
 	// SPAWNING NEW WANDERERS

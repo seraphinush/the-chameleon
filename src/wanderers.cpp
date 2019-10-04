@@ -103,7 +103,9 @@ void Wanderer::draw(const mat3& projection)
 
 	// Enabling alpha channel for textures
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_DEPTH_TEST);
+
+  // Depth
+	glEnable(GL_DEPTH_TEST);
 
 	// Getting uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
