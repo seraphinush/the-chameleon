@@ -222,19 +222,30 @@ bool World::update(float elapsed_ms)
 	for (auto& wanderer : m_wanderers) {
 		int xPos = wanderer.get_position().x;
 		int yPos = wanderer.get_position().y;
-		if ((wanderer.m_direction_wanderer.x > 0) || (wanderer.m_direction_wanderer.y > 0)) {
-			if (xPos > screen.x) {
-				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+		if (wanderer.m_direction_wanderer.x > 0) {
+			if (xPos > screen.x - 100) {
+				wanderer.m_direction_wanderer.y = 0.75;
+				wanderer.m_direction_wanderer.x = 0;
 			}
-			else if (yPos > screen.y) {
-				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+		}
+		else if (wanderer.m_direction_wanderer.y > 0) 
+		{
+			if (yPos > screen.y - 100) {
+				wanderer.m_direction_wanderer.x = -0.75;
 				wanderer.m_direction_wanderer.y = 0;
 			}
 		}
-		else {
-			if (xPos < (screen.x / 2)) {
+		else if (wanderer.m_direction_wanderer.x < 0) {
+			if (xPos < 100) {
 				wanderer.m_direction_wanderer.x = 0;
-				wanderer.m_direction_wanderer.y = -1;
+				wanderer.m_direction_wanderer.y = -0.75;
+			}
+		}
+		else if (wanderer.m_direction_wanderer.y < 1)
+		{
+			if (yPos < 100) {
+				wanderer.m_direction_wanderer.x = 0.75;
+				wanderer.m_direction_wanderer.y = 0;
 			}
 		}
 		wanderer.update(elapsed_ms * m_current_speed);
