@@ -3,6 +3,8 @@
 uniform sampler2D screen_texture;
 uniform float time;
 uniform float dead_timer;
+uniform int window_width;
+uniform int window_height;
 
 in vec2 uv;
 
@@ -21,13 +23,13 @@ vec2 distort(vec2 uv)
 vec4 color_shift(vec4 in_color) 
 {
 	vec4 color = in_color;
-	if (gl_FragCoord.x < 1200 && gl_FragCoord.y < 750)
+	if (gl_FragCoord.x < window_width/2 && gl_FragCoord.y < window_height/2)
 		color = vec4(1.0, 0.0, 0.0, 1.0);
-	else if (gl_FragCoord.x >= 1200 && gl_FragCoord.y < 750)
+	else if (gl_FragCoord.x >= window_width/2 && gl_FragCoord.y < window_height/2)
 		color = vec4(0.0, 1.0, 0.0, 1.0);
-	else if (gl_FragCoord.x < 1200 && gl_FragCoord.y >= 750)
+	else if (gl_FragCoord.x < window_width/2 && gl_FragCoord.y >= window_height/2)
 		color = vec4(0.0, 0.0, 1.0, 1.0);
-	else if (gl_FragCoord.x >= 1200 && gl_FragCoord.y >= 750)
+	else if (gl_FragCoord.x >= window_width/2 && gl_FragCoord.y >= window_height/2)
 		color = vec4(1.0, 1.0, 0.0, 1.0);
 	return color;
 }
