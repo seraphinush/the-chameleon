@@ -1,17 +1,21 @@
 // Header
 #include "world.hpp"
+#include "wanderers.cpp"
 
 // stlib
 #include <string.h>
 #include <cassert>
 #include <sstream>
+#include <iostream>
 
 // Same as static in c, local to compilation unit
 namespace
 {
 	const size_t MAX_TURTLES = 5;
+	const size_t MAX_WANDERERS = 5;
 	const size_t MAX_FISH = 5;
 	const size_t TURTLE_DELAY_MS = 2000;
+	const size_t WANDERER_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
 
 	namespace
@@ -23,10 +27,11 @@ namespace
 	}
 }
 
-World::World() : 
-m_points(0),
-m_next_turtle_spawn(0.f),
-m_next_fish_spawn(0.f)
+World::World() :
+	m_points(0),
+	m_next_turtle_spawn(0.f),
+	m_next_fish_spawn(0.f),
+	m_next_wanderer_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -148,6 +153,9 @@ void World::destroy()
 		turtle.destroy();
 	for (auto& fish : m_fish)
 		fish.destroy();
+	for (auto& wanderer : m_wanderers)
+		wanderer.destroy();
+	m_wanderers.clear();
 	m_turtles.clear();
 	m_fish.clear();
 	glfwDestroyWindow(m_window);
@@ -198,7 +206,7 @@ bool World::update(float elapsed_ms)
 	// HANDLE PEBBLE COLLISIONS HERE
 	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 3
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current.
 	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
@@ -208,6 +216,31 @@ bool World::update(float elapsed_ms)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
 		fish.update(elapsed_ms * m_current_speed);
+
+
+
+	for (auto& wanderer : m_wanderers) {
+		int xPos = wanderer.get_position().x;
+		int yPos = wanderer.get_position().y;
+		if ((wanderer.m_direction_wanderer.x > 0) || (wanderer.m_direction_wanderer.y > 0)) {
+			if (xPos > screen.x) {
+				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+			}
+			else if (yPos > screen.y) {
+				wanderer.m_direction_wanderer.x = -wanderer.m_direction_wanderer.x;
+				wanderer.m_direction_wanderer.y = 0;
+			}
+		}
+		else {
+			if (xPos < (screen.x / 2)) {
+				wanderer.m_direction_wanderer.x = 0;
+				wanderer.m_direction_wanderer.y = -1;
+			}
+		}
+		wanderer.update(elapsed_ms * m_current_speed);
+	}
+
+
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE PEBBLE SPAWN/UPDATES HERE
@@ -227,6 +260,24 @@ bool World::update(float elapsed_ms)
 
 		++turtle_it;
 	}
+
+
+
+	// REMOVING OUT OF SCREEN WANDERERS
+	auto wanderer_it = m_wanderers.begin();
+	while (wanderer_it != m_wanderers.end())
+	{
+		float w = wanderer_it->get_bounding_box().x / 2;
+		if (wanderer_it->get_position().x + w < 0.f)
+		{
+			wanderer_it = m_wanderers.erase(wanderer_it);
+			continue;
+		}
+
+		++wanderer_it;
+	}
+
+	
 
 	// Removing out of screen fish
 	fish_it = m_fish.begin();
@@ -258,6 +309,25 @@ bool World::update(float elapsed_ms)
 		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
 	}
 
+	// SPAWNING NEW WANDERERS
+	m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
+	if (m_wanderers.size() <= MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+	{
+		if (!spawn_wanderer())
+			return false;
+		
+
+		Wanderer& new_wanderer = m_wanderers.back();
+
+		// Setting random initial position
+		new_wanderer.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+
+		// Next spawn
+		m_next_wanderer_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
+	}
+
+	
+
 	// Spawning new fish
 	// REMOVED
 
@@ -269,6 +339,7 @@ bool World::update(float elapsed_ms)
 		m_pebbles_emitter.destroy();
 		m_pebbles_emitter.init();
 		m_turtles.clear();
+		m_wanderers.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
@@ -330,6 +401,8 @@ void World::draw()
 		turtle.draw(projection_2D);
 	for (auto& fish : m_fish)
 		fish.draw(projection_2D);
+	for (auto& wanderer : m_wanderers)
+		wanderer.draw(projection_2D);
 	m_salmon.draw(projection_2D);
 
 	/////////////////////
@@ -367,6 +440,19 @@ bool World::spawn_turtle()
 	if (turtle.init())
 	{
 		m_turtles.emplace_back(turtle);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn turtle");
+	return false;
+}
+
+// Creates a new wanderer and if successful adds it to the list of wanderers
+bool World::spawn_wanderer()
+{
+	Wanderer wanderer;
+	if (wanderer.init())
+	{
+		m_wanderers.emplace_back(wanderer);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn turtle");
