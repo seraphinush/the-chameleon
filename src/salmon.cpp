@@ -168,9 +168,10 @@ void Salmon::draw(const mat3 &projection)
 	glUseProgram(effect.program);
 
 	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
+	glEnable(GL_BLEND); 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+	// depth is 0.00001
 
 	// Getting uniform locations
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -300,8 +301,6 @@ void Salmon::set_direction(char direction, bool value)
 
 float Salmon::get_direction_change()
 {
-	// if (m_direction_change == 1.0)
-	fprintf(stderr, "%f", m_direction_change);
 	return m_direction_change;
 }
 void Salmon::change_direction(float c)

@@ -28,5 +28,5 @@ void main()
 		vpos = -vec2(in_position.x*cs - in_position.y*sn, in_position.x*sn + in_position.y*cs);
 	}
 	vec3 pos = projection * transform * vec3(vpos, 1.0);
-	gl_Position = vec4(pos.xy, in_position.z, 1.0);
+	gl_Position = vec4(pos.xy, 0.01, 1.0);
 }
