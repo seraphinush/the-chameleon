@@ -6,6 +6,8 @@
 class Water : public Entity
 {
 public:
+	int view_port[4];
+
 	// Creates all the associated render resources and default transform
 	bool init();
 

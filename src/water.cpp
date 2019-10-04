@@ -3,6 +3,8 @@
 #include <iostream>
 
 bool Water::init() {
+	glGetIntegerv(GL_VIEWPORT, view_port);
+
 	m_dead_time = -1;
 
 	// Since we are not going to apply transformation to this screen geometry
@@ -56,10 +58,14 @@ float Water::get_salmon_dead_time() const {
 	return glfwGetTime() - m_dead_time;
 }
 
+
 void Water::draw(const mat3& projection) {
+
 	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND); 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+	// Water depth at 0.0
 
 	// Setting shaders
 	glUseProgram(effect.program);
@@ -69,9 +75,15 @@ void Water::draw(const mat3& projection) {
 	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
 	GLuint time_uloc = glGetUniformLocation(effect.program, "time");
 	GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
+
+	GLuint window_width_uloc = glGetUniformLocation(effect.program, "window_width");
+	GLuint window_height_uloc = glGetUniformLocation(effect.program, "window_height");
+
 	glUniform1i(screen_text_uloc, 0);
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
+	glUniform1i(window_width_uloc, view_port[2]);
+	glUniform1i(window_height_uloc, view_port[3]);
 
 	// Draw the screen texture on the quad geometry
 	// Setting vertices
