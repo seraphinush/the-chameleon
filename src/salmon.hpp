@@ -53,6 +53,9 @@ public:
 	// Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
+	// Bound player
+	void set_bound(char direction, bool state);
+
 	void change_color(float c);
 	float get_color_change();
 	void change_direction(float c);
@@ -69,6 +72,12 @@ private:
 	float m_color_change;
 	float m_direction_change;
 
-	std::vector<Vertex> m_vertices;
+  // Bound
+	bool m_bound_right;
+	bool m_bound_left;
+	bool m_bound_up;
+	bool m_bound_down;
+
+  std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 };
