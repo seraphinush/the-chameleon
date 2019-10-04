@@ -4,6 +4,7 @@
 // internal
 #include "turtle.hpp"
 #include "fish.hpp"
+#include "wanderers.hpp"
 
 // stlib
 #include <string>
@@ -225,6 +226,20 @@ bool Salmon::collides_with(const Turtle &turtle)
 	float dy = motion.position.y - turtle.get_position().y;
 	float d_sq = dx * dx + dy * dy;
 	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+bool Salmon::collides_with(const Wanderer &wanderer)
+{
+	float dx = motion.position.x - wanderer.get_position().x;
+	float dy = motion.position.y - wanderer.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(wanderer.get_bounding_box().x, wanderer.get_bounding_box().y);
 	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
