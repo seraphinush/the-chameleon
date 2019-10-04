@@ -9,7 +9,7 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-const size_t MAX_TURTLES = 5;
+const size_t MAX_TURTLES = 3;
 const size_t MAX_FISH = 5;
 const size_t TURTLE_DELAY_MS = 2000;
 const size_t FISH_DELAY_MS = 5000;
@@ -203,10 +203,10 @@ bool World::update(float elapsed_ms)
 	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
 	// rather than by their class.
 	m_salmon.update(elapsed_ms);
-	for (auto &turtle : m_turtles)
-		turtle.update(elapsed_ms * m_current_speed);
-	for (auto &fish : m_fish)
-		fish.update(elapsed_ms * m_current_speed);
+	// for (auto &turtle : m_turtles)
+	// 	turtle.update(elapsed_ms * m_current_speed);
+	// for (auto &fish : m_fish)
+	// 	fish.update(elapsed_ms * m_current_speed);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE PEBBLE SPAWN/UPDATES HERE
@@ -251,7 +251,7 @@ bool World::update(float elapsed_ms)
 		Turtle &new_turtle = m_turtles.back();
 
 		// Setting random initial position
-		new_turtle.set_position({screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100)});
+		new_turtle.set_position({50 + m_dist(m_rng) * (screen.y - 100), 90 + m_dist(m_rng) * (screen.y - 100)});
 
 		// Next spawn
 		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
