@@ -396,15 +396,19 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (action == GLFW_PRESS)
 	{
-		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
+		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode())){
+			m_salmon.change_direction(0.0);
 			m_salmon.set_direction('R', true);
-		else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
+		} else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode())){
+			m_salmon.change_direction(1.0);
 			m_salmon.set_direction('L', true);
-		else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
+		} else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode())){
+			m_salmon.change_direction(2.0);
 			m_salmon.set_direction('U', true);
-		else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
+		} else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode())){
+			m_salmon.change_direction(3.0);
 			m_salmon.set_direction('D', true);
-		else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
+		} else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
 		{
 			// Up Red
 			m_salmon.change_color(1.0);

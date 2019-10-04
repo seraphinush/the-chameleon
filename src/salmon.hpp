@@ -55,7 +55,7 @@ public:
 
 	void change_color(float c);
 	float get_color_change();
-
+	void change_direction(float c);
 	float get_direction_change();
 
 private:

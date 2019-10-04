@@ -280,34 +280,33 @@ void Salmon::set_rotation(float radians)
 
 void Salmon::set_direction(char direction, bool value)
 {
-	m_direction_change = 0.0;
 	if (direction == 'R')
 	{
 		m_moving_right = value;
-		m_direction_change = 0.0;
 	}
 	else if (direction == 'L')
 	{
 		m_moving_left = value;
-		m_direction_change = 1.0;
 	}
 	else if (direction == 'U')
 	{
 		m_moving_up = value;
-		m_direction_change = 2.0;
 	}
 	else if (direction == 'D')
 	{
 		m_moving_down = value;
-		m_direction_change = 3.0;
 	}
 }
 
 float Salmon::get_direction_change()
 {
 	// if (m_direction_change == 1.0)
-	// 	fprintf(stderr, "%f", m_direction_change);
+	fprintf(stderr, "%f", m_direction_change);
 	return m_direction_change;
+}
+void Salmon::change_direction(float c)
+{
+	m_direction_change = c;
 }
 
 bool Salmon::is_alive() const
