@@ -12,7 +12,7 @@ bool Turtle::init()
 	{
 		if (!turtle_texture.load_from_file(textures_path("theif.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load thief texture!");
 			return false;
 		}
 	}
@@ -101,7 +101,7 @@ void Turtle::draw(const mat3& projection)
 
 	// Enabling alpha channel for textures
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	// Getting uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -143,6 +143,7 @@ vec2 Turtle::get_position()const
 void Turtle::set_position(vec2 position)
 {
 	motion.position = position;
+	// fprintf(stderr, "Position: %f : %f\n", position.x, position.y);
 }
 
 vec2 Turtle::get_bounding_box() const
