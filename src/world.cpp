@@ -171,8 +171,6 @@ bool World::update(float elapsed_ms)
 	glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
 
-	fprintf(stderr, "%d", (m_salmon.get_position().y > screen.y));
-
 	// Checking boundary
 	m_salmon.set_bound('R', (m_salmon.get_position().x > screen.x));
 	m_salmon.set_bound('L', (m_salmon.get_position().x < 0));
