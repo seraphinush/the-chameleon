@@ -11,13 +11,13 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t MAX_TURTLES = 4;
-	const size_t MAX_WANDERERS = 5;
-	const size_t MAX_FISH = 5;
-	const size_t TURTLE_DELAY_MS = 2000;
-	const size_t WANDERER_DELAY_MS = 2000;
-	const size_t FISH_DELAY_MS = 5000;
-	vec2 thief_positions[4] = { {100,100} };
+const size_t MAX_TURTLES = 4;
+const size_t MAX_WANDERERS = 5;
+const size_t MAX_FISH = 5;
+const size_t TURTLE_DELAY_MS = 2000;
+const size_t WANDERER_DELAY_MS = 2000;
+const size_t FISH_DELAY_MS = 5000;
+vec2 thief_positions[4] = {{100, 100}};
 
 namespace
 {
@@ -28,11 +28,10 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() :
-	m_points(0),
-	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f),
-	m_next_wanderer_spawn(0.f)
+World::World() : m_points(0),
+				 m_next_turtle_spawn(0.f),
+				 m_next_fish_spawn(0.f),
+				 m_next_wanderer_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -45,9 +44,9 @@ World::~World()
 // World initialization
 bool World::init(vec2 screen)
 {
-	thief_positions[1] = { screen.x - 100, 100 };
-	thief_positions[2] = { 100, screen.y - 100 };
-	thief_positions[3] = { screen.x - 100, screen.y - 100 };
+	thief_positions[1] = {screen.x - 100, 100};
+	thief_positions[2] = {100, screen.y - 100};
+	thief_positions[3] = {screen.x - 100, screen.y - 100};
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -120,9 +119,9 @@ bool World::init(vec2 screen)
 	if (m_background_music == nullptr || m_salmon_dead_sound == nullptr || m_salmon_eat_sound == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-			audio_path("theRiver.wav"),
-			audio_path("salmon_dead.wav"),
-			audio_path("salmon_eat.wav"));
+				audio_path("theRiver.wav"),
+				audio_path("salmon_dead.wav"),
+				audio_path("salmon_eat.wav"));
 		return false;
 	}
 
@@ -156,7 +155,7 @@ void World::destroy()
 		turtle.destroy();
 	for (auto &fish : m_fish)
 		fish.destroy();
-	for (auto& wanderer : m_wanderers)
+	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_turtles.clear();
@@ -174,8 +173,8 @@ bool World::update(float elapsed_ms)
 	// Checking boundary
 	m_salmon.set_bound('R', (m_salmon.get_position().x > screen.x));
 	m_salmon.set_bound('L', (m_salmon.get_position().x < 0));
-  m_salmon.set_bound('D', (m_salmon.get_position().y > screen.y));
-	m_salmon.set_bound('U', (m_salmon.get_position().y < 0));	
+	m_salmon.set_bound('D', (m_salmon.get_position().y > screen.y));
+	m_salmon.set_bound('U', (m_salmon.get_position().y < 0));
 
 	// Checking Salmon - Turtle collisions
 	for (const auto &turtle : m_turtles)
@@ -241,41 +240,44 @@ bool World::update(float elapsed_ms)
 	// for (auto &fish : m_fish)
 	// 	fish.update(elapsed_ms * m_current_speed);
 
-
-
-	for (auto& wanderer : m_wanderers) {
+	for (auto &wanderer : m_wanderers)
+	{
 		int xPos = wanderer.get_position().x;
 		int yPos = wanderer.get_position().y;
-		if (wanderer.m_direction_wanderer.x > 0) {
-			if (xPos > screen.x - 100) {
+		if (wanderer.m_direction_wanderer.x > 0)
+		{
+			if (xPos > screen.x - 100)
+			{
 				wanderer.m_direction_wanderer.y = 0.75;
 				wanderer.m_direction_wanderer.x = 0;
 			}
 		}
-		else if (wanderer.m_direction_wanderer.y > 0) 
+		else if (wanderer.m_direction_wanderer.y > 0)
 		{
-			if (yPos > screen.y - 100) {
+			if (yPos > screen.y - 100)
+			{
 				wanderer.m_direction_wanderer.x = -0.75;
 				wanderer.m_direction_wanderer.y = 0;
 			}
 		}
-		else if (wanderer.m_direction_wanderer.x < 0) {
-			if (xPos < 100) {
+		else if (wanderer.m_direction_wanderer.x < 0)
+		{
+			if (xPos < 100)
+			{
 				wanderer.m_direction_wanderer.x = 0;
 				wanderer.m_direction_wanderer.y = -0.75;
 			}
 		}
 		else if (wanderer.m_direction_wanderer.y < 1)
 		{
-			if (yPos < 100) {
+			if (yPos < 100)
+			{
 				wanderer.m_direction_wanderer.x = 0.75;
 				wanderer.m_direction_wanderer.y = 0;
 			}
 		}
 		wanderer.update(elapsed_ms * m_current_speed);
 	}
-
-
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE PEBBLE SPAWN/UPDATES HERE
@@ -296,8 +298,6 @@ bool World::update(float elapsed_ms)
 		++turtle_it;
 	}
 
-
-
 	// REMOVING OUT OF SCREEN WANDERERS
 	auto wanderer_it = m_wanderers.begin();
 	while (wanderer_it != m_wanderers.end())
@@ -311,8 +311,6 @@ bool World::update(float elapsed_ms)
 
 		++wanderer_it;
 	}
-
-	
 
 	// Removing out of screen fish
 	fish_it = m_fish.begin();
@@ -350,18 +348,15 @@ bool World::update(float elapsed_ms)
 	{
 		if (!spawn_wanderer())
 			return false;
-		
 
-		Wanderer& new_wanderer = m_wanderers.back();
+		Wanderer &new_wanderer = m_wanderers.back();
 
 		// Setting random initial position
-		new_wanderer.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+		new_wanderer.set_position({screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100)});
 
 		// Next spawn
 		m_next_wanderer_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
 	}
-
-	
 
 	// Spawning new fish
 	// REMOVED
@@ -437,7 +432,7 @@ void World::draw()
 		turtle.draw(projection_2D);
 	for (auto &fish : m_fish)
 		fish.draw(projection_2D);
-	for (auto& wanderer : m_wanderers)
+	for (auto &wanderer : m_wanderers)
 		wanderer.draw(projection_2D);
 	m_salmon.draw(projection_2D);
 
@@ -510,19 +505,27 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (action == GLFW_PRESS)
 	{
-		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode())){
+		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
+		{
 			m_salmon.change_direction(0.0);
 			m_salmon.set_direction('R', true);
-		} else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode())){
+		}
+		else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
+		{
 			m_salmon.change_direction(1.0);
 			m_salmon.set_direction('L', true);
-		} else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode())){
+		}
+		else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
+		{
 			m_salmon.change_direction(2.0);
 			m_salmon.set_direction('U', true);
-		} else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode())){
+		}
+		else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
+		{
 			m_salmon.change_direction(3.0);
 			m_salmon.set_direction('D', true);
-		} else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
+		}
+		else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
 		{
 			// Up Red
 			m_salmon.change_color(1.0);
@@ -575,6 +578,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		m_pebbles_emitter.destroy();
 		m_pebbles_emitter.init();
 		m_turtles.clear();
+		m_wanderers.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
@@ -594,6 +598,175 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE SALMON ROTATION HERE
 	// xpos and ypos are relative to the top-left of the window, the salmon's
-	// default facing direction is (1, 0)
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	return true;
 }
+fprintf(stderr, "Failed to spawn turtle");
+return false;
+}
+
+reCruates a new rish nnd if s ccessfutl adds iruto the list oe fish bool World::sp;
+wn_fish()
+{
+	Fish fish;
+	if (fish.init())
+	{
+		m_fish.empla e_back(f
+								sh);
+		retur true;
+	}
+	fprintf(stderr,
+"Faile
+ to spawn fish");
+	return false;
+}
+
+// On key callback
+vo !d Wo !ld::on_key(GLFWwindow *, int k !y, int, int a !n, i t mod)
+{
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// HANDLE SALMON MOVEMENT HERE
+	// key
+	of 'type' GLFW_KEY_
+		// action can be GLFW_PRESSeGLFW_RELEASE GLFW_REPEAT ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key
+		if (action == GLFW_PRESS)
+	{
+		if ((key == GLFW_KEY_D && m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
+		{
+			m_salmon.change_direction(0.0);
+			m_salmon.set_direction('R', true);
+		}
+		else if ((key == GLFW_KEY_A && = m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
+		{
+			m_salmon.change_direction(1.0);
+			m_salmon.set_direction('L', true);
+		}
+		else if ((key == GLFW_KEY_W && = m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
+		{
+			m_salmon.change_direction(2.0);
+			m_salmon.set_direction('U', true);
+		}
+		else if ((key == GLFW_KEY_S && m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
+		{
+			m_salmon.change_direction(3.0);
+			m_salmon.set_direction('D', true);GLFW_KEY_W && m_salmon.get_mode()))fprintf(stderr, "Failed to spawn turtle");
+			return false;
+		}
+
+		// Creates a new fish and if successfull adds it to the list of fish
+		bool World::spawn_fish()
+		{
+			Fish fish;
+			if (fish.init())
+			{
+				m_fish.emplace_back(fish);
+				return true;
+			}
+			fprintf(stderr, "Failed to spawn fish");
+			return false;
+		}
+
+		// On key callback
+		void World::on_key(GLFWwindow *, int key, int, int action, int mod)
+		{
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// HANDLE SALMON MOVEMENT HERE
+			// key is of 'type' GLFW_KEY_
+			// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			if (action == GLFW_PRESS)
+			{
+				if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
+				{
+					m_salmon.change_direction(0.0);
+					m_salmon.set_direction('R', true);
+				}
+				else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
+				{
+					m_salmon.change_direction(1.0);
+					m_salmon.set_direction('L', true);
+				}
+				else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
+				{
+					m_salmon.change_direction(2.0);
+					m_salmon.set_direction('U', true);
+				}
+				else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
+				{
+					m_salmon.change_direction(3.0);
+					m_salmon.set_direction('D', true);
+				}
+				else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
+				{
+					// Up Red
+					m_salmon.change_color(1.0);
+				}
+				else if ((key == GLFW_KEY_DOWN && !m_salmon.get_mode()) || (key == GLFW_KEY_S && m_salmon.get_mode()))
+				{
+					// Down Yellow
+					m_salmon.change_color(2.0);
+				}
+				else if ((key == GLFW_KEY_LEFT && !m_salmon.get_mode()) || (key == GLFW_KEY_A && m_salmon.get_mode()))
+				{
+					// Left Blue
+					m_salmon.change_color(3.0);
+				}
+				else if ((key == GLFW_KEY_RIGHT && !m_salmon.get_mode()) || (key == GLFW_KEY_D && m_salmon.get_mode()))
+				{
+					// Right Green
+					m_salmon.change_color(4.0);
+				}
+			}
+
+			if (action == GLFW_RELEASE)
+			{
+				if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
+					m_salmon.set_direction('R', false);
+				else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
+					m_salmon.set_direction('L', false);
+				else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
+					m_salmon.set_direction('U', false);
+				else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
+					m_salmon.set_direction('D', false);
+			}
+
+			// Basic and Advanced mode
+			if (action == GLFW_PRESS)
+			{
+				if (key == GLFW_KEY_1)
+					m_salmon.set_mode(false);
+				else if (key == GLFW_KEY_2)
+					m_salmon.set_mode(true);
+			}
+
+			// Resetting game
+			if (action == GLFW_RELEASE && key == GLFW_KEY_R)
+			{
+				int w, h;
+				glfwGetWindowSize(m_window, &w, &h);
+				m_salmon.destroy();
+				m_salmon.init();
+				m_pebbles_emitter.destroy();
+				m_pebbles_emitter.init();
+				m_turtles.clear();
+				m_fish.clear();
+				m_water.reset_salmon_dead_time();
+				m_current_speed = 1.f;
+			}
+
+			// Control the current speed with `<` `>`
+			if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
+				m_current_speed -= 0.1f;
+			if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
+				m_current_speed += 0.1f;
+
+			m_current_speed = fmax(0.f, m_current_speed);
+		}
+
+		void World::on_mouse_move(GLFWwindow * window, double xpos, double ypos)
+		{
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// HANDLE SALMON ROTATION HERE
+			// xpos and ypos are relative to the top-left of the window, the salmon's
+			// default facing direction is (1, 0)
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
