@@ -73,7 +73,7 @@ bool Salmon::init()
 		return false;
 
 	// Setting initial values
-	motion.position = {50.f, 100.f};
+	motion.position = {600.f, 400.f};
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
@@ -124,8 +124,8 @@ void Salmon::update(float ms)
 	else
 	{
 		// If dead we make it face upwards and sink deep down
-		//set_rotation(-1.5708f);
-		move({600.0f, 650.0f});
+		set_rotation(-3.14f);
+		//move({600.0f, 650.0f});
 	}
 
 	if (m_light_up_countdown_ms > 0.f)
@@ -176,6 +176,7 @@ void Salmon::draw(const mat3 &projection)
 	GLint light_up_uloc = glGetUniformLocation(effect.program, "light_up");
 	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
 	GLint direction_change_uloc = glGetUniformLocation(effect.program, "direction_change");
+	GLint is_alive_uloc = glGetUniformLocation(effect.program, "is_alive");
 
 	// Setting vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -209,6 +210,9 @@ void Salmon::draw(const mat3 &projection)
 
 	float direction_change = get_direction_change();
 	glUniform1f(direction_change_uloc, direction_change);
+
+	glUniform1f(is_alive_uloc, is_alive());
+
 	// Get number of infices from buffer,
 	// we know our vbo contains both colour and position information, so...
 	GLint size = 0;

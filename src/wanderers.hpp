@@ -32,5 +32,5 @@ public:
 	// Returns the turtle' bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box() const;
 
-	vec2 m_direction_wanderer = { {-1}, {0} };
+	vec2 m_direction_wanderer = { -1, 0 };
 };
