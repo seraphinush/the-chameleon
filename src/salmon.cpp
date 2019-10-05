@@ -112,10 +112,14 @@ void Salmon::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-		if (m_moving_right && !m_bound_right) move({ step, 0.f });
-		if (m_moving_left && !m_bound_left) move({ -step, 0.f });
-		if (m_moving_up && !m_bound_up) move({ 0.f, -step });
-		if (m_moving_down && !m_bound_down) move({ 0.f, step });
+		if (m_moving_right && !m_bound_right)
+			move({step, 0.f});
+		if (m_moving_left && !m_bound_left)
+			move({-step, 0.f});
+		if (m_moving_up && !m_bound_up)
+			move({0.f, -step});
+		if (m_moving_down && !m_bound_down)
+			move({0.f, step});
 	}
 	else
 	{
@@ -160,7 +164,7 @@ void Salmon::draw(const mat3 &projection)
 	glUseProgram(effect.program);
 
 	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); 
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	// depth is 0.00001
@@ -288,21 +292,22 @@ void Salmon::set_rotation(float radians)
 // Bound
 void Salmon::set_bound(char direction, bool state)
 {
-	switch (direction) {
-		case 'R':
-			m_bound_right = state;
-			break;
-		case 'L':
-		  m_bound_left = state;
-			break;
-		case 'U':
-		  m_bound_up = state;
-			break;
-		case 'D':
-		  m_bound_down = state;
-			break;
-		default:
-			break;
+	switch (direction)
+	{
+	case 'R':
+		m_bound_right = state;
+		break;
+	case 'L':
+		m_bound_left = state;
+		break;
+	case 'U':
+		m_bound_up = state;
+		break;
+	case 'D':
+		m_bound_down = state;
+		break;
+	default:
+		break;
 	}
 }
 
