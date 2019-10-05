@@ -17,6 +17,7 @@ namespace
 	const size_t TURTLE_DELAY_MS = 2000;
 	const size_t WANDERER_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
+	vec2 thief_positions[4] = { {100,100} };
 
 namespace
 {
@@ -44,6 +45,9 @@ World::~World()
 // World initialization
 bool World::init(vec2 screen)
 {
+	thief_positions[1] = { screen.x - 100, 100 };
+	thief_positions[2] = { 100, screen.y - 100 };
+	thief_positions[3] = { screen.x - 100, screen.y - 100 };
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -314,7 +318,7 @@ bool World::update(float elapsed_ms)
 
 	// Spawning new turtles
 	//m_next_turtle_spawn -= elapsed_ms * m_current_speed;
-	if (m_turtles.size() <= MAX_TURTLES) // && m_next_turtle_spawn < 0.f)
+	if (m_turtles.size() < MAX_TURTLES) // && m_next_turtle_spawn < 0.f)
 	{
 		if (!spawn_turtle())
 			return false;
@@ -322,7 +326,7 @@ bool World::update(float elapsed_ms)
 		Turtle &new_turtle = m_turtles.back();
 
 		// Setting random initial position
-		new_turtle.set_position({50 + m_dist(m_rng) * (screen.y - 100), 90 + m_dist(m_rng) * (screen.y - 100)});
+		new_turtle.set_position(thief_positions[m_turtles.size() - 1]);
 
 		// Next spawn
 		//m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
