@@ -12,10 +12,7 @@ namespace
 {
 	const size_t MAX_SPOTTERS = 4;
 	const size_t MAX_WANDERERS = 4;
-	const size_t MAX_FISH = 5;
 	const size_t SPOTTER_DELAY_MS = 2000;
-	const size_t WANDERER_DELAY_MS = 2000;
-	const size_t FISH_DELAY_MS = 5000;
 
 	// TODO
 	vec2 spotter_loc[4] = { {100,100} };
@@ -66,7 +63,7 @@ bool World::init(vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "Salmon Game Assignment", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "The Cameleon", nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -113,15 +110,13 @@ bool World::init(vec2 screen)
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("theRiver.wav"));
-	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
-	m_salmon_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
+	m_char_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
 
-	if (m_background_music == nullptr || m_salmon_dead_sound == nullptr || m_salmon_eat_sound == nullptr)
+	if (m_background_music == nullptr || m_char_dead_sound == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 			audio_path("theRiver.wav"),
-			audio_path("salmon_dead.wav"),
-			audio_path("salmon_eat.wav"));
+			audio_path("salmon_dead.wav"));
 		return false;
 	}
 
@@ -131,7 +126,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_salmon.init() && m_water.init();
+	return m_char.init() && m_water.init();
 }
 
 // release all the associated resources
@@ -141,14 +136,12 @@ void World::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
-	if (m_salmon_dead_sound != nullptr)
-		Mix_FreeChunk(m_salmon_dead_sound);
-	if (m_salmon_eat_sound != nullptr)
-		Mix_FreeChunk(m_salmon_eat_sound);
+	if (m_char_dead_sound != nullptr)
+		Mix_FreeChunk(m_char_dead_sound);
 
 	Mix_CloseAudio();
 
-	m_salmon.destroy();
+	m_char.destroy();
 	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	for (auto &wanderer : m_wanderers)
@@ -167,22 +160,22 @@ bool World::update(float elapsed_ms)
 
 	// bound
 	// TODO -- change to collision-base
-	m_salmon.set_bound('R', (m_salmon.get_position().x > screen.x));
-	m_salmon.set_bound('L', (m_salmon.get_position().x < 0));
-  m_salmon.set_bound('D', (m_salmon.get_position().y > screen.y));
-	m_salmon.set_bound('U', (m_salmon.get_position().y < 0));
+	m_char.set_bound('R', (m_char.get_position().x > screen.x));
+	m_char.set_bound('L', (m_char.get_position().x < 0));
+  m_char.set_bound('D', (m_char.get_position().y > screen.y));
+	m_char.set_bound('U', (m_char.get_position().y < 0));
 
 	// collision, char-spotter
 	for (const auto &spotter : m_spotters)
 	{
-		if (m_salmon.collides_with(spotter))
+		if (m_char.collides_with(spotter))
 		{
-			if (m_salmon.is_alive())
+			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_water.set_salmon_dead();
+				Mix_PlayChannel(-1, m_char_dead_sound, 0);
+				m_water.set_char_dead();
 			}
-			m_salmon.kill();
+			m_char.kill();
 			break;
 		}
 	}
@@ -190,14 +183,14 @@ bool World::update(float elapsed_ms)
 	// collision, char-wanderer
 	for (const auto &wanderer : m_wanderers)
 	{
-		if (m_salmon.collides_with(wanderer))
+		if (m_char.collides_with(wanderer))
 		{
-			if (m_salmon.is_alive())
+			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_water.set_salmon_dead();
+				Mix_PlayChannel(-1, m_char_dead_sound, 0);
+				m_water.set_char_dead();
 			}
-			m_salmon.kill();
+			m_char.kill();
 			break;
 		}
 	}
@@ -206,7 +199,7 @@ bool World::update(float elapsed_ms)
 	// faster based on current.
 	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
 	// rather than by their class.
-	m_salmon.update(elapsed_ms);
+	m_char.update(elapsed_ms);
 
 	// TODO
 	for (auto &wanderer : m_wanderers) {
@@ -284,14 +277,14 @@ bool World::update(float elapsed_ms)
 	}
 
 	// restart game
-	if (!m_salmon.is_alive() &&
-		m_water.get_salmon_dead_time() > 5)
+	if (!m_char.is_alive() &&
+		m_water.get_char_dead_time() > 5)
 	{
-		m_salmon.destroy();
-		m_salmon.init();
+		m_char.destroy();
+		m_char.init();
 		m_spotters.clear();
 		m_wanderers.clear();
-		m_water.reset_salmon_dead_time();
+		m_water.reset_char_dead_time();
 		m_current_speed = 1.f;
 	}
 	return true;
@@ -342,7 +335,7 @@ void World::draw()
 		spotter.draw(projection_2D);
 	for (auto& wanderer : m_wanderers)
 		wanderer.draw(projection_2D);
-	m_salmon.draw(projection_2D);
+	m_char.draw(projection_2D);
 
 	// bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -391,61 +384,61 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS)
 	{
 		// movement
-		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode())){
-			m_salmon.change_direction(0.0);
-			m_salmon.set_direction('R', true);
-		} else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode())){
-			m_salmon.change_direction(1.0);
-			m_salmon.set_direction('L', true);
-		} else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode())){
-			m_salmon.change_direction(2.0);
-			m_salmon.set_direction('U', true);
-		} else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode())){
-			m_salmon.change_direction(3.0);
-			m_salmon.set_direction('D', true);
+		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode())){
+			m_char.change_direction(0.0);
+			m_char.set_direction('R', true);
+		} else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode())){
+			m_char.change_direction(1.0);
+			m_char.set_direction('L', true);
+		} else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode())){
+			m_char.change_direction(2.0);
+			m_char.set_direction('U', true);
+		} else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode())){
+			m_char.change_direction(3.0);
+			m_char.set_direction('D', true);
 
 		// red
-		} else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
+		} else if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
 		{
-			m_salmon.change_color(1.0);
+			m_char.change_color(1.0);
 		}
 		// yellow
-		else if ((key == GLFW_KEY_DOWN && !m_salmon.get_mode()) || (key == GLFW_KEY_S && m_salmon.get_mode()))
+		else if ((key == GLFW_KEY_DOWN && !m_char.get_mode()) || (key == GLFW_KEY_S && m_char.get_mode()))
 		{
-			m_salmon.change_color(2.0);
+			m_char.change_color(2.0);
 		}
 		// blue
-		else if ((key == GLFW_KEY_LEFT && !m_salmon.get_mode()) || (key == GLFW_KEY_A && m_salmon.get_mode()))
+		else if ((key == GLFW_KEY_LEFT && !m_char.get_mode()) || (key == GLFW_KEY_A && m_char.get_mode()))
 		{
-			m_salmon.change_color(3.0);
+			m_char.change_color(3.0);
 		}
 		// green
-		else if ((key == GLFW_KEY_RIGHT && !m_salmon.get_mode()) || (key == GLFW_KEY_D && m_salmon.get_mode()))
+		else if ((key == GLFW_KEY_RIGHT && !m_char.get_mode()) || (key == GLFW_KEY_D && m_char.get_mode()))
 		{
-			m_salmon.change_color(4.0);
+			m_char.change_color(4.0);
 		}
 	}
 
 	// movement
 	if (action == GLFW_RELEASE)
 	{
-		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
-			m_salmon.set_direction('R', false);
-		else if ((key == GLFW_KEY_A && !m_salmon.get_mode()) || (key == GLFW_KEY_LEFT && m_salmon.get_mode()))
-			m_salmon.set_direction('L', false);
-		else if ((key == GLFW_KEY_W && !m_salmon.get_mode()) || (key == GLFW_KEY_UP && m_salmon.get_mode()))
-			m_salmon.set_direction('U', false);
-		else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode()))
-			m_salmon.set_direction('D', false);
+		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			m_char.set_direction('R', false);
+		else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			m_char.set_direction('L', false);
+		else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			m_char.set_direction('U', false);
+		else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			m_char.set_direction('D', false);
 	}
 
 	// game mode
 	if (action == GLFW_PRESS)
 	{
 		if (key == GLFW_KEY_1)
-			m_salmon.set_mode(false);
+			m_char.set_mode(false);
 		else if (key == GLFW_KEY_2)
-			m_salmon.set_mode(true);
+			m_char.set_mode(true);
 	}
 
 	// reset
@@ -453,11 +446,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	{
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
-		m_salmon.destroy();
-		m_salmon.init();
+		m_char.destroy();
+		m_char.init();
 		m_wanderers.clear();
 		m_spotters.clear();
-		m_water.reset_salmon_dead_time();
+		m_water.reset_char_dead_time();
 		m_current_speed = 1.f;
 	}
 

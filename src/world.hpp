@@ -1,6 +1,7 @@
 #pragma once
 
 // internal
+#include "char.hpp"
 #include "common.hpp"
 #include "salmon.hpp"
 #include "spotter.hpp"
@@ -57,7 +58,7 @@ private:
 	unsigned int m_points;
 
 	// entities
-	Salmon m_salmon;
+	Salmon m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
 
@@ -67,8 +68,7 @@ private:
 
 	// sound
 	Mix_Music* m_background_music;
-	Mix_Chunk* m_salmon_dead_sound;
-	Mix_Chunk* m_salmon_eat_sound;
+	Mix_Chunk* m_char_dead_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;

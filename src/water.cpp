@@ -7,9 +7,9 @@ bool Water::init() {
 
 	m_dead_time = -1;
 
-	// Since we are not going to apply transformation to this screen geometry
-	// The coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
-	// Make the size slightly larger then the screen to crop the boundary.
+	// since we are not going to apply transformation to this screen geometry
+	// the coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
+	// make the size slightly larger then the screen to crop the boundary.
 	static const GLfloat screen_vertex_buffer_data[] = {
 		-1.05f, -1.05f, 0.0f,
 		1.05f, -1.05f, 0.0f,
@@ -19,10 +19,10 @@ bool Water::init() {
 		1.05f,  1.05f, 0.0f,
 	};
 
-	// Clearing errors
+	// clear errors
 	gl_flush_errors();
 
-	// Vertex Buffer creation
+	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer_data), screen_vertex_buffer_data, GL_STATIC_DRAW);
@@ -30,14 +30,14 @@ bool Water::init() {
 	if (gl_has_errors())
 		return false;
 
-	// Loading shaders
+	// load shaders
 	if (!effect.load_from_file(shader_path("water.vs.glsl"), shader_path("water.fs.glsl")))
 		return false;
 
 	return true;
 }
 
-// Releases all graphics resources
+// release all graphics resources
 void Water::destroy() {
 	glDeleteBuffers(1, &mesh.vbo);
 
@@ -46,32 +46,20 @@ void Water::destroy() {
 	glDeleteShader(effect.program);
 }
 
-void Water::set_salmon_dead() {
-	m_dead_time = glfwGetTime();
-}
-
-void Water::reset_salmon_dead_time() {
-	m_dead_time = -1;
-}
-
-float Water::get_salmon_dead_time() const {
-	return glfwGetTime() - m_dead_time;
-}
-
-
 void Water::draw(const mat3& projection) {
 
-	// Enabling alpha channel for textures
+	// enable alpha channel for textures
 	glEnable(GL_BLEND); 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-	// Water depth at 0.0
 
-	// Setting shaders
+	// depth
+	glEnable(GL_DEPTH_TEST);
+
+	// set shaders
 	glUseProgram(effect.program);
 
-	// Set screen_texture sampling to texture unit 0
-	// Set clock
+	// set screen_texture sampling to texture unit 0
+	// set clock
 	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
 	GLuint time_uloc = glGetUniformLocation(effect.program, "time");
 	GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
@@ -85,15 +73,27 @@ void Water::draw(const mat3& projection) {
 	glUniform1i(window_width_uloc, view_port[2]);
 	glUniform1i(window_height_uloc, view_port[3]);
 
-	// Draw the screen texture on the quad geometry
-	// Setting vertices
+	// draw the screen texture on the quad geometry
+	// set vertices
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 
-	// Bind to attribute 0 (in_position) as in the vertex shader
+	// bind to attribute 0 (in_position) as in the vertex shader
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	// Draw
+	// draw
 	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 	glDisableVertexAttribArray(0);
+}
+
+void Water::set_char_dead() {
+	m_dead_time = glfwGetTime();
+}
+
+void Water::reset_char_dead_time() {
+	m_dead_time = -1;
+}
+
+float Water::get_char_dead_time() const {
+	return glfwGetTime() - m_dead_time;
 }
