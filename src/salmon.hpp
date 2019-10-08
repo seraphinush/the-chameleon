@@ -3,7 +3,7 @@
 #include "common.hpp"
 #include <vector>
 
-class Turtle;
+class Spotter;
 class Fish;
 class Wanderer;
 
@@ -24,7 +24,7 @@ public:
 	void draw(const mat3 &projection) override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle &turtle);
+	bool collides_with(const Spotter &spotter);
 	bool collides_with(const Fish &fish);
 	bool collides_with(const Wanderer& wanderer);
 

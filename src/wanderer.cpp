@@ -1,23 +1,24 @@
-// Header
-#include "wanderers.hpp"
+// header
+#include "wanderer.hpp"
 
 #include <cmath>
 
+// texture
 Texture Wanderer::wanderer_texture;
 
 bool Wanderer::init()
 {
-	// Load shared texture
+	// load shared texture
 	if (!wanderer_texture.is_valid())
 	{
 		if (!wanderer_texture.load_from_file(textures_path("wanderer.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load wanderer texture!");
 			return false;
 		}
 	}
 
-	// The position corresponds to the center of the texture
+	// the position corresponds to the center of the texture
 	float wr = wanderer_texture.width * 0.5f;
 	float hr = wanderer_texture.height * 0.5f;
 
@@ -31,42 +32,42 @@ bool Wanderer::init()
 	vertices[3].position = { -wr, -hr, -0.02f };
 	vertices[3].texcoord = { 0.f, 0.f };
 
-	// Counterclockwise as it's the default opengl front winding direction
+	// counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
 
-	// Clearing errors
+	// clear errors
 	gl_flush_errors();
 
-	// Vertex Buffer creation
+	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
-	// Index Buffer creation
+	// index buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
-	// Vertex Array (Container for Vertex + Index buffer)
+	// vertex array (container for vertex + index buffer)
 	glGenVertexArrays(1, &mesh.vao);
 	if (gl_has_errors())
 		return false;
 
-	// Loading shaders
+	// load shaders
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	// Setting initial values, scale is negative to make it face the opposite way
+	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	physics.scale = { -0.4f, 0.4f };
 
 	return true;
 }
 
-// Releases all graphics resources
+// release all graphics resources
 void Wanderer::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
@@ -80,8 +81,7 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	// Move fish along -X based on how much time has passed, this is to (partially) avoid
-	// having entities move at different speed based on the machine.
+	// movement
 	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
 	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
 	motion.position.x += step_in_x;
@@ -90,34 +90,34 @@ void Wanderer::update(float ms)
 
 void Wanderer::draw(const mat3& projection)
 {
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	// transformation
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
 	transform.scale(physics.scale);
 	transform.end();
 
-	// Setting shaders
+	// set shaders
 	glUseProgram(effect.program);
 
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// enable alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // Depth
+  // depth
 	glEnable(GL_DEPTH_TEST);
 
-	// Getting uniform locations for glUniform* calls
+	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
-	// Setting vertices and indices
+	// set vertices and indices
 	glBindVertexArray(mesh.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
-	// Input data location as in the vertex buffer
+	// input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
@@ -125,21 +125,21 @@ void Wanderer::draw(const mat3& projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
-	// Enabling and binding texture to slot 0
+	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, wanderer_texture.id);
 
-	// Setting uniform values to the currently bound program
+	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
-	// Drawing!
+	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Wanderer::get_position()const
+vec2 Wanderer::get_position() const
 {
 	return motion.position;
 }
@@ -149,9 +149,9 @@ void Wanderer::set_position(vec2 position)
 	motion.position = position;
 }
 
+// returns the local bounding coordinates scaled by the current size of the wanderer
+// fabs is to avoid negative scale due to the facing direction.
 vec2 Wanderer::get_bounding_box() const
 {
-	// Returns the local bounding coordinates scaled by the current size of the turtle 
-	// fabs is to avoid negative scale due to the facing direction.
 	return { std::fabs(physics.scale.x) * wanderer_texture.width, std::fabs(physics.scale.y) * wanderer_texture.height };
 }

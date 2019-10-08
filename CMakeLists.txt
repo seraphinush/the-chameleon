@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(salmon)
+project(cameleon)
 
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
@@ -35,19 +35,18 @@ set(SOURCE_FILES
 	src/common.cpp
 	src/fish.cpp
 	src/salmon.cpp
-	src/turtle.cpp
+	src/spotter.cpp
+  src/wanderer.cpp
 	src/water.cpp
 	src/world.cpp
-  src/pebbles.cpp
-
-    src/project_path.hpp
+  src/project_path.hpp
 	src/common.hpp
 	src/fish.hpp
 	src/salmon.hpp
-	src/turtle.hpp
+	src/spotter.hpp
+  src/wanderer.hpp
 	src/water.hpp
 	src/world.hpp
-  src/pebbles.hpp
 	)
 
 if (IS_OS_MAC)

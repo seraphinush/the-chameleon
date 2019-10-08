@@ -1,6 +1,5 @@
 // Header
 #include "world.hpp"
-#include "wanderers.cpp"
 
 // stlib
 #include <string.h>
@@ -11,13 +10,15 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-	const size_t MAX_TURTLES = 4;
-	const size_t MAX_WANDERERS = 5;
+	const size_t MAX_SPOTTERS = 4;
+	const size_t MAX_WANDERERS = 4;
 	const size_t MAX_FISH = 5;
-	const size_t TURTLE_DELAY_MS = 2000;
+	const size_t SPOTTER_DELAY_MS = 2000;
 	const size_t WANDERER_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
-	vec2 thief_positions[4] = { {100,100} };
+
+	// TODO
+	vec2 spotter_loc[4] = { {100,100} };
 
 namespace
 {
@@ -30,11 +31,9 @@ void glfw_err_cb(int error, const char *desc)
 
 World::World() :
 	m_points(0),
-	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f),
 	m_next_wanderer_spawn(0.f)
 {
-	// Seeding rng with random device
+	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
@@ -42,13 +41,14 @@ World::~World()
 {
 }
 
-// World initialization
+// initialization
 bool World::init(vec2 screen)
 {
-	thief_positions[1] = { screen.x - 100, 100 };
-	thief_positions[2] = { 100, screen.y - 100 };
-	thief_positions[3] = { screen.x - 100, screen.y - 100 };
-	//-------------------------------------------------------------------------
+	// TODO
+	spotter_loc[1] = { screen.x - 100, 100 };
+	spotter_loc[2] = { 100, screen.y - 100 };
+	spotter_loc[3] = { screen.x - 100, screen.y - 100 };
+	
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
@@ -73,11 +73,11 @@ bool World::init(vec2 screen)
 	glfwMakeContextCurrent(m_window);
 	glfwSwapInterval(1); // vsync
 
-	// Load OpenGL function pointers
+	// load OpenGL function pointers
 	gl3w_init();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
+	// set callbacks to member functions (that's why the redirect is needed)
+	// input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
 	auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) { ((World *)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
@@ -85,22 +85,21 @@ bool World::init(vec2 screen)
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
-	// Create a frame buffer
+	// create a frame buffer
 	m_frame_buffer = 0;
 	glGenFramebuffers(1, &m_frame_buffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
-	// For some high DPI displays (ex. Retina Display on Macbooks)
+	// for some high DPI displays (ex. Retina Display on Macbooks)
 	// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
 	int fb_width, fb_height;
 	glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
 	m_screen_scale = static_cast<float>(fb_width) / screen.x;
 
-	// Initialize the screen texture
+	// initialize the screen texture
 	m_screen_tex.create_from_screen(m_window);
 
-	//-------------------------------------------------------------------------
-	// Loading music and sounds
+	// load music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0)
 	{
 		fprintf(stderr, "Failed to initialize SDL Audio");
@@ -126,17 +125,16 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
-	// Playing background music indefinitely
+	// play background music
 	Mix_PlayMusic(m_background_music, -1);
-
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
 
-	return m_salmon.init() && m_water.init() && m_pebbles_emitter.init();
+	return m_salmon.init() && m_water.init();
 }
 
-// Releases all the associated resources
+// release all the associated resources
 void World::destroy()
 {
 	glDeleteFramebuffers(1, &m_frame_buffer);
@@ -151,36 +149,33 @@ void World::destroy()
 	Mix_CloseAudio();
 
 	m_salmon.destroy();
-	m_pebbles_emitter.destroy();
-	for (auto &turtle : m_turtles)
-		turtle.destroy();
-	for (auto &fish : m_fish)
-		fish.destroy();
-	for (auto& wanderer : m_wanderers)
+	for (auto &spotter : m_spotters)
+		spotter.destroy();
+	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
-	m_turtles.clear();
-	m_fish.clear();
+	m_spotters.clear();
 	glfwDestroyWindow(m_window);
 }
 
-// Update our game world
+// update our game world
 bool World::update(float elapsed_ms)
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
 
-	// Checking boundary
+	// bound
+	// TODO -- change to collision-base
 	m_salmon.set_bound('R', (m_salmon.get_position().x > screen.x));
 	m_salmon.set_bound('L', (m_salmon.get_position().x < 0));
   m_salmon.set_bound('D', (m_salmon.get_position().y > screen.y));
 	m_salmon.set_bound('U', (m_salmon.get_position().y < 0));
 
-	// Checking Salmon - Turtle collisions
-	for (const auto &turtle : m_turtles)
+	// collision, char-spotter
+	for (const auto &spotter : m_spotters)
 	{
-		if (m_salmon.collides_with(turtle))
+		if (m_salmon.collides_with(spotter))
 		{
 			if (m_salmon.is_alive())
 			{
@@ -192,6 +187,7 @@ bool World::update(float elapsed_ms)
 		}
 	}
 
+	// collision, char-wanderer
 	for (const auto &wanderer : m_wanderers)
 	{
 		if (m_salmon.collides_with(wanderer))
@@ -206,38 +202,14 @@ bool World::update(float elapsed_ms)
 		}
 	}
 
-	// Checking Salmon - Fish collisions
-	auto fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
-	{
-		if (m_salmon.is_alive() && m_salmon.collides_with(*fish_it))
-		{
-			fish_it = m_fish.erase(fish_it);
-			m_salmon.light_up();
-			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
-			++m_points;
-		}
-		else
-			++fish_it;
-	}
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HANDLE SALMON - WALL COLLISIONS HERE
-	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HANDLE PEBBLE COLLISIONS HERE
-	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 3
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	// Updating all entities, making the turtle and fish
+	// update all entities, making the spotter and fish
 	// faster based on current.
 	// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
 	// rather than by their class.
 	m_salmon.update(elapsed_ms);
 
-	for (auto& wanderer : m_wanderers) {
+	// TODO
+	for (auto &wanderer : m_wanderers) {
 		int xPos = wanderer.get_position().x;
 		int yPos = wanderer.get_position().y;
 		if (wanderer.m_direction_wanderer.x > 0) {
@@ -269,50 +241,33 @@ bool World::update(float elapsed_ms)
 		wanderer.update(elapsed_ms * m_current_speed);
 	}
 
-	// Removing out of screen turtles
-	auto turtle_it = m_turtles.begin();
-	while (turtle_it != m_turtles.end())
+	// remove out of screen spotters
+	auto spotter_it = m_spotters.begin();
+	while (spotter_it != m_spotters.end())
 	{
-		float w = turtle_it->get_bounding_box().x / 2;
-		if (turtle_it->get_position().x + w < 0.f)
+		float w = spotter_it->get_bounding_box().x / 2;
+		if (spotter_it->get_position().x + w < 0.f)
 		{
-			turtle_it = m_turtles.erase(turtle_it);
+			spotter_it = m_spotters.erase(spotter_it);
 			continue;
 		}
 
-		++turtle_it;
+		++spotter_it;
 	}
 
-	// Removing out of screen fish
-	fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
+	// spawn spotter
+	if (m_spotters.size() <= MAX_SPOTTERS)
 	{
-		float w = fish_it->get_bounding_box().x / 2;
-		if (fish_it->get_position().x + w < 0.f)
-		{
-			fish_it = m_fish.erase(fish_it);
-			continue;
-		}
-
-		++fish_it;
-	}
-
-	// Spawning new turtles
-	if (m_turtles.size() < MAX_TURTLES)
-	{
-		if (!spawn_turtle())
+		if (!spawn_spotter())
 			return false;
 
-		Turtle &new_turtle = m_turtles.back();
+		Spotter &new_spotter = m_spotters.back();
 
-		// Setting random initial position
-		new_turtle.set_position(thief_positions[m_turtles.size() - 1]);
-
-		// Next spawn
-		//m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
+		// set random initial position
+		new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 	}
 
-	// SPAWNING NEW WANDERERS
+	// spawn wanderer
 	m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 	if (m_wanderers.size() <= MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
 	{
@@ -321,51 +276,47 @@ bool World::update(float elapsed_ms)
 		
 		Wanderer& new_wanderer = m_wanderers.back();
 
-		// Setting random initial position
+		// set random initial position
 		new_wanderer.set_position({ screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100) });
 
-		// Next spawn
-		m_next_wanderer_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS / 2);
+		// next spawn
+		m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 	}
 
-	// If salmon is dead, restart the game after the fading animation
+	// restart game
 	if (!m_salmon.is_alive() &&
 		m_water.get_salmon_dead_time() > 5)
 	{
 		m_salmon.destroy();
 		m_salmon.init();
-		m_pebbles_emitter.destroy();
-		m_pebbles_emitter.init();
-		m_turtles.clear();
+		m_spotters.clear();
 		m_wanderers.clear();
-		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
 	return true;
 }
 
-// Render our game world
+// render
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void World::draw()
 {
-	// Clearing error buffer
+	// clear error buffer
 	gl_flush_errors();
 
-	// Getting size of window
+	// get size of window
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 
-	// Updating window title with points
+	// update window title with points
 	std::stringstream title_ss;
 	title_ss << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
-	/////////////////////////////////////
-	// First render to the custom framebuffer
+\
+	// first render to the custom framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// Clearing backbuffer
+	// clear backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
 	const float clear_color[3] = {0.3f, 0.3f, 0.8f};
@@ -373,7 +324,7 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Fake projection matrix, scales with respect to window coordinates
+	// fake projection matrix, scales with respect to window coordinates
 	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
 	float left = 0.f;						  // *-0.5;
 	float top = 0.f;						  // (float)h * -0.5;
@@ -386,57 +337,42 @@ void World::draw()
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// DRAW DEBUG INFO HERE
-	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-	// You will want to create your own data structures for passing in
-	// relevant information to your debug draw call.
-	// The shaders coloured.vs.glsl and coloured.fs.glsl should be helpful.
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	// Drawing entities
-	for (auto &turtle : m_turtles)
-		turtle.draw(projection_2D);
-	for (auto &fish : m_fish)
-		fish.draw(projection_2D);
+	// draw entities
+	for (auto &spotter : m_spotters)
+		spotter.draw(projection_2D);
 	for (auto& wanderer : m_wanderers)
 		wanderer.draw(projection_2D);
 	m_salmon.draw(projection_2D);
 
-	/////////////////////
-	// Truely render to the screen
-
-	// Bind our texture in Texture Unit 0
+	// bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 	m_water.draw(projection_2D);
 
-	//////////////////
-	// Presenting
+	// present
 	glfwSwapBuffers(m_window);
 }
 
-// Should the game be over ?
 bool World::is_over() const
 {
 	return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
-bool World::spawn_turtle()
+// spawn spotter
+bool World::spawn_spotter()
 {
-	Turtle turtle;
-	if (turtle.init())
+	Spotter spotter;
+	if (spotter.init())
 	{
-		m_turtles.emplace_back(turtle);
+		m_spotters.emplace_back(spotter);
 		return true;
 	}
-	fprintf(stderr, "Failed to spawn turtle");
+	fprintf(stderr, "Failed to spawn spotter");
 	return false;
 }
 
-// Creates a new wanderer and if successful adds it to the list of wanderers
+// spawn wanderer
 bool World::spawn_wanderer()
 {
 	Wanderer wanderer;
@@ -445,33 +381,16 @@ bool World::spawn_wanderer()
 		m_wanderers.emplace_back(wanderer);
 		return true;
 	}
-	fprintf(stderr, "Failed to spawn turtle");
+	fprintf(stderr, "Failed to spawn wanderer");
 	return false;
 }
 
-// Creates a new fish and if successfull adds it to the list of fish
-bool World::spawn_fish()
-{
-	Fish fish;
-	if (fish.init())
-	{
-		m_fish.emplace_back(fish);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn fish");
-	return false;
-}
-
-// On key callback
+// key callback function
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HANDLE SALMON MOVEMENT HERE
-	// key is of 'type' GLFW_KEY_
-	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if (action == GLFW_PRESS)
 	{
+		// movement
 		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode())){
 			m_salmon.change_direction(0.0);
 			m_salmon.set_direction('R', true);
@@ -484,28 +403,30 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		} else if ((key == GLFW_KEY_S && !m_salmon.get_mode()) || (key == GLFW_KEY_DOWN && m_salmon.get_mode())){
 			m_salmon.change_direction(3.0);
 			m_salmon.set_direction('D', true);
+
+		// red
 		} else if ((key == GLFW_KEY_UP && !m_salmon.get_mode()) || (key == GLFW_KEY_W && m_salmon.get_mode()))
 		{
-			// Up Red
 			m_salmon.change_color(1.0);
 		}
+		// yellow
 		else if ((key == GLFW_KEY_DOWN && !m_salmon.get_mode()) || (key == GLFW_KEY_S && m_salmon.get_mode()))
 		{
-			// Down Yellow
 			m_salmon.change_color(2.0);
 		}
+		// blue
 		else if ((key == GLFW_KEY_LEFT && !m_salmon.get_mode()) || (key == GLFW_KEY_A && m_salmon.get_mode()))
 		{
-			// Left Blue
 			m_salmon.change_color(3.0);
 		}
+		// green
 		else if ((key == GLFW_KEY_RIGHT && !m_salmon.get_mode()) || (key == GLFW_KEY_D && m_salmon.get_mode()))
 		{
-			// Right Green
 			m_salmon.change_color(4.0);
 		}
 	}
 
+	// movement
 	if (action == GLFW_RELEASE)
 	{
 		if ((key == GLFW_KEY_D && !m_salmon.get_mode()) || (key == GLFW_KEY_RIGHT && m_salmon.get_mode()))
@@ -518,7 +439,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_salmon.set_direction('D', false);
 	}
 
-	// Basic and Advanced mode
+	// game mode
 	if (action == GLFW_PRESS)
 	{
 		if (key == GLFW_KEY_1)
@@ -527,22 +448,20 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_salmon.set_mode(true);
 	}
 
-	// Resetting game
+	// reset
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy();
 		m_salmon.init();
-		m_pebbles_emitter.destroy();
-		m_pebbles_emitter.init();
 		m_wanderers.clear();
-		m_turtles.clear();
+		m_spotters.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
 
-	// Control the current speed with `<` `>`
+	// game current speed
 	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
 		m_current_speed -= 0.1f;
 	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
@@ -553,9 +472,5 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HANDLE SALMON ROTATION HERE
-	// xpos and ypos are relative to the top-left of the window, the salmon's
-	// default facing direction is (1, 0)
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//
 }

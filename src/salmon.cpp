@@ -2,9 +2,9 @@
 #include "salmon.hpp"
 
 // internal
-#include "turtle.hpp"
+#include "spotter.hpp"
 #include "fish.hpp"
-#include "wanderers.hpp"
+#include "wanderer.hpp"
 
 // stlib
 #include <string>
@@ -228,12 +228,12 @@ void Salmon::draw(const mat3 &projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Salmon::collides_with(const Turtle &turtle)
+bool Salmon::collides_with(const Spotter &spotter)
 {
-	float dx = motion.position.x - turtle.get_position().x;
-	float dy = motion.position.y - turtle.get_position().y;
+	float dx = motion.position.x - spotter.get_position().x;
+	float dy = motion.position.y - spotter.get_position().y;
 	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+	float other_r = std::max(spotter.get_bounding_box().x, spotter.get_bounding_box().y);
 	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
 	r *= 0.6f;
@@ -349,7 +349,7 @@ bool Salmon::is_alive() const
 	return m_is_alive;
 }
 
-// Called when the salmon collides with a turtle
+// Called when the salmon collides with a spotter
 void Salmon::kill()
 {
 	m_is_alive = false;
