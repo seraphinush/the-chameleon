@@ -31,18 +31,16 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
 set(SOURCE_FILES
-	src/main.cpp
+	src/char.cpp
 	src/common.cpp
-	src/fish.cpp
-	src/salmon.cpp
+	src/main.cpp
 	src/spotter.cpp
   src/wanderer.cpp
 	src/water.cpp
 	src/world.cpp
   src/project_path.hpp
+	src/char.hpp
 	src/common.hpp
-	src/fish.hpp
-	src/salmon.hpp
 	src/spotter.hpp
   src/wanderer.hpp
 	src/water.hpp

@@ -3,7 +3,6 @@
 // internal
 #include "char.hpp"
 #include "common.hpp"
-#include "salmon.hpp"
 #include "spotter.hpp"
 #include "water.hpp"
 #include "wanderer.hpp"
@@ -37,8 +36,6 @@ private:
 
 	bool spawn_wanderer();
 
-	bool spawn_fish();
-
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
@@ -58,7 +55,7 @@ private:
 	unsigned int m_points;
 
 	// entities
-	Salmon m_char;
+	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
 

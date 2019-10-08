@@ -10,7 +10,7 @@ bool Spotter::init()
 	// load shared texture
 	if (!spotter_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("theif.png")))
+		if (!spotter_texture.load_from_file(textures_path("spotter.png")))
 		{
 			fprintf(stderr, "Failed to load thief texture!");
 			return false;

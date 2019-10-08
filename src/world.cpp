@@ -109,14 +109,14 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
-	m_background_music = Mix_LoadMUS(audio_path("theRiver.wav"));
-	m_char_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
+	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
+	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
 
 	if (m_background_music == nullptr || m_char_dead_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-			audio_path("theRiver.wav"),
-			audio_path("salmon_dead.wav"));
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present",
+			audio_path("music.wav"),
+			audio_path("char_dead.wav"));
 		return false;
 	}
 
