@@ -9,7 +9,7 @@
 #include <string>
 #include <algorithm>
 
-bool Char::init()
+/* bool Char::init()
 {
 	m_vertices.clear();
 	m_indices.clear();
@@ -91,7 +91,84 @@ bool Char::init()
 	m_bound_right = false;
 
 	return true;
+} */
+
+Texture Char::char_texture;
+
+bool Char::init()
+{
+	// load shared texture
+	if (!char_texture.is_valid())
+	{
+		if (!char_texture.load_from_file(textures_path("char.png")))
+		{
+			fprintf(stderr, "Failed to load char texture!");
+			return false;
+		}
+	}
+
+	// the position corresponds to the center of the texture
+	float wr = char_texture.width * 0.5f;
+	float hr = char_texture.height * 0.5f;
+
+	TexturedVertex vertices[4];
+	vertices[0].position = { -wr, +hr, -0.0f };
+	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[1].position = { +wr, +hr, -0.0f };
+	vertices[1].texcoord = { 1.f, 1.f };
+	vertices[2].position = { +wr, -hr, -0.0f };
+	vertices[2].texcoord = { 1.f, 0.f };
+	vertices[3].position = { -wr, -hr, -0.0f };
+	vertices[3].texcoord =  {0.f, 0.f };
+
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+
+	// clear errors
+	gl_flush_errors();
+
+	// vertex buffer creation
+	glGenBuffers(1, &mesh.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+	// index buffer creation
+	glGenBuffers(1, &mesh.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+	// vertex array (container for vertex + index buffer)
+	glGenVertexArrays(1, &mesh.vao);
+	if (gl_has_errors())
+		return false;
+
+	// load shaders
+	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
+		return false;
+
+	motion.position = {600.f, 400.f};
+	motion.radians = 0.f;
+	motion.speed = 200.f;
+
+	// set initial values, scale is negative to make it face the opposite way
+	// 1.0 would be as big as the original texture.
+	physics.scale = { -0.05f, 0.05f };
+
+	m_is_alive = true;
+
+	m_color_change = 0.0;
+	m_direction_change = 0.0;
+
+	// bound
+	// TODO -- change to collision-base
+	m_bound_up = false;
+	m_bound_down = false;
+	m_bound_left = false;
+	m_bound_right = false;
+
+	return true;
 }
+
 
 // release all graphics resources
 void Char::destroy()
@@ -123,7 +200,7 @@ void Char::update(float ms)
 	else
 	{
 		// if dead, set upside down
-		set_rotation(-3.1415f);
+		//set_rotation(-3.1415f);
 	}
 }
 
@@ -131,11 +208,9 @@ void Char::draw(const mat3 &projection)
 {
 	// transformation
 	transform.begin();
-
-	transform.translate(get_position());
+	transform.translate(motion.position);
 	transform.rotate(motion.radians);
 	transform.scale(physics.scale);
-
 	transform.end();
 
 	// set shaders
@@ -161,14 +236,23 @@ void Char::draw(const mat3 &projection)
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
-	// input data location as in the vertex buffer
+/* 	// input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 	GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_color_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
 	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)sizeof(vec3));
+ */
 
+	// input data location as in the vertex buffer
+	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+ 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
@@ -185,48 +269,50 @@ void Char::draw(const mat3 &projection)
 
 	glUniform1f(is_alive_uloc, is_alive());
 
-	// get number of indices from buffer,
+	/* // get number of indices from buffer,
 	// we know our vbo contains both colour and position information, so...
 	GLint size = 0;
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	GLsizei num_indices = size / sizeof(uint16_t);
+	GLsizei num_indices = size / sizeof(uint16_t); */
 
 	// draw
-	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 // collision
-// Simple bounding box collision check
-// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
-// if the center point of either object is inside the other's bounding-box-circle. You don't
-// need to try to use this technique.
 bool Char::collides_with(const Spotter &spotter)
 {
-	float dx = motion.position.x - spotter.get_position().x;
-	float dy = motion.position.y - spotter.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(spotter.get_bounding_box().x, spotter.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
+	vec2 spotter_pos = spotter.get_position();
+	vec2 spotter_box = spotter.get_bounding_box();
+
+	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
+		(spotter_pos.x + spotter_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
+		(spotter_pos.x + spotter_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
+		(spotter_pos.y + spotter_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
+		(spotter_pos.y + spotter_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+
+	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
 
 bool Char::collides_with(const Wanderer &wanderer)
-{
-	float dx = motion.position.x - wanderer.get_position().x;
-	float dy = motion.position.y - wanderer.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(wanderer.get_bounding_box().x, wanderer.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
+{	
+	vec2 wanderer_pos = wanderer.get_position();
+	vec2 wanderer_box = wanderer.get_bounding_box();
+
+	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
+		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
+		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
+		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
+		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+
+	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
 
 vec2 Char::get_position() const
@@ -234,10 +320,10 @@ vec2 Char::get_position() const
 	return motion.position;
 }
 
-void Char::move(vec2 off)
+void Char::move(vec2 offset)
 {
-	motion.position.x += off.x;
-	motion.position.y += off.y;
+	motion.position.x += offset.x;
+	motion.position.y += offset.y;
 }
 
 void Char::set_rotation(float radians)

@@ -11,7 +11,7 @@
 namespace
 {
 	const size_t MAX_SPOTTERS = 4;
-	const size_t MAX_WANDERERS = 4;
+	const size_t MAX_WANDERERS = 0;
 	const size_t SPOTTER_DELAY_MS = 2000;
 
 	// TODO
@@ -249,7 +249,7 @@ bool World::update(float elapsed_ms)
 	}
 
 	// spawn spotter
-	if (m_spotters.size() <= MAX_SPOTTERS)
+	if (m_spotters.size() < MAX_SPOTTERS)
 	{
 		if (!spawn_spotter())
 			return false;
@@ -262,7 +262,7 @@ bool World::update(float elapsed_ms)
 
 	// spawn wanderer
 	m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-	if (m_wanderers.size() <= MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+	if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
 	{
 		if (!spawn_wanderer())
 			return false;

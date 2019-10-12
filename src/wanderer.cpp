@@ -23,13 +23,13 @@ bool Wanderer::init()
 	float hr = wanderer_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.02f };
+	vertices[0].position = { -wr, +hr, -0.00f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].position = { +wr, +hr, -0.00f };
 	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.02f };
+	vertices[2].position = { +wr, -hr, -0.00f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].position = { -wr, -hr, -0.00f };
 	vertices[3].texcoord = { 0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
@@ -62,7 +62,7 @@ bool Wanderer::init()
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -153,5 +153,5 @@ void Wanderer::set_position(vec2 position)
 // fabs is to avoid negative scale due to the facing direction.
 vec2 Wanderer::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * wanderer_texture.width, std::fabs(physics.scale.y) * wanderer_texture.height };
+	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
 }

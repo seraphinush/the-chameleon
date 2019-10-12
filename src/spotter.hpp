@@ -8,6 +8,9 @@ class Spotter : public Entity
 	// shared texture
 	static Texture spotter_texture;
 
+private:
+	float config_scale = 0.05f;
+
 public:
 	bool init();
 
@@ -24,4 +27,5 @@ public:
 
 	// collision
 	vec2 get_bounding_box() const;
+
 };

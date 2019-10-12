@@ -8,6 +8,9 @@ class Wanderer;
 
 class Char : public Entity
 {
+
+	static Texture char_texture;
+
 public:
 	bool init();
 
