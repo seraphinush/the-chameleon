@@ -45,6 +45,8 @@ set(SOURCE_FILES
   src/wanderer.hpp
 	src/water.hpp
 	src/world.hpp
+	src/map.hpp
+	src/map.cpp
 	)
 
 if (IS_OS_MAC)
