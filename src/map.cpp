@@ -255,10 +255,10 @@ float Map::collision_with(Char m_char) {
 	int char_tile_x = (int) char_position.x / 40;
 	int char_tile_y = (int) char_position.y / 40;
 
-	if (level_1[char_tile_x][char_tile_y] == 'W') {
+	if (level_1[char_tile_y][char_tile_x] == 'W') {
 		return 1.0;
 	}
-	else if (level_1[char_tile_x][char_tile_y] == 'C') {
+	else if (level_1[char_tile_y][char_tile_x] == 'C') {
 		return 2.0;
 	}
 	else {

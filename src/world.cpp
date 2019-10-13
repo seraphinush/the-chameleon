@@ -277,7 +277,9 @@ bool World::update(float elapsed_ms)
 		m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 	}
 
-	printf("%f", m_map.collision_with(m_char));
+	if (m_map.collision_with(m_char) == 1.0) {
+		printf("Wall");
+	}
 
 	// restart game
 	if (!m_char.is_alive() &&
