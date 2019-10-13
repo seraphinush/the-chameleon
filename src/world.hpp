@@ -54,6 +54,9 @@ private:
 	// points
 	unsigned int m_points;
 
+	// game state
+	unsigned int m_game_state; // 0 - Start Screen, 1 - Level 1, 2 - Controls, 3 - Quit 
+
 	// entities
 	Char m_char;
 	std::vector<Spotter> m_spotters;

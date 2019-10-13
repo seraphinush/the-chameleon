@@ -28,7 +28,8 @@ void glfw_err_cb(int error, const char *desc)
 
 World::World() :
 	m_points(0),
-	m_next_wanderer_spawn(0.f)
+	m_next_wanderer_spawn(0.f),
+	m_game_state(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -162,7 +163,7 @@ bool World::update(float elapsed_ms)
 	// TODO -- change to collision-base
 	m_char.set_bound('R', (m_char.get_position().x > screen.x));
 	m_char.set_bound('L', (m_char.get_position().x < 0));
-  m_char.set_bound('D', (m_char.get_position().y > screen.y));
+    m_char.set_bound('D', (m_char.get_position().y > screen.y));
 	m_char.set_bound('U', (m_char.get_position().y < 0));
 
 	// collision, char-spotter
@@ -330,18 +331,31 @@ void World::draw()
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 
-	// draw entities
-	for (auto &spotter : m_spotters)
-		spotter.draw(projection_2D);
-	for (auto& wanderer : m_wanderers)
-		wanderer.draw(projection_2D);
-	m_char.draw(projection_2D);
+	switch (m_game_state) {
+		case 0:
+			// start screen
+			break;
+		case 1:
+			// draw entities
+			for (auto &spotter : m_spotters)
+				spotter.draw(projection_2D);
+			for (auto& wanderer : m_wanderers)
+				wanderer.draw(projection_2D);
+			m_char.draw(projection_2D);
 
-	// bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+			// bind our texture in Texture Unit 0
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
-	m_water.draw(projection_2D);
+			m_water.draw(projection_2D);
+			break;
+		case 2: 
+			// controls
+			break;
+		case 3:
+			// quit
+			break;
+	}
 
 	// present
 	glfwSwapBuffers(m_window);
