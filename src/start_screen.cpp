@@ -109,7 +109,7 @@ bool StartScreen::init()
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	motion.position.x = 575.0f;
+	motion.position.x = 600.0f;
 	motion.position.y = 400.0f;
 
 	// set initial values, scale is negative to make it face the opposite way
@@ -131,9 +131,20 @@ void StartScreen::destroy()
 	glDeleteShader(effect.program);
 }
 
-void StartScreen::update(float ms)
+void StartScreen::update(unsigned int game_state)
 {
-	
+	switch (game_state)
+	{
+		case 0:
+			pointer_position = vec2({385.0f, 400.0f});
+			break;
+		case 1:
+			pointer_position = vec2({290.0f, 500.0f});
+			break;
+		case 2:
+			pointer_position = vec2({405.0f, 600.0f});
+			break;
+	}
 }
 
 void StartScreen::draw(const mat3 &projection)
@@ -190,7 +201,7 @@ void StartScreen::draw(const mat3 &projection)
 	//pointer 
 	// transformation
 	transform.begin();
-	transform.translate(vec2({375.0f, motion.position.y}));
+	transform.translate(pointer_position);
 	transform.rotate(3.14f / 2.0f);
 	transform.scale({0.1f, 0.1f});
 	transform.end();
@@ -240,7 +251,7 @@ void StartScreen::draw(const mat3 &projection)
 	transform.begin();
 	transform.translate(vec2({motion.position.x, 500.f}));
 	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	transform.scale({0.75f, 0.75f});
 	transform.end();
 
 	// set shaders
@@ -286,9 +297,9 @@ void StartScreen::draw(const mat3 &projection)
 	//quit
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x, 600.0f}));
+	transform.translate(vec2({motion.position.x - 10.0f, 600.0f}));
 	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	transform.scale({0.45f, 0.45f});
 	transform.end();
 
 	// set shaders
@@ -334,9 +345,9 @@ void StartScreen::draw(const mat3 &projection)
 	// game title
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x, 100.0f}));
+	transform.translate(vec2({motion.position.x, 150.0f}));
 	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	transform.scale({1.4f, 1.3f});
 	transform.end();
 
 	// set shaders

@@ -59,7 +59,10 @@ private:
 	unsigned int m_points;
 
 	// game state
-	unsigned int m_game_state; // 0 - Start Screen, 1 - Level 1, 2 - Controls, 3 - Quit 
+	unsigned int m_game_state; // 0 - Start, 1 - Controls, 2 - Quit, 3 - Level 1,
+
+	// current game state
+	unsigned int m_current_game_state;
 
 	// entities
 	Char m_char;

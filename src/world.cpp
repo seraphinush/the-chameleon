@@ -29,7 +29,8 @@ void glfw_err_cb(int error, const char *desc)
 World::World() :
 	m_points(0),
 	m_next_wanderer_spawn(0.f),
-	m_game_state(0)
+	m_game_state(0),
+	m_current_game_state(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -158,6 +159,8 @@ bool World::update(float elapsed_ms)
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
+
+	m_start_screen.update(m_current_game_state);
 
 	// bound
 	// TODO -- change to collision-base
@@ -335,7 +338,13 @@ void World::draw()
 		case 0:
 			m_start_screen.draw(projection_2D);
 			break;
-		case 1:
+		case 1: 
+			// controls
+			break;
+		case 2:
+			// quit
+			break;
+		case 3:
 			// draw entities
 			for (auto &spotter : m_spotters)
 				spotter.draw(projection_2D);
@@ -348,12 +357,6 @@ void World::draw()
 			glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 			m_water.draw(projection_2D);
-			break;
-		case 2: 
-			// controls
-			break;
-		case 3:
-			// quit
 			break;
 	}
 
@@ -395,10 +398,40 @@ bool World::spawn_wanderer()
 // key callback function
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
-	if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
-		m_game_state = 1;
+	if (m_game_state != 3)
+	{
+		if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
+		{
+			if (m_current_game_state < 2)
+				m_current_game_state++;
+		}
+
+		if (action == GLFW_PRESS && key == GLFW_KEY_UP)
+		{
+			if (m_current_game_state > 0)
+				m_current_game_state--;
+		}
+
+		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
+		{
+			if (m_current_game_state == 0)
+			{
+				m_game_state = 3;
+			}
+			else
+			{
+				m_game_state = m_current_game_state;
+			}
+		}
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
+	{
+		m_current_game_state = 0;
+		m_game_state = 0;
+	}
 	
-	if (action == GLFW_PRESS)
+	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// movement
 		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode())){
@@ -437,7 +470,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// movement
-	if (action == GLFW_RELEASE)
+	if (action == GLFW_RELEASE && m_game_state == 3)
 	{
 		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
 			m_char.set_direction('R', false);

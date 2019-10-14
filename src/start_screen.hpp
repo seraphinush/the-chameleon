@@ -12,12 +12,14 @@ class StartScreen : public Entity
 	static Texture quit;
 	static Texture game_title;
 
+	vec2 pointer_position;
+
 public:
 	bool init();
 
 	void destroy();
 
-	void update(float ms);
+	void update(unsigned int game_state);
 
 	// projection is the 2D orthographic projection matrix
 	void draw(const mat3& projection) override;
