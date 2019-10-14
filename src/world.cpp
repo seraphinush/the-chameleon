@@ -64,7 +64,7 @@ bool World::init(vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "The Cameleon", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "The Chameleon", nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -127,7 +127,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init();
+	return m_char.init() && m_water.init() && m_start_screen.init();
 }
 
 // release all the associated resources
@@ -333,7 +333,7 @@ void World::draw()
 
 	switch (m_game_state) {
 		case 0:
-			// start screen
+			m_start_screen.draw(projection_2D);
 			break;
 		case 1:
 			// draw entities
@@ -395,6 +395,9 @@ bool World::spawn_wanderer()
 // key callback function
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
+	if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
+		m_game_state = 1;
+	
 	if (action == GLFW_PRESS)
 	{
 		// movement

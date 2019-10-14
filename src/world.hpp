@@ -6,6 +6,7 @@
 #include "spotter.hpp"
 #include "water.hpp"
 #include "wanderer.hpp"
+#include "start_screen.hpp"
 
 // stlib
 #include <vector>
@@ -50,6 +51,9 @@ private:
 
 	// water effect
 	Water m_water;
+
+	// start screen
+	StartScreen m_start_screen;
 
 	// points
 	unsigned int m_points;
