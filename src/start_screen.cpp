@@ -203,7 +203,7 @@ void StartScreen::draw(const mat3 &projection)
 	transform.begin();
 	transform.translate(pointer_position);
 	transform.rotate(3.14f / 2.0f);
-	transform.scale({0.1f, 0.1f});
+	transform.scale({0.1f, 0.15f});
 	transform.end();
 
 	// set shaders

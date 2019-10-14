@@ -342,7 +342,7 @@ void World::draw()
 			// controls
 			break;
 		case 2:
-			// quit
+			glfwDestroyWindow(m_window);
 			break;
 		case 3:
 			// draw entities
