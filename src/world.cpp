@@ -216,6 +216,8 @@ bool World::update(float elapsed_ms)
 			if (yPos > screen.y - 100) {
 				wanderer.m_direction_wanderer.x = -0.75;
 				wanderer.m_direction_wanderer.y = 0;
+
+				wanderer.flip_in_x = 1;
 			}
 		}
 		else if (wanderer.m_direction_wanderer.x < 0) {
@@ -229,6 +231,8 @@ bool World::update(float elapsed_ms)
 			if (yPos < 100) {
 				wanderer.m_direction_wanderer.x = 0.75;
 				wanderer.m_direction_wanderer.y = 0;
+
+				wanderer.flip_in_x = -1;
 			}
 		}
 		wanderer.update(elapsed_ms * m_current_speed);

@@ -2,16 +2,20 @@
 #include "wanderer.hpp"
 
 #include <cmath>
+#include <string> 
+#include <iostream>
 
 // texture
 Texture Wanderer::wanderer_texture;
+using namespace std;
 
 bool Wanderer::init()
 {
 	// load shared texture
 	if (!wanderer_texture.is_valid())
 	{
-		if (!wanderer_texture.load_from_file(textures_path("wanderer.png")))
+
+		if (!wanderer_texture.load_from_file(textures_path("1.png")))
 		{
 			fprintf(stderr, "Failed to load wanderer texture!");
 			return false;
@@ -62,7 +66,7 @@ bool Wanderer::init()
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { 0.4f, 0.4f };
 
 	return true;
 }
@@ -81,11 +85,23 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
+	
 	// movement
 	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
 	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
 	motion.position.x += step_in_x;
 	motion.position.y += step_in_y;
+
+	if (wanderer_sprite_countdown > 0.f)
+		wanderer_sprite_countdown -= ms;
+
+	if (sprite_switch < 4) {
+		sprite_switch++;
+	}
+	else {
+		sprite_switch = 1;
+
+	}
 }
 
 void Wanderer::draw(const mat3& projection)
@@ -94,7 +110,10 @@ void Wanderer::draw(const mat3& projection)
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	vec2 scale = { 0, 0 };
+	scale.x = flip_in_x*4*physics.scale.x;
+	scale.y = 4* physics.scale.y;
+	transform.scale(scale);
 	transform.end();
 
 	// set shaders
@@ -125,6 +144,15 @@ void Wanderer::draw(const mat3& projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
+	if (wanderer_sprite_countdown < 0) {
+
+		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/" + to_string(sprite_switch) + ".png";
+		const char* path = temp_str.c_str();
+
+		wanderer_texture.load_from_file(path);
+		wanderer_sprite_countdown = 200.f;
+	}
+
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, wanderer_texture.id);
@@ -147,6 +175,10 @@ vec2 Wanderer::get_position() const
 void Wanderer::set_position(vec2 position)
 {
 	motion.position = position;
+}
+void Wanderer::set_rotation(float radians)
+{
+	motion.radians = radians;
 }
 
 // returns the local bounding coordinates scaled by the current size of the wanderer
