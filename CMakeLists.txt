@@ -39,6 +39,7 @@ set(SOURCE_FILES
 	src/water.cpp
 	src/world.cpp
   src/start_screen.cpp
+  src/control_screen.cpp
   src/project_path.hpp
 	src/char.hpp
 	src/common.hpp
@@ -47,6 +48,7 @@ set(SOURCE_FILES
 	src/water.hpp
 	src/world.hpp
   src/start_screen.hpp
+  src/control_screen.hpp
 	)
 
 if (IS_OS_MAC)

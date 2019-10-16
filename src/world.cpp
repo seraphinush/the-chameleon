@@ -127,7 +127,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init() && m_start_screen.init();
+	return m_char.init() && m_water.init() && m_start_screen.init() && m_control_screen.init();
 }
 
 // release all the associated resources
@@ -160,6 +160,7 @@ bool World::update(float elapsed_ms)
 	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
 
 	m_start_screen.update(m_current_game_state);
+	m_control_screen.update(m_current_game_state);
 
 	if (m_game_state == 3)
 	{
@@ -321,7 +322,7 @@ void World::draw()
 	title_ss << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-		// first render to the custom framebuffer
+	// first render to the custom framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// clear backbuffer
@@ -351,7 +352,7 @@ void World::draw()
 		m_start_screen.draw(projection_2D);
 		break;
 	case 1:
-		// controls
+		m_control_screen.draw(projection_2D);
 		break;
 	case 2:
 		glfwDestroyWindow(m_window);
@@ -427,6 +428,10 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
 			if (m_current_game_state == 0)
+			{
+				m_game_state = 3;
+			}
+			else if (m_game_state == 1)
 			{
 				m_game_state = 3;
 			}

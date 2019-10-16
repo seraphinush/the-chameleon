@@ -1,64 +1,28 @@
 // header
-#include "start_screen.hpp"
+#include "control_screen.hpp"
 #include <cmath>
 
-Texture StartScreen::start_game;
-Texture StartScreen::controls;
-Texture StartScreen::quit;
-Texture StartScreen::game_title;
-Texture StartScreen::pointer;
+Texture ControlScreen::control_game;
+Texture ControlScreen::controls;
+Texture ControlScreen::quit;
+Texture ControlScreen::game_title;
+Texture ControlScreen::pointer;
 
-bool StartScreen::init()
+bool ControlScreen::init()
 {
 	// load shared texture
-	if (!start_game.is_valid())
+	if (!control_game.is_valid())
 	{
-		if (!start_game.load_from_file(textures_path("start_game.png")))
+		if (!control_game.load_from_file(textures_path("control_screen.png")))
 		{
-			fprintf(stderr, "Failed to load start texture!");
-			return false;
-		}
-	}
-
-	if (!pointer.is_valid())
-	{
-		if (!pointer.load_from_file(textures_path("pointer.png")))
-		{
-			fprintf(stderr, "Failed to load pointer texture!");
-			return false;
-		}
-	}
-
-	if (!controls.is_valid())
-	{
-		if (!controls.load_from_file(textures_path("controls.png")))
-		{
-			fprintf(stderr, "Failed to load controls texture!");
-			return false;
-		}
-	}
-
-	if (!quit.is_valid())
-	{
-		if (!quit.load_from_file(textures_path("quit.png")))
-		{
-			fprintf(stderr, "Failed to load quit texture!");
-			return false;
-		}
-	}
-
-	if (!game_title.is_valid())
-	{
-		if (!game_title.load_from_file(textures_path("game_title.png")))
-		{
-			fprintf(stderr, "Failed to load game_title texture!");
+			fprintf(stderr, "Failed to load control texture!");
 			return false;
 		}
 	}
 
 	// the position corresponds to the center of the texture
-	float start_wr = start_game.width;
-	float start_hr = start_game.height;
+	float control_wr = control_game.width;
+	float control_hr = control_game.height;
 
 	float pointer_wr = pointer.width * 0.5f;
 	float pointer_hr = pointer.height * 0.5f;
@@ -73,13 +37,13 @@ bool StartScreen::init()
 	float game_title_hr = game_title.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-start_wr, +start_hr, -0.0f};
+	vertices[0].position = {-control_wr, +control_hr, -0.0f};
 	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+start_wr, +start_hr, -0.02f};
+	vertices[1].position = {+control_wr, +control_hr, -0.0f};
 	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+start_wr, -start_hr, -0.02f};
+	vertices[2].position = {+control_wr, -control_hr, -0.0f};
 	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-start_wr, -start_hr, -0.02f};
+	vertices[3].position = {-control_wr, -control_hr, -0.0f};
 	vertices[3].texcoord = {0.f, 0.f};
 
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -120,7 +84,7 @@ bool StartScreen::init()
 }
 
 // release all graphics resources
-void StartScreen::destroy()
+void ControlScreen::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -131,7 +95,7 @@ void StartScreen::destroy()
 	glDeleteShader(effect.program);
 }
 
-void StartScreen::update(unsigned int game_state)
+void ControlScreen::update(unsigned int game_state)
 {
 	switch (game_state)
 	{
@@ -147,7 +111,7 @@ void StartScreen::update(unsigned int game_state)
 	}
 }
 
-void StartScreen::draw(const mat3 &projection)
+void ControlScreen::draw(const mat3 &projection)
 {
 	// transformation
 	transform.begin();
@@ -186,7 +150,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, start_game.id);
+	glBindTexture(GL_TEXTURE_2D, control_game.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);

@@ -7,6 +7,7 @@
 #include "water.hpp"
 #include "wanderer.hpp"
 #include "start_screen.hpp"
+#include "control_screen.hpp"
 
 // stlib
 #include <vector>
@@ -30,19 +31,19 @@ public:
 
 	void draw();
 
-	bool is_over()const;
+	bool is_over() const;
 
 private:
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
 
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
-	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+	void on_key(GLFWwindow *, int key, int, int action, int mod);
+	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 private:
 	// screen handle
-	GLFWwindow* m_window;
+	GLFWwindow *m_window;
 	float m_screen_scale; // Screen to pixel coordinates scale factor
 
 	// screen texture
@@ -54,6 +55,9 @@ private:
 
 	// start screen
 	StartScreen m_start_screen;
+
+	// controls screen
+	ControlScreen m_control_screen;
 
 	// points
 	unsigned int m_points;
@@ -74,8 +78,8 @@ private:
 	float m_next_wanderer_spawn;
 
 	// sound
-	Mix_Music* m_background_music;
-	Mix_Chunk* m_char_dead_sound;
+	Mix_Music *m_background_music;
+	Mix_Chunk *m_char_dead_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;
