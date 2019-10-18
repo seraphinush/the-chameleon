@@ -8,6 +8,7 @@
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
+#include "story_screen.hpp"
 
 // stlib
 #include <vector>
@@ -58,6 +59,9 @@ private:
 
 	// controls screen
 	ControlScreen m_control_screen;
+
+	// story screen
+	StoryScreen m_story_screen;
 
 	// points
 	unsigned int m_points;

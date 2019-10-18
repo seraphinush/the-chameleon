@@ -127,7 +127,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init() && m_start_screen.init() && m_control_screen.init();
+	return m_char.init() && m_water.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
 }
 
 // release all the associated resources
@@ -161,6 +161,7 @@ bool World::update(float elapsed_ms)
 
 	m_start_screen.update(m_current_game_state);
 	m_control_screen.update(m_current_game_state);
+	m_story_screen.update(m_current_game_state);
 
 	if (m_game_state == 3)
 	{
@@ -371,6 +372,9 @@ void World::draw()
 
 		m_water.draw(projection_2D);
 		break;
+	case 4:
+		m_story_screen.draw(projection_2D);
+		break;
 	}
 
 	// present
@@ -427,16 +431,25 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
-			if (m_current_game_state == 0)
+			fprintf(stderr, "Enter pressed");
+			if (m_game_state == 4)
 			{
+				fprintf(stderr, "Start Game");
 				m_game_state = 3;
+			}
+			else if (m_current_game_state == 0)
+			{
+				fprintf(stderr, "Go to Story Screen");
+				m_game_state = 4;
 			}
 			else if (m_game_state == 1)
 			{
-				m_game_state = 3;
+				fprintf(stderr, "Go to Start Screen");
+				m_game_state = 0;
 			}
 			else
 			{
+				fprintf(stderr, "Nothing");
 				m_game_state = m_current_game_state;
 			}
 		}
