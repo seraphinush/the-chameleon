@@ -90,6 +90,8 @@ bool Char::init()
 	m_bound_left = false;
 	m_bound_right = false;
 
+	m_wall_collision = false;
+
 	return true;
 }
 
@@ -111,6 +113,23 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
+
+		//if (m_moving_right && m_wall_collision) {
+		//	move({ -step * 5.f, 0.f });
+		//}
+		//if (m_moving_left && m_wall_collision) {
+		//	move({ step * 5.f, 0.f });
+		//}
+		//if (m_moving_up && m_wall_collision) {
+		//	move({ 0.f, step * 5.f });
+		//}
+		//if (m_moving_down && m_wall_collision) {
+		//	move({ 0.f, -step * 5.f });
+		//}
+		//m_wall_collision = false;
+
+
+		// find a bool in world and pass taht to char
 		if (m_moving_right && !m_bound_right)
 			move({step, 0.f});
 		if (m_moving_left && !m_bound_left)
@@ -327,4 +346,12 @@ bool Char::is_alive() const
 void Char::kill()
 {
 	m_is_alive = false;
+}
+
+void Char::set_wall_collision(bool c) {
+	m_wall_collision = c;
+}
+
+bool Char::get_wall_collision() {
+	return m_wall_collision;
 }

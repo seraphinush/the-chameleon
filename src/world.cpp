@@ -163,8 +163,13 @@ bool World::update(float elapsed_ms)
 	// TODO -- change to collision-base
 	m_char.set_bound('R', (m_char.get_position().x > screen.x));
 	m_char.set_bound('L', (m_char.get_position().x < 0));
-  m_char.set_bound('D', (m_char.get_position().y > screen.y));
+	m_char.set_bound('D', (m_char.get_position().y > screen.y));
 	m_char.set_bound('U', (m_char.get_position().y < 0));
+
+	// Wall Collision
+	if (m_map.collision_with(m_char) == 1.0) {
+		m_char.set_wall_collision(true);
+	}
 
 	// collision, char-spotter
 	for (const auto &spotter : m_spotters)
@@ -275,10 +280,6 @@ bool World::update(float elapsed_ms)
 
 		// next spawn
 		m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
-	}
-
-	if (m_map.collision_with(m_char) == 1.0) {
-		printf("Wall");
 	}
 
 	// restart game
