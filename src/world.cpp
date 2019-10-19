@@ -280,7 +280,7 @@ bool World::update(float elapsed_ms)
 		Wanderer& new_wanderer = m_wanderers.back();
 
 		// set random initial position
-		new_wanderer.set_position({ screen.x + 250, 100 + m_dist(m_rng) * (screen.y - 50) });
+		new_wanderer.set_position({ screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50) });
 
 		// next spawn
 		m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
