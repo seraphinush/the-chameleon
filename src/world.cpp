@@ -222,7 +222,7 @@ bool World::update(float elapsed_ms)
 			int yPos = wanderer.get_position().y;
 			if (wanderer.m_direction_wanderer.x > 0)
 			{
-				if (xPos > screen.x - 100)
+				if (xPos > screen.x - 150)
 				{
 					wanderer.m_direction_wanderer.y = 0.75;
 					wanderer.m_direction_wanderer.x = 0;
@@ -230,15 +230,17 @@ bool World::update(float elapsed_ms)
 			}
 			else if (wanderer.m_direction_wanderer.y > 0)
 			{
-				if (yPos > screen.y - 100)
+				if (yPos > screen.y - 150)
 				{
 					wanderer.m_direction_wanderer.x = -0.75;
 					wanderer.m_direction_wanderer.y = 0;
+
+					wanderer.flip_in_x = 1;
 				}
 			}
 			else if (wanderer.m_direction_wanderer.x < 0)
 			{
-				if (xPos < 100)
+				if (xPos < 150)
 				{
 					wanderer.m_direction_wanderer.x = 0;
 					wanderer.m_direction_wanderer.y = -0.75;
@@ -246,13 +248,20 @@ bool World::update(float elapsed_ms)
 			}
 			else if (wanderer.m_direction_wanderer.y < 1)
 			{
-				if (yPos < 100)
+				if (yPos < 150)
 				{
 					wanderer.m_direction_wanderer.x = 0.75;
 					wanderer.m_direction_wanderer.y = 0;
+
+					wanderer.flip_in_x = -1;
 				}
 			}
 			wanderer.update(elapsed_ms * m_current_speed);
+		}
+
+		// update spotters
+		for (auto& spotter : m_spotters) {
+			spotter.update(elapsed_ms * m_current_speed);
 		}
 
 		// remove out of screen spotters
@@ -291,7 +300,7 @@ bool World::update(float elapsed_ms)
 			Wanderer &new_wanderer = m_wanderers.back();
 
 			// set random initial position
-			new_wanderer.set_position({screen.x + 150, 50 + m_dist(m_rng) * (screen.y - 100)});
+			new_wanderer.set_position({ screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50) });
 
 			// next spawn
 			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
@@ -366,6 +375,9 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
+		m_water.draw(projection_2D);
+		m_map.draw(projection_2D);
+
 		// draw entities
 		for (auto &spotter : m_spotters)
 			spotter.draw(projection_2D);
@@ -376,8 +388,6 @@ void World::draw()
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
-
-		m_map.draw(projection_2D);
 		break;
 	case 4:
 		m_story_screen.draw(projection_2D);

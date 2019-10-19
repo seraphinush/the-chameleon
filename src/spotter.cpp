@@ -2,17 +2,20 @@
 #include "spotter.hpp"
 
 #include <cmath>
+#include <string> 
+#include <iostream>
 
 Texture Spotter::spotter_texture;
+using namespace std;
 
 bool Spotter::init()
 {
 	// load shared texture
 	if (!spotter_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("spotter.png")))
+		if (!spotter_texture.load_from_file(textures_path("spotters/1.png")))
 		{
-			fprintf(stderr, "Failed to load thief texture!");
+			fprintf(stderr, "Failed to load spotter texture!");
 			return false;
 		}
 	}
@@ -57,11 +60,11 @@ bool Spotter::init()
 		return false;
 
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 0.f;
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { -1.5f, 1.5f };
 
 	return true;
 }
@@ -83,6 +86,17 @@ void Spotter::update(float ms)
 	// movement
 	float step = -1.0 * motion.speed * (ms / 1000);
 	motion.position.x += step;
+
+	if (spotter_sprite_countdown > 0.f)
+		spotter_sprite_countdown -= ms;
+
+	if (spotter_sprite_switch < 4) {
+		spotter_sprite_switch++;
+	}
+	else {
+		spotter_sprite_switch = 1;
+
+	}
 }
 
 void Spotter::draw(const mat3 &projection)
@@ -121,6 +135,14 @@ void Spotter::draw(const mat3 &projection)
 	glEnableVertexAttribArray(in_texcoord_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+
+	if (spotter_sprite_countdown < 0) {
+		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
+		const char* path = temp_str.c_str();
+
+		spotter_texture.load_from_file(path);
+		spotter_sprite_countdown = 1500.f;
+	}
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
