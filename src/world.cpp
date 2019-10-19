@@ -127,7 +127,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
+	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
 }
 
 // release all the associated resources
@@ -187,7 +187,7 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_water.set_char_dead();
+					m_map.set_char_dead();
 				}
 				m_char.kill();
 				break;
@@ -202,7 +202,7 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_water.set_char_dead();
+					m_map.set_char_dead();
 				}
 				m_char.kill();
 				break;
@@ -308,13 +308,13 @@ bool World::update(float elapsed_ms)
 
 		// restart game
 		if (!m_char.is_alive() &&
-			m_water.get_char_dead_time() > 5)
+			m_map.get_char_dead_time() > 2)
 		{
 			m_char.destroy();
 			m_char.init();
 			m_spotters.clear();
 			m_wanderers.clear();
-			m_water.reset_char_dead_time();
+			m_map.reset_char_dead_time();
 			m_current_speed = 1.f;
 		}
 		return true;
@@ -448,25 +448,20 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
-			fprintf(stderr, "Enter pressed");
 			if (m_game_state == 4)
 			{
-				fprintf(stderr, "Start Game");
 				m_game_state = 3;
 			}
 			else if (m_current_game_state == 0)
 			{
-				fprintf(stderr, "Go to Story Screen");
 				m_game_state = 4;
 			}
 			else if (m_game_state == 1)
 			{
-				fprintf(stderr, "Go to Start Screen");
 				m_game_state = 0;
 			}
 			else
 			{
-				fprintf(stderr, "Nothing");
 				m_game_state = m_current_game_state;
 			}
 		}
@@ -557,7 +552,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		m_map.init();
 		m_wanderers.clear();
 		m_spotters.clear();
-		m_water.reset_char_dead_time();
+		m_map.reset_char_dead_time();
 		m_current_speed = 1.f;
 	}
 

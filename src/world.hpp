@@ -4,7 +4,6 @@
 #include "char.hpp"
 #include "common.hpp"
 #include "spotter.hpp"
-#include "water.hpp"
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
@@ -52,8 +51,6 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-	// water effect
-	Water m_water;
 
 	// start screen
 	StartScreen m_start_screen;

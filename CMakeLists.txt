@@ -36,7 +36,6 @@ set(SOURCE_FILES
 	src/main.cpp
 	src/spotter.cpp
   src/wanderer.cpp
-	src/water.cpp
 	src/world.cpp
   src/start_screen.cpp
   src/control_screen.cpp  
@@ -46,7 +45,6 @@ set(SOURCE_FILES
 	src/common.hpp
 	src/spotter.hpp
   src/wanderer.hpp
-	src/water.hpp
 	src/world.hpp
   src/start_screen.hpp
   src/control_screen.hpp

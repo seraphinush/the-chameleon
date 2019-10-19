@@ -2,6 +2,8 @@
 #include "map.hpp"
 
 #include <cmath>
+#include <iostream>
+
 
 Texture Map::wall_texture;
 Texture Map::corridor_texture;
@@ -53,6 +55,7 @@ char level_1[40][61] = {
 
 bool Map::init()
 {
+	m_dead_time = -1;
 	// Load shared texture
 	if (!wall_texture.is_valid())
 	{
@@ -292,4 +295,19 @@ vec2 Map::get_bounding_box() const
 	// Returns the local bounding coordinates scaled by the current size of the turtle 
 	// fabs is to avoid negative scale due to the facing direction.
 	return { std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height };
+}
+
+void Map::set_char_dead()
+{
+	m_dead_time = glfwGetTime();
+}
+
+void Map::reset_char_dead_time()
+{
+	m_dead_time = -1;
+}
+
+float Map::get_char_dead_time() const
+{
+	return glfwGetTime() - m_dead_time;
 }
