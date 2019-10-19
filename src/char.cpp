@@ -114,19 +114,19 @@ void Char::update(float ms)
 	if (m_is_alive)
 	{
 
-		//if (m_moving_right && m_wall_collision) {
-		//	move({ -step * 5.f, 0.f });
-		//}
-		//if (m_moving_left && m_wall_collision) {
-		//	move({ step * 5.f, 0.f });
-		//}
-		//if (m_moving_up && m_wall_collision) {
-		//	move({ 0.f, step * 5.f });
-		//}
-		//if (m_moving_down && m_wall_collision) {
-		//	move({ 0.f, -step * 5.f });
-		//}
-		//m_wall_collision = false;
+		if (m_moving_right && m_wall_collision) {
+			move({ -step * 5.f, 0.f });
+		}
+		if (m_moving_left && m_wall_collision) {
+			move({ step * 5.f, 0.f });
+		}
+		if (m_moving_up && m_wall_collision) {
+			move({ 0.f, step * 5.f });
+		}
+		if (m_moving_down && m_wall_collision) {
+			move({ 0.f, -step * 5.f });
+		}
+		m_wall_collision = false;
 
 
 		// find a bool in world and pass taht to char
