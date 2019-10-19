@@ -50,6 +50,8 @@ public:
 	bool is_alive() const;
 
 	void kill();
+	void set_wall_collision(bool c);
+	bool get_wall_collision();
 
 private:
 	bool m_is_alive;
@@ -73,6 +75,8 @@ private:
 	bool m_bound_left;
 	bool m_bound_up;
 	bool m_bound_down;
+
+	bool m_wall_collision;
 
   std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

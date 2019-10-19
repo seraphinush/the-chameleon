@@ -51,6 +51,8 @@ set(SOURCE_FILES
   src/start_screen.hpp
   src/control_screen.hpp
   src/story_screen.hpp
+	src/map.hpp
+	src/map.cpp
 	)
 
 if (IS_OS_MAC)

@@ -9,6 +9,7 @@
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "story_screen.hpp"
+#include "map.hpp"
 
 // stlib
 #include <vector>
@@ -62,6 +63,7 @@ private:
 
 	// story screen
 	StoryScreen m_story_screen;
+	Map m_map;
 
 	// points
 	unsigned int m_points;
