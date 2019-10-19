@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(cameleon)
+project(chameleon)
 
 # Set c++11
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
@@ -38,6 +38,9 @@ set(SOURCE_FILES
   src/wanderer.cpp
 	src/water.cpp
 	src/world.cpp
+  src/start_screen.cpp
+  src/control_screen.cpp  
+  src/story_screen.cpp
   src/project_path.hpp
 	src/char.hpp
 	src/common.hpp
@@ -45,6 +48,9 @@ set(SOURCE_FILES
   src/wanderer.hpp
 	src/water.hpp
 	src/world.hpp
+  src/start_screen.hpp
+  src/control_screen.hpp
+  src/story_screen.hpp
 	src/map.hpp
 	src/map.cpp
 	)

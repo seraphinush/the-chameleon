@@ -6,6 +6,9 @@
 #include "spotter.hpp"
 #include "water.hpp"
 #include "wanderer.hpp"
+#include "start_screen.hpp"
+#include "control_screen.hpp"
+#include "story_screen.hpp"
 #include "map.hpp"
 
 // stlib
@@ -30,19 +33,19 @@ public:
 
 	void draw();
 
-	bool is_over()const;
+	bool is_over() const;
 
 private:
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
 
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
-	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+	void on_key(GLFWwindow *, int key, int, int action, int mod);
+	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 private:
 	// screen handle
-	GLFWwindow* m_window;
+	GLFWwindow *m_window;
 	float m_screen_scale; // Screen to pixel coordinates scale factor
 
 	// screen texture
@@ -52,10 +55,24 @@ private:
 	// water effect
 	Water m_water;
 
+	// start screen
+	StartScreen m_start_screen;
+
+	// controls screen
+	ControlScreen m_control_screen;
+
+	// story screen
+	StoryScreen m_story_screen;
 	Map m_map;
 
 	// points
 	unsigned int m_points;
+
+	// game state
+	unsigned int m_game_state; // 0 - Start, 1 - Controls, 2 - Quit, 3 - Level 1,
+
+	// current game state
+	unsigned int m_current_game_state;
 
 	// entities
 	Char m_char;
@@ -67,8 +84,8 @@ private:
 	float m_next_wanderer_spawn;
 
 	// sound
-	Mix_Music* m_background_music;
-	Mix_Chunk* m_char_dead_sound;
+	Mix_Music *m_background_music;
+	Mix_Chunk *m_char_dead_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;
