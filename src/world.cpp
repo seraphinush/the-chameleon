@@ -375,7 +375,6 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
-		m_water.draw(projection_2D);
 		m_map.draw(projection_2D);
 
 		// draw entities
