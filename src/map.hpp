@@ -36,7 +36,16 @@ public:
 
 	float collision_with(Char m_char);
 
+	// char dead time getters and setters
+	void set_char_dead();
+
+	void reset_char_dead_time();
+
+	float get_char_dead_time() const;
+
 private:
 	Char m_char;
 	vec2 translation_tile;
+	float m_dead_time;
+
 };
