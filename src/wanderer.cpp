@@ -15,7 +15,7 @@ bool Wanderer::init()
 	if (!wanderer_texture.is_valid())
 	{
 
-		if (!wanderer_texture.load_from_file(textures_path("1.png")))
+		if (!wanderer_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
 			fprintf(stderr, "Failed to load wanderer texture!");
 			return false;
@@ -62,7 +62,7 @@ bool Wanderer::init()
 		return false;
 
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 150.f;
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -95,7 +95,7 @@ void Wanderer::update(float ms)
 	if (wanderer_sprite_countdown > 0.f)
 		wanderer_sprite_countdown -= ms;
 
-	if (sprite_switch < 4) {
+	if (sprite_switch < 6) {
 		sprite_switch++;
 	}
 	else {
@@ -124,7 +124,7 @@ void Wanderer::draw(const mat3& projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -146,7 +146,7 @@ void Wanderer::draw(const mat3& projection)
 
 	if (wanderer_sprite_countdown < 0) {
 
-		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/" + to_string(sprite_switch) + ".png";
+		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/wanderers/" + to_string(sprite_switch) + ".png";
 		const char* path = temp_str.c_str();
 
 		wanderer_texture.load_from_file(path);

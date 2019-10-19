@@ -8,6 +8,7 @@
 // stlib
 #include <string>
 #include <algorithm>
+Texture Char::char_texture;
 
 bool Char::init()
 {
@@ -70,6 +71,7 @@ bool Char::init()
 	// load shaders
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
+
 
 	// set initial values
 	motion.position = {600.f, 400.f};

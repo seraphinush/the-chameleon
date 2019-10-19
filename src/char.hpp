@@ -9,6 +9,7 @@ class Wanderer;
 class Char : public Entity
 {
 public:
+	static Texture char_texture;
 	bool init();
 
 	void destroy();
