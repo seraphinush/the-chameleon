@@ -127,7 +127,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
+	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
 }
 
 // release all the associated resources
@@ -377,7 +377,6 @@ void World::draw()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
-		m_water.draw(projection_2D);
 		m_map.draw(projection_2D);
 		break;
 	case 4:
