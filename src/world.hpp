@@ -6,6 +6,7 @@
 #include "spotter.hpp"
 #include "water.hpp"
 #include "wanderer.hpp"
+#include "map.hpp"
 
 // stlib
 #include <vector>
@@ -50,6 +51,8 @@ private:
 
 	// water effect
 	Water m_water;
+
+	Map m_map;
 
 	// points
 	unsigned int m_points;

@@ -126,7 +126,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_water.init();
+	return m_char.init() && m_water.init() && m_map.init();
 }
 
 // release all the associated resources
@@ -142,6 +142,7 @@ void World::destroy()
 	Mix_CloseAudio();
 
 	m_char.destroy();
+	m_map.destroy();
 	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	for (auto &wanderer : m_wanderers)
@@ -162,8 +163,13 @@ bool World::update(float elapsed_ms)
 	// TODO -- change to collision-base
 	m_char.set_bound('R', (m_char.get_position().x > screen.x));
 	m_char.set_bound('L', (m_char.get_position().x < 0));
-  m_char.set_bound('D', (m_char.get_position().y > screen.y));
+	m_char.set_bound('D', (m_char.get_position().y > screen.y));
 	m_char.set_bound('U', (m_char.get_position().y < 0));
+
+	// Wall Collision
+	if (m_map.collision_with(m_char) == 1.0) {
+		m_char.set_wall_collision(true);
+	}
 
 	// collision, char-spotter
 	for (const auto &spotter : m_spotters)
@@ -281,7 +287,9 @@ bool World::update(float elapsed_ms)
 		m_water.get_char_dead_time() > 5)
 	{
 		m_char.destroy();
+		m_map.destroy();
 		m_char.init();
+		m_map.init();
 		m_spotters.clear();
 		m_wanderers.clear();
 		m_water.reset_char_dead_time();
@@ -342,6 +350,7 @@ void World::draw()
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 	m_water.draw(projection_2D);
+	m_map.draw(projection_2D);
 
 	// present
 	glfwSwapBuffers(m_window);
@@ -447,7 +456,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_char.destroy();
+		m_map.destroy();
 		m_char.init();
+		m_map.init();
 		m_wanderers.clear();
 		m_spotters.clear();
 		m_water.reset_char_dead_time();
