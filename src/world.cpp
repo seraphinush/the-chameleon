@@ -221,6 +221,10 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					Mix_PlayChannel(-1, m_char_win_sound, 0);
+					m_char.set_direction('R', false);
+					m_char.set_direction('L', false);
+					m_char.set_direction('U', false);
+					m_char.set_direction('D', false);
 					m_map.set_char_dead();
 					m_game_state = 5;
 				}
