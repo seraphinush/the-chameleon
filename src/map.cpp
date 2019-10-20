@@ -8,48 +8,54 @@
 Texture Map::wall_texture;
 Texture Map::corridor_texture;
 
+
+Texture Map::corridor_texture_red;
+Texture Map::corridor_texture_blue;
+Texture Map::corridor_texture_green;
+Texture Map::corridor_texture_yellow;
+
 // 800 * 1200 Map of Level 1
 // 31 for the \n of all chars
 char level_1[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCWWWWWWWWWWWWWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCWWWWWWWWWWWWWWWWWWWCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCWWWWWWWWWWWWWWWWWWWCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 };
 
@@ -70,6 +76,46 @@ bool Map::init()
 	if (!corridor_texture.is_valid())
 	{
 		if (!corridor_texture.load_from_file(textures_path("corridor_tile.png")))
+		{
+			fprintf(stderr, "Failed to load corridor texture!");
+			return false;
+		}
+	}
+
+	// Load shared texture
+	if (!corridor_texture_red.is_valid())
+	{
+		if (!corridor_texture_red.load_from_file(textures_path("corridor_tile_red.png")))
+		{
+			fprintf(stderr, "Failed to load corridor texture!");
+			return false;
+		}
+	}
+
+	// Load shared texture
+	if (!corridor_texture_blue.is_valid())
+	{
+		if (!corridor_texture_blue.load_from_file(textures_path("corridor_tile_blue.png")))
+		{
+			fprintf(stderr, "Failed to load corridor texture!");
+			return false;
+		}
+	}
+
+	// Load shared texture
+	if (!corridor_texture_green.is_valid())
+	{
+		if (!corridor_texture_green.load_from_file(textures_path("corridor_tile_green.png")))
+		{
+			fprintf(stderr, "Failed to load corridor texture!");
+			return false;
+		}
+	}
+
+	// Load shared texture
+	if (!corridor_texture_yellow.is_valid())
+	{
+		if (!corridor_texture_yellow.load_from_file(textures_path("corridor_tile_yellow.png")))
 		{
 			fprintf(stderr, "Failed to load corridor texture!");
 			return false;
@@ -153,6 +199,22 @@ void Map::draw(const mat3& projection) {
 			else if (level_1[i][j] == 'C') {
 				// Draw a Corridor
 				draw_corridor(projection);
+			}
+			else if (level_1[i][j] == 'R') {
+				// Draw a Corridor
+				draw_corridor_red(projection);
+			}
+			else if (level_1[i][j] == 'B') {
+				// Draw a Corridor
+				draw_corridor_blue(projection);
+			}
+			else if (level_1[i][j] == 'G') {
+				// Draw a Corridor
+				draw_corridor_green(projection);
+			}
+			else if (level_1[i][j] == 'Y') {
+				// Draw a Corridor
+				draw_corridor_yellow(projection);
 			}
 
 			translation_tile.x += 20.0;
@@ -263,6 +325,210 @@ void Map::draw_corridor(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+
+void Map::draw_corridor_red(const mat3& projection)
+{
+	// Transformation code, see Rendering and Transformation in the template specification for more info
+	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	transform.begin();
+	transform.translate(translation_tile);
+	transform.scale(physics.scale);
+	transform.end();
+
+	// Setting shaders
+	glUseProgram(effect.program);
+
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Depth
+	glEnable(GL_DEPTH_TEST);
+
+	// Getting uniform locations for glUniform* calls
+	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+
+	// Setting vertices and indices
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+	// Input data location as in the vertex buffer
+	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, corridor_texture_red.id);
+
+	// Setting uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
+	glUniform3fv(color_uloc, 1, color);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+
+	// Drawing!
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+
+void Map::draw_corridor_blue(const mat3& projection)
+{
+	// Transformation code, see Rendering and Transformation in the template specification for more info
+	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	transform.begin();
+	transform.translate(translation_tile);
+	transform.scale(physics.scale);
+	transform.end();
+
+	// Setting shaders
+	glUseProgram(effect.program);
+
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Depth
+	glEnable(GL_DEPTH_TEST);
+
+	// Getting uniform locations for glUniform* calls
+	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+
+	// Setting vertices and indices
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+	// Input data location as in the vertex buffer
+	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, corridor_texture_blue.id);
+
+	// Setting uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
+	glUniform3fv(color_uloc, 1, color);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+
+	// Drawing!
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+
+void Map::draw_corridor_green(const mat3& projection)
+{
+	// Transformation code, see Rendering and Transformation in the template specification for more info
+	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	transform.begin();
+	transform.translate(translation_tile);
+	transform.scale(physics.scale);
+	transform.end();
+
+	// Setting shaders
+	glUseProgram(effect.program);
+
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Depth
+	glEnable(GL_DEPTH_TEST);
+
+	// Getting uniform locations for glUniform* calls
+	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+
+	// Setting vertices and indices
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+	// Input data location as in the vertex buffer
+	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, corridor_texture_green.id);
+
+	// Setting uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
+	glUniform3fv(color_uloc, 1, color);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+
+	// Drawing!
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+
+void Map::draw_corridor_yellow(const mat3& projection)
+{
+	// Transformation code, see Rendering and Transformation in the template specification for more info
+	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	transform.begin();
+	transform.translate(translation_tile);
+	transform.scale(physics.scale);
+	transform.end();
+
+	// Setting shaders
+	glUseProgram(effect.program);
+
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Depth
+	glEnable(GL_DEPTH_TEST);
+
+	// Getting uniform locations for glUniform* calls
+	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
+	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+
+	// Setting vertices and indices
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+	// Input data location as in the vertex buffer
+	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, corridor_texture_yellow.id);
+
+	// Setting uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
+	glUniform3fv(color_uloc, 1, color);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+
+	// Drawing!
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
 vec2 Map::get_position()const
 {
 	return motion.position;
@@ -282,7 +548,19 @@ float Map::collision_with(Char m_char) {
 		return 1.0;
 	}
 	else if (level_1[char_tile_y][char_tile_x] == 'C') {
+		return 6.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'R') {
 		return 2.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'G') {
+		return 3.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'B') {
+		return 4.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'Y') {
+		return 5.0;
 	}
 	else {
 		return 0.0;
