@@ -109,8 +109,8 @@ bool StartScreen::init()
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	motion.position.x = 600.0f;
-	motion.position.y = 400.0f;
+	motion.position.x = 900.0f;
+	motion.position.y = 250.0f;
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -136,24 +136,25 @@ void StartScreen::update(unsigned int game_state)
 	switch (game_state)
 	{
 	case 0:
-		pointer_position = vec2({385.0f, 400.0f});
+		pointer_position = vec2({685.0f, 250.0f});
 		break;
 	case 1:
-		pointer_position = vec2({290.0f, 500.0f});
+		pointer_position = vec2({585.0f, 400.0f});
 		break;
 	case 2:
-		pointer_position = vec2({405.0f, 600.0f});
+		pointer_position = vec2({715.0f, 550.0f});
 		break;
 	}
 }
 
 void StartScreen::draw(const mat3 &projection)
 {
+	// pointer
 	// transformation
 	transform.begin();
-	transform.translate(motion.position);
-	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	transform.translate(pointer_position);
+	transform.rotate(3.14f / 2.0f);
+	transform.scale({0.1f, 0.15f});
 	transform.end();
 
 	// set shaders
@@ -186,7 +187,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, start_game.id);
+	glBindTexture(GL_TEXTURE_2D, pointer.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -197,12 +198,12 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	//pointer
+	// start
 	// transformation
 	transform.begin();
-	transform.translate(pointer_position);
-	transform.rotate(3.14f / 2.0f);
-	transform.scale({0.1f, 0.15f});
+	transform.translate(motion.position);
+	transform.rotate(motion.radians);
+	transform.scale({0.5f, 0.5f});
 	transform.end();
 
 	// set shaders
@@ -235,7 +236,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pointer.id);
+	glBindTexture(GL_TEXTURE_2D, start_game.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -248,7 +249,7 @@ void StartScreen::draw(const mat3 &projection)
 	//controls
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x, 500.f}));
+	transform.translate(vec2({motion.position.x, 400.f}));
 	transform.rotate(motion.radians);
 	transform.scale({0.75f, 0.75f});
 	transform.end();
@@ -293,10 +294,11 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
+
 	//quit
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x - 10.0f, 600.0f}));
+	transform.translate(vec2({motion.position.x, 550.0f}));
 	transform.rotate(motion.radians);
 	transform.scale({0.45f, 0.45f});
 	transform.end();
@@ -344,9 +346,9 @@ void StartScreen::draw(const mat3 &projection)
 	// game title
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x, 150.0f}));
+	transform.translate(vec2({295.0f, 400.0f}));
 	transform.rotate(motion.radians);
-	transform.scale({1.4f, 1.3f});
+	transform.scale({1.0f, 2.5f});
 	transform.end();
 
 	// set shaders
