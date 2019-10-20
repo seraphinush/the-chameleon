@@ -3,7 +3,10 @@
 // Input attributes
 in vec3 in_position;
 in vec3 in_color;
+in vec2 in_texcoord;
 
+// Passed to fragment shader
+out vec2 texcoord;
 out vec3 vcolor;
 out vec2 vpos;
 
@@ -15,6 +18,8 @@ uniform bool is_alive;
 
 void main()
 {
+	texcoord = in_texcoord;
+
 	vpos = in_position.xy;
 	vcolor = in_color;
 	float cs = cos(1.5708);
@@ -30,6 +35,7 @@ void main()
 			vpos = -vec2(in_position.x*cs - in_position.y*sn, in_position.x*sn + in_position.y*cs);
 		}
 	}
+
 	vec3 pos = projection * transform * vec3(vpos, 1.0);
 	gl_Position = vec4(pos.xy, 0.01, 1.0);
 }

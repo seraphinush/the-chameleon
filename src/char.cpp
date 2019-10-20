@@ -1,102 +1,12 @@
 // Header
 #include "char.hpp"
 
-// internal
-#include "spotter.hpp"
-#include "wanderer.hpp"
-#include "trophy.hpp"
-
 // stlib
 #include <string>
 #include <algorithm>
+
 Texture Char::char_texture;
-
-/* bool Char::init()
-{
-	m_vertices.clear();
-	m_indices.clear();
-
-	// read the char mesh from a file, which contains a list of vertices and indices
-	FILE *mesh_file = fopen(mesh_path("char.mesh"), "r");
-	if (mesh_file == nullptr)
-		return false;
-
-	// read vertices and colors
-	size_t num_vertices;
-	fscanf(mesh_file, "%zu\n", &num_vertices);
-	for (size_t i = 0; i < num_vertices; ++i)
-	{
-		float x, y, z;
-		float _u[3]; // unused
-		int r, g, b;
-		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u + 1, _u + 2, &r, &g, &b);
-		Vertex vertex;
-		vertex.position = {x, y, -z};
-		vertex.color = {(float)r / 255, (float)g / 255, (float)b / 255};
-		m_vertices.push_back(vertex);
-	}
-
-	// read associated indices
-	size_t num_indices;
-	fscanf(mesh_file, "%zu\n", &num_indices);
-	for (size_t i = 0; i < num_indices; ++i)
-	{
-		int idx[3];
-		fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		m_indices.push_back((uint16_t)idx[0]);
-		m_indices.push_back((uint16_t)idx[1]);
-		m_indices.push_back((uint16_t)idx[2]);
-	}
-
-	// close
-	fclose(mesh_file);
-
-	// clear errors
-	gl_flush_errors();
-
-	// vertex buffer creation
-	glGenBuffers(1, &mesh.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
-
-	// index buffer creation
-	glGenBuffers(1, &mesh.ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
-
-	// vertex array (container for vertex + index buffer)
-	glGenVertexArrays(1, &mesh.vao);
-	if (gl_has_errors())
-		return false;
-
-	// load shaders
-	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
-		return false;
-
-
-	// set initial values
-	motion.position = {600.f, 400.f};
-	motion.radians = 0.f;
-	motion.speed = 200.f;
-
-	physics.scale = {-35.f, 35.f};
-
-	m_is_alive = true;
-
-	m_color_change = 0.0;
-	m_direction_change = 0.0;
-
-	// bound
-	// TODO -- change to collision-base
-	m_bound_up = false;
-	m_bound_down = false;
-	m_bound_left = false;
-	m_bound_right = false;
-
-	m_wall_collision = false;
-
-	return true;
-} */
+using namespace std;
 
 bool Char::init()
 {
@@ -155,7 +65,7 @@ bool Char::init()
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.05f, 0.05f };
+	physics.scale = { -0.5f, 0.5f };
 
 	m_is_alive = true;
 

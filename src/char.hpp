@@ -1,7 +1,13 @@
 #pragma once
 
+// interval
 #include "common.hpp"
 #include "map.hpp"
+#include "spotter.hpp"
+#include "trophy.hpp"
+#include "wanderer.hpp"
+
+// stlib
 #include <vector>
 
 class Spotter;
