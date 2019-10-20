@@ -66,7 +66,7 @@ bool Trophy::init()
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { 0.05f, 0.05f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -85,14 +85,7 @@ void Trophy::destroy()
 
 void Trophy::update(float ms)
 {
-	
-	// movement
-	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
-	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
-	motion.position.x += step_in_x;
-	motion.position.y += step_in_y;
-
-	
+	//
 }
 
 void Trophy::draw(const mat3& projection)
@@ -101,9 +94,6 @@ void Trophy::draw(const mat3& projection)
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
-	vec2 scale = { 0, 0 };
-	scale.x = flip_in_x*4*physics.scale.x;
-	scale.y = 4* physics.scale.y;
 	transform.scale(scale);
 	transform.end();
 
@@ -163,7 +153,7 @@ void Trophy::set_rotation(float radians)
 	motion.radians = radians;
 }
 
-// returns the local bounding coordinates scaled by the current size of the wanderer
+// returns the local bounding coordinates scaled by the current size of the trophy
 // fabs is to avoid negative scale due to the facing direction.
 vec2 Trophy::get_bounding_box() const
 {

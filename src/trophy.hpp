@@ -8,6 +8,9 @@ class Trophy : public Entity
 	// shared texture
 	static Texture trophy_texture;
 
+private:
+	float config_scale = 0.05f;
+
 public:
 	bool init();
 
@@ -25,11 +28,4 @@ public:
 
 	// collision
 	vec2 get_bounding_box() const;
-
-	// direction
-	vec2 m_direction_wanderer = { -1, 0 };
-
-	int sprite_switch = 1;
-	float wanderer_sprite_countdown = 200.f;
-	int flip_in_x = 1;
 };
