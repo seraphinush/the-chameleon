@@ -1,101 +1,12 @@
 // Header
 #include "char.hpp"
 
-// internal
-#include "spotter.hpp"
-#include "wanderer.hpp"
-
 // stlib
 #include <string>
 #include <algorithm>
+
 Texture Char::char_texture;
-
-/* bool Char::init()
-{
-	m_vertices.clear();
-	m_indices.clear();
-
-	// read the char mesh from a file, which contains a list of vertices and indices
-	FILE *mesh_file = fopen(mesh_path("char.mesh"), "r");
-	if (mesh_file == nullptr)
-		return false;
-
-	// read vertices and colors
-	size_t num_vertices;
-	fscanf(mesh_file, "%zu\n", &num_vertices);
-	for (size_t i = 0; i < num_vertices; ++i)
-	{
-		float x, y, z;
-		float _u[3]; // unused
-		int r, g, b;
-		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u + 1, _u + 2, &r, &g, &b);
-		Vertex vertex;
-		vertex.position = {x, y, -z};
-		vertex.color = {(float)r / 255, (float)g / 255, (float)b / 255};
-		m_vertices.push_back(vertex);
-	}
-
-	// read associated indices
-	size_t num_indices;
-	fscanf(mesh_file, "%zu\n", &num_indices);
-	for (size_t i = 0; i < num_indices; ++i)
-	{
-		int idx[3];
-		fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		m_indices.push_back((uint16_t)idx[0]);
-		m_indices.push_back((uint16_t)idx[1]);
-		m_indices.push_back((uint16_t)idx[2]);
-	}
-
-	// close
-	fclose(mesh_file);
-
-	// clear errors
-	gl_flush_errors();
-
-	// vertex buffer creation
-	glGenBuffers(1, &mesh.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
-
-	// index buffer creation
-	glGenBuffers(1, &mesh.ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
-
-	// vertex array (container for vertex + index buffer)
-	glGenVertexArrays(1, &mesh.vao);
-	if (gl_has_errors())
-		return false;
-
-	// load shaders
-	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
-		return false;
-
-
-	// set initial values
-	motion.position = {600.f, 400.f};
-	motion.radians = 0.f;
-	motion.speed = 200.f;
-
-	physics.scale = {-35.f, 35.f};
-
-	m_is_alive = true;
-
-	m_color_change = 0.0;
-	m_direction_change = 0.0;
-
-	// bound
-	// TODO -- change to collision-base
-	m_bound_up = false;
-	m_bound_down = false;
-	m_bound_left = false;
-	m_bound_right = false;
-
-	m_wall_collision = false;
-
-	return true;
-} */
+using namespace std;
 
 bool Char::init()
 {
@@ -154,7 +65,7 @@ bool Char::init()
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.05f, 0.05f };
+	physics.scale = { -0.5f, 0.5f };
 
 	m_is_alive = true;
 
@@ -255,15 +166,6 @@ void Char::draw(const mat3 &projection)
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
-/* 	// input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_color_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)sizeof(vec3));
- */
-
 	// input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
@@ -272,6 +174,10 @@ void Char::draw(const mat3 &projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
  
+	// enable and binding texture to slot 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, char_texture.id);
+
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
@@ -287,13 +193,6 @@ void Char::draw(const mat3 &projection)
 	glUniform1f(direction_change_uloc, direction_change);
 
 	glUniform1f(is_alive_uloc, is_alive());
-
-	/* // get number of indices from buffer,
-	// we know our vbo contains both colour and position information, so...
-	GLint size = 0;
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	GLsizei num_indices = size / sizeof(uint16_t); */
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -317,8 +216,8 @@ bool Char::collides_with(const Spotter &spotter)
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
 
-bool Char::collides_with(const Wanderer &wanderer)
-{	
+	bool Char::collides_with(const Wanderer& wanderer)
+{
 	vec2 wanderer_pos = wanderer.get_position();
 	vec2 wanderer_box = wanderer.get_bounding_box();
 
@@ -333,6 +232,22 @@ bool Char::collides_with(const Wanderer &wanderer)
 
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
+
+bool Char::collides_with(const Trophy &trophy)
+{
+	float dx = motion.position.x - trophy.get_position().x;
+	float dy = motion.position.y - trophy.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(trophy.get_bounding_box().x, trophy.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+
 
 vec2 Char::get_position() const
 {
@@ -406,6 +321,7 @@ void Char::set_bound(char direction, bool state)
 
 void Char::change_color(float c)
 {
+	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
 	m_color_change = c;
 }
 
@@ -429,9 +345,21 @@ bool Char::is_alive() const
 	return m_is_alive;
 }
 
+
+
 void Char::kill()
 {
 	m_is_alive = false;
+}
+
+bool Char::is_win() const
+{
+	return m_is_win;
+}
+
+void Char::win()
+{
+	m_is_win = true;
 }
 
 void Char::set_wall_collision(bool c) {

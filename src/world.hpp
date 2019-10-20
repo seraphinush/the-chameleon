@@ -8,7 +8,9 @@
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "story_screen.hpp"
+#include "complete_screen.hpp"
 #include "map.hpp"
+#include "trophy.hpp"
 
 // stlib
 #include <vector>
@@ -39,8 +41,12 @@ private:
 
 	bool spawn_wanderer();
 
+	bool spawn_trophy();
+
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
+
+	bool is_char_detectable(Map m_map);
 
 private:
 	// screen handle
@@ -51,7 +57,6 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-
 	// start screen
 	StartScreen m_start_screen;
 
@@ -60,6 +65,10 @@ private:
 
 	// story screen
 	StoryScreen m_story_screen;
+
+	// Complete screen
+	CompleteScreen m_complete_screen;
+
 	Map m_map;
 
 	// points
@@ -75,6 +84,7 @@ private:
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
+	std::vector<Trophy> m_trophy;
 
 	// variables
 	float m_current_speed;
@@ -84,6 +94,7 @@ private:
 	Mix_Music *m_background_music;
 	Mix_Chunk *m_char_dead_sound;
 	Mix_Chunk *m_char_green_sound;
+	Mix_Chunk* m_char_win_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;
