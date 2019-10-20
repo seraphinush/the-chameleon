@@ -9,6 +9,7 @@
 #include "control_screen.hpp"
 #include "story_screen.hpp"
 #include "map.hpp"
+#include "trophy.hpp"
 
 // stlib
 #include <vector>
@@ -38,6 +39,8 @@ private:
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
+
+	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
@@ -75,6 +78,7 @@ private:
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
+	std::vector<Trophy> m_trophy;
 
 	// variables
 	float m_current_speed;
@@ -83,6 +87,7 @@ private:
 	// sound
 	Mix_Music *m_background_music;
 	Mix_Chunk *m_char_dead_sound;
+	Mix_Chunk* m_char_win_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;
