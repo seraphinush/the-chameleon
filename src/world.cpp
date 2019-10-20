@@ -182,7 +182,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
 		{
-			if (m_char.collides_with(spotter))
+			if (m_char.collides_with(spotter) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{
@@ -197,7 +197,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
-			if (m_char.collides_with(wanderer))
+			if (m_char.collides_with(wanderer) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{
@@ -567,4 +567,14 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
 	//
+}
+
+
+bool World::is_char_detectable(Map m_map) {
+	float collision_tile = m_map.collision_with(m_char) - 1.0;
+	if (collision_tile != m_char.get_color_change()) {
+		return true;
+	}
+
+	return false;
 }

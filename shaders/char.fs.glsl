@@ -21,11 +21,11 @@ void main()
 		if (color_change == 1.0) {
 			char_color = vec3(1.0, 0.0, 0.0);
 		} else if (color_change == 2.0) {
-			char_color = vec3(1.0, 1.0, 0.0);
+			char_color = vec3(0.0, 1.0, 0.0);
 		} else if (color_change == 3.0) {
 			char_color = vec3(0.0, 0.0, 1.0);
 		} else if (color_change == 4.0) {
-			char_color = vec3(0.0, 1.0, 0.0);
+			char_color = vec3(1.0, 1.0, 0.0);
 		}
 	}
 	else {

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "common.hpp"
+#include "map.hpp"
 #include <vector>
 
 class Spotter;
 class Wanderer;
+class Map;
 
 class Char : public Entity
 {

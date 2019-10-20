@@ -322,6 +322,7 @@ void Char::set_bound(char direction, bool state)
 
 void Char::change_color(float c)
 {
+	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
 	m_color_change = c;
 }
 
