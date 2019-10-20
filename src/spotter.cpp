@@ -137,8 +137,10 @@ void Spotter::draw(const mat3 &projection)
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
 	if (spotter_sprite_countdown < 0) {
-		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
-		const char* path = temp_str.c_str();
+		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
 
 		spotter_texture.load_from_file(path);
 		spotter_sprite_countdown = 1500.f;

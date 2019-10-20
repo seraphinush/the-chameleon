@@ -145,9 +145,10 @@ void Wanderer::draw(const mat3& projection)
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
 	if (wanderer_sprite_countdown < 0) {
-
-		string temp_str = "C:/Users/viven/OneDrive/Documents/the_chameleon/data/textures/wanderers/" + to_string(sprite_switch) + ".png";
-		const char* path = temp_str.c_str();
+		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
 
 		wanderer_texture.load_from_file(path);
 		wanderer_sprite_countdown = 200.f;
