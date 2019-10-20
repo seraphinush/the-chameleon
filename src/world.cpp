@@ -113,12 +113,14 @@ bool World::init(vec2 screen)
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
+	m_char_green_sound = Mix_LoadWAV(audio_path("green_sound.wav"));
 
-	if (m_background_music == nullptr || m_char_dead_sound == nullptr)
+	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_green_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 				audio_path("music.wav"),
-				audio_path("char_dead.wav"));
+				audio_path("char_dead.wav"),
+				audio_path("green_sound.wav"));
 		return false;
 	}
 
@@ -140,6 +142,8 @@ void World::destroy()
 		Mix_FreeMusic(m_background_music);
 	if (m_char_dead_sound != nullptr)
 		Mix_FreeChunk(m_char_dead_sound);
+	if (m_char_green_sound != nullptr)
+		Mix_FreeChunk(m_char_green_sound);
 
 	Mix_CloseAudio();
 
@@ -546,6 +550,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// green
 		else if ((key == GLFW_KEY_RIGHT && !m_char.get_mode()) || (key == GLFW_KEY_D && m_char.get_mode()))
 		{
+			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.change_color(4.0);
 		}
 	}
