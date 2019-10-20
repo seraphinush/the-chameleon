@@ -3,13 +3,10 @@
 #include "common.hpp"
 
 // guard type 1 : wanderer
-class Wanderer : public Entity
+class Trophy : public Entity
 {
 	// shared texture
-	static Texture wanderer_texture;
-
-private:
-	float config_scale = 0.2f;
+	static Texture trophy_texture;
 
 public:
 	bool init();

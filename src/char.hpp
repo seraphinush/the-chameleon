@@ -7,11 +7,14 @@
 class Spotter;
 class Wanderer;
 class Map;
+class Trophy;
 
 class Char : public Entity
 {
-public:
+	// shared texture
 	static Texture char_texture;
+
+public:
 	bool init();
 
 	void destroy();
@@ -24,6 +27,8 @@ public:
 	bool collides_with(const Spotter &spotter);
 
 	bool collides_with(const Wanderer &wanderer);
+
+	bool collides_with(const Trophy& trophy);
 
 	vec2 get_position() const;
 
@@ -52,12 +57,17 @@ public:
 	
 	bool is_alive() const;
 
+	bool is_win() const;
+
+	void win();
+
 	void kill();
 	void set_wall_collision(bool c);
 	bool get_wall_collision();
 
 private:
 	bool m_is_alive;
+	bool m_is_win;
 
 	// key press
 	bool m_moving_right;

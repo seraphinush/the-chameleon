@@ -1,39 +1,40 @@
 // header
-#include "spotter.hpp"
+#include "trophy.hpp"
 
 #include <cmath>
 #include <string> 
 #include <iostream>
 
 // texture
-Texture Spotter::spotter_texture;
+Texture Trophy::trophy_texture;
 using namespace std;
 
-bool Spotter::init()
+bool Trophy::init()
 {
 	// load shared texture
-	if (!spotter_texture.is_valid())
+	if (!trophy_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("spotters/1.png")))
+
+		if (!trophy_texture.load_from_file(textures_path("trophy.png")))
 		{
-			fprintf(stderr, "Failed to load spotter texture!");
+			fprintf(stderr, "Failed to load texture!");
 			return false;
 		}
 	}
 
 	// the position corresponds to the center of the texture
-	float wr = spotter_texture.width * 0.5f;
-	float hr = spotter_texture.height * 0.5f;
+	float wr = trophy_texture.width * 0.5f;
+	float hr = trophy_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.0f };
+	vertices[0].position = { -wr, +hr, -0.02f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.0f };
+	vertices[1].position = { +wr, +hr, -0.02f };
 	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.0f };
+	vertices[2].position = { +wr, -hr, -0.02f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.0f };
-	vertices[3].texcoord =  {0.f, 0.f };
+	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].texcoord = { 0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
@@ -63,13 +64,15 @@ bool Spotter::init()
 	motion.radians = 0.f;
 	motion.speed = 0.f;
 
-	physics.scale = { config_scale, config_scale };
+	// set initial values, scale is negative to make it face the opposite way
+	// 1.0 would be as big as the original texture.
+	physics.scale = { 0.05f, 0.05f };
 
 	return true;
 }
 
 // release all graphics resources
-void Spotter::destroy()
+void Trophy::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -80,31 +83,28 @@ void Spotter::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Spotter::update(float ms)
+void Trophy::update(float ms)
 {
+	
 	// movement
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
+	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
+	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
+	motion.position.x += step_in_x;
+	motion.position.y += step_in_y;
 
-	if (spotter_sprite_countdown > 0.f)
-		spotter_sprite_countdown -= ms;
-
-	if (spotter_sprite_switch < 4) {
-		spotter_sprite_switch++;
-	}
-	else {
-		spotter_sprite_switch = 1;
-
-	}
+	
 }
 
-void Spotter::draw(const mat3 &projection)
+void Trophy::draw(const mat3& projection)
 {
 	// transformation
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+	vec2 scale = { 0, 0 };
+	scale.x = flip_in_x*4*physics.scale.x;
+	scale.y = 4* physics.scale.y;
+	transform.scale(scale);
 	transform.end();
 
 	// set shaders
@@ -114,8 +114,8 @@ void Spotter::draw(const mat3 &projection)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// depth
-	glEnable(GL_DEPTH_TEST);
+  // depth
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -132,46 +132,40 @@ void Spotter::draw(const mat3 &projection)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	if (spotter_sprite_countdown < 0) {
-		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char* path = s.c_str();
-
-		spotter_texture.load_from_file(path);
-		spotter_sprite_countdown = 1500.f;
-	}
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, spotter_texture.id);
+	glBindTexture(GL_TEXTURE_2D, trophy_texture.id);
 
 	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Spotter::get_position() const
+vec2 Trophy::get_position() const
 {
 	return motion.position;
 }
 
-void Spotter::set_position(vec2 position)
+void Trophy::set_position(vec2 position)
 {
 	motion.position = position;
 }
-
-// returns the local bounding coordinates scaled by the current size of the spotter
-// fabs is to avoid negative scale due to the facing direction.
-vec2 Spotter::get_bounding_box() const
+void Trophy::set_rotation(float radians)
 {
-	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
+	motion.radians = radians;
+}
+
+// returns the local bounding coordinates scaled by the current size of the wanderer
+// fabs is to avoid negative scale due to the facing direction.
+vec2 Trophy::get_bounding_box() const
+{
+	return { std::fabs(physics.scale.x) * trophy_texture.width, std::fabs(physics.scale.y) * trophy_texture.height };
 }

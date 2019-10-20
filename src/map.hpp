@@ -57,7 +57,6 @@ public:
 	float get_char_dead_time() const;
 
 private:
-	//Char m_char;
 	vec2 translation_tile;
 	float m_dead_time;
 

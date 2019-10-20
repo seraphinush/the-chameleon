@@ -51,6 +51,8 @@ set(SOURCE_FILES
   src/story_screen.hpp
 	src/map.hpp
 	src/map.cpp
+	src/trophy.hpp
+	src/trophy.cpp
 	)
 
 if (IS_OS_MAC)
