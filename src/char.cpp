@@ -4,6 +4,7 @@
 // internal
 #include "spotter.hpp"
 #include "wanderer.hpp"
+#include "trophy.hpp"
 
 // stlib
 #include <string>
@@ -317,8 +318,8 @@ bool Char::collides_with(const Spotter &spotter)
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
 
-bool Char::collides_with(const Wanderer &wanderer)
-{	
+	bool Char::collides_with(const Wanderer& wanderer)
+{
 	vec2 wanderer_pos = wanderer.get_position();
 	vec2 wanderer_box = wanderer.get_bounding_box();
 
@@ -333,6 +334,22 @@ bool Char::collides_with(const Wanderer &wanderer)
 
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
+
+bool Char::collides_with(const Trophy &trophy)
+{
+	float dx = motion.position.x - trophy.get_position().x;
+	float dy = motion.position.y - trophy.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(trophy.get_bounding_box().x, trophy.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 0.6f;
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+
 
 vec2 Char::get_position() const
 {
@@ -429,9 +446,21 @@ bool Char::is_alive() const
 	return m_is_alive;
 }
 
+
+
 void Char::kill()
 {
 	m_is_alive = false;
+}
+
+bool Char::is_win() const
+{
+	return m_is_win;
+}
+
+void Char::win()
+{
+	m_is_win = true;
 }
 
 void Char::set_wall_collision(bool c) {

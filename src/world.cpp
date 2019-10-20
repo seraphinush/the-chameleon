@@ -114,11 +114,17 @@ bool World::init(vec2 screen)
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
 
-	if (m_background_music == nullptr || m_char_dead_sound == nullptr)
+	m_char_win_sound = Mix_LoadWAV(audio_path("char_win.wav"));
+
+
+
+
+	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 				audio_path("music.wav"),
-				audio_path("char_dead.wav"));
+				audio_path("char_dead.wav"),
+			    audio_path("char_win.wav"));
 		return false;
 	}
 
@@ -210,6 +216,23 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
+		// check for trophy collision
+		for (const auto& trophy : m_trophy)
+		{
+			if (m_char.collides_with(trophy))
+			{
+				if (m_char.is_alive())
+				{
+					Mix_PlayChannel(-1, m_char_win_sound, 0);
+					m_map.set_char_dead();
+				}
+				m_char.kill();
+				break;
+			}
+		}
+
+		
+
 		// update all entities, making the spotter and fish
 		// faster based on current.
 		// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
@@ -291,6 +314,19 @@ bool World::update(float elapsed_ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
+		//spawn trophy
+		if (m_trophy.size() <= 1)
+		{
+			if (!spawn_trophy())
+				return false;
+
+			Trophy& new_trophy = m_trophy.back();
+
+			// set random initial position
+			new_trophy.set_position({screen.x/2 + 100, screen.y/2 + 100});
+		}
+		
+
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
@@ -307,6 +343,7 @@ bool World::update(float elapsed_ms)
 			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 		}
 
+	
 		// restart game
 		if (!m_char.is_alive() &&
 			m_map.get_char_dead_time() > 2)
@@ -383,6 +420,8 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
+		for (auto& trophy : m_trophy)
+			trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -413,6 +452,18 @@ bool World::spawn_spotter()
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn spotter");
+	return false;
+}
+
+bool World::spawn_trophy()
+{
+	Trophy trophy;
+	if (trophy.init())
+	{
+		m_trophy.emplace_back(trophy);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn trophy");
 	return false;
 }
 
