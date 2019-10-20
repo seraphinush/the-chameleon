@@ -8,6 +8,9 @@ class Wanderer : public Entity
 	// shared texture
 	static Texture wanderer_texture;
 
+private:
+	float config_scale = 0.2f;
+
 public:
 	bool init();
 
