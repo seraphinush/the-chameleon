@@ -260,7 +260,8 @@ bool World::update(float elapsed_ms)
 		}
 
 		// update spotters
-		for (auto& spotter : m_spotters) {
+		for (auto &spotter : m_spotters)
+		{
 			spotter.update(elapsed_ms * m_current_speed);
 		}
 
@@ -300,7 +301,7 @@ bool World::update(float elapsed_ms)
 			Wanderer &new_wanderer = m_wanderers.back();
 
 			// set random initial position
-			new_wanderer.set_position({ screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50) });
+			new_wanderer.set_position({screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50)});
 
 			// next spawn
 			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
@@ -474,30 +475,60 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
-		// movement
-		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+		// opposite movements - when blue
+		if (m_char.get_color_change() == 3.0)
 		{
-			m_char.change_direction(0.0);
-			m_char.set_direction('R', true);
+			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			{
+				m_char.change_direction(1.0);
+				m_char.set_direction('L', true);
+			}
+			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			{
+				m_char.change_direction(0.0);
+				m_char.set_direction('R', true);
+			}
+			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			{
+				m_char.change_direction(3.0);
+				m_char.set_direction('D', true);
+			}
+			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			{
+				m_char.change_direction(3.0);
+				m_char.set_direction('U', true);
+			}
 		}
-		else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+		// proper movement
+		else
 		{
-			m_char.change_direction(1.0);
-			m_char.set_direction('L', true);
+			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			{
+				m_char.change_direction(0.0);
+				m_char.set_direction('R', true);
+			}
+			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			{
+				m_char.change_direction(1.0);
+				m_char.set_direction('L', true);
+			}
+			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			{
+				m_char.change_direction(2.0);
+				m_char.set_direction('U', true);
+			}
+			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			{
+				m_char.change_direction(3.0);
+				m_char.set_direction('D', true);
+			}
 		}
-		else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
-		{
-			m_char.change_direction(2.0);
-			m_char.set_direction('U', true);
-		}
-		else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
-		{
-			m_char.change_direction(3.0);
-			m_char.set_direction('D', true);
+	}
 
-			// red
-		}
-		else if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
+	if (action == GLFW_PRESS && m_game_state == 3)
+	{
+		// red
+		if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
 		{
 			m_char.change_color(1.0);
 		}
@@ -518,17 +549,31 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		}
 	}
 
-	// movement
+	// remove movement
 	if (action == GLFW_RELEASE && m_game_state == 3)
 	{
-		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
-			m_char.set_direction('R', false);
-		else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
-			m_char.set_direction('L', false);
-		else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
-			m_char.set_direction('U', false);
-		else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
-			m_char.set_direction('D', false);
+		if (m_char.get_color_change() == 3.0)
+		{
+			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+				m_char.set_direction('L', false);
+			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+				m_char.set_direction('R', false);
+			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+				m_char.set_direction('D', false);
+			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+				m_char.set_direction('U', false);
+		}
+		else
+		{
+			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+				m_char.set_direction('R', false);
+			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+				m_char.set_direction('L', false);
+			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+				m_char.set_direction('U', false);
+			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+				m_char.set_direction('D', false);
+		}
 	}
 
 	// game mode
