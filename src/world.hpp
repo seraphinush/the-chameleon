@@ -8,6 +8,7 @@
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "story_screen.hpp"
+#include "complete_screen.hpp"
 #include "map.hpp"
 #include "trophy.hpp"
 
@@ -56,7 +57,6 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-
 	// start screen
 	StartScreen m_start_screen;
 
@@ -65,6 +65,10 @@ private:
 
 	// story screen
 	StoryScreen m_story_screen;
+
+	// Complete screen
+	CompleteScreen m_complete_screen;
+
 	Map m_map;
 
 	// points

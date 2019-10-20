@@ -15,7 +15,7 @@ const size_t MAX_WANDERERS = 4;
 const size_t SPOTTER_DELAY_MS = 2000;
 
 // TODO
-vec2 spotter_loc[4] = { {100, 100} };
+vec2 spotter_loc[4] = {{100, 100}};
 
 namespace
 {
@@ -26,11 +26,10 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() :
-  m_points(0),
-  m_next_wanderer_spawn(0.f),
-  m_game_state(0),
-  m_current_game_state(0)
+World::World() : m_points(0),
+				 m_next_wanderer_spawn(0.f),
+				 m_game_state(0),
+				 m_current_game_state(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -44,9 +43,9 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
-	spotter_loc[1] = { screen.x - 100, 100 };
-	spotter_loc[2] = { 100, screen.y - 100 };
-	spotter_loc[3] = { screen.x - 100, screen.y - 100 };
+	spotter_loc[1] = {screen.x - 100, 100};
+	spotter_loc[2] = {100, screen.y - 100};
+	spotter_loc[3] = {screen.x - 100, screen.y - 100};
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -116,15 +115,12 @@ bool World::init(vec2 screen)
 
 	m_char_win_sound = Mix_LoadWAV(audio_path("char_win.wav"));
 
-
-
-
 	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 				audio_path("music.wav"),
 				audio_path("char_dead.wav"),
-			    audio_path("char_win.wav"));
+				audio_path("char_win.wav"));
 		return false;
 	}
 
@@ -134,7 +130,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init();
+	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init() && m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -170,6 +166,7 @@ bool World::update(float elapsed_ms)
 	m_start_screen.update(m_current_game_state);
 	m_control_screen.update(m_current_game_state);
 	m_story_screen.update(m_current_game_state);
+	m_complete_screen.update(m_current_game_state);
 
 	if (m_game_state == 3)
 	{
@@ -217,7 +214,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// check for trophy collision
-		for (const auto& trophy : m_trophy)
+		for (const auto &trophy : m_trophy)
 		{
 			if (m_char.collides_with(trophy))
 			{
@@ -225,13 +222,12 @@ bool World::update(float elapsed_ms)
 				{
 					Mix_PlayChannel(-1, m_char_win_sound, 0);
 					m_map.set_char_dead();
+					m_game_state = 5;
 				}
 				m_char.kill();
 				break;
 			}
 		}
-
-		
 
 		// update all entities, making the spotter and fish
 		// faster based on current.
@@ -284,7 +280,8 @@ bool World::update(float elapsed_ms)
 		}
 
 		// update spotters
-		for (auto& spotter : m_spotters) {
+		for (auto &spotter : m_spotters)
+		{
 			spotter.update(elapsed_ms * m_current_speed);
 		}
 
@@ -320,12 +317,11 @@ bool World::update(float elapsed_ms)
 			if (!spawn_trophy())
 				return false;
 
-			Trophy& new_trophy = m_trophy.back();
+			Trophy &new_trophy = m_trophy.back();
 
 			// set random initial position
-			new_trophy.set_position({screen.x/2 + 100, screen.y/2 + 100});
+			new_trophy.set_position({screen.x / 2 + 100, screen.y / 2 + 100});
 		}
-		
 
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
@@ -337,13 +333,12 @@ bool World::update(float elapsed_ms)
 			Wanderer &new_wanderer = m_wanderers.back();
 
 			// set random initial position
-			new_wanderer.set_position({ screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50) });
+			new_wanderer.set_position({screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50)});
 
 			// next spawn
 			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 		}
 
-	
 		// restart game
 		if (!m_char.is_alive() &&
 			m_map.get_char_dead_time() > 2)
@@ -383,7 +378,7 @@ void World::draw()
 	// clear backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.3f, 0.3f, 0.3f };
+	const float clear_color[3] = {0.3f, 0.3f, 0.3f};
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -420,7 +415,7 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
-		for (auto& trophy : m_trophy)
+		for (auto &trophy : m_trophy)
 			trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
@@ -430,6 +425,9 @@ void World::draw()
 		break;
 	case 4:
 		m_story_screen.draw(projection_2D);
+		break;
+	case 5:
+		m_complete_screen.draw(projection_2D);
 		break;
 	}
 
@@ -502,6 +500,10 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			if (m_game_state == 4)
 			{
 				m_game_state = 3;
+			}
+			else if (m_game_state == 5)
+			{
+				m_game_state = 0;
 			}
 			else if (m_current_game_state == 0)
 			{
@@ -621,10 +623,11 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 	//
 }
 
-
-bool World::is_char_detectable(Map m_map) {
+bool World::is_char_detectable(Map m_map)
+{
 	float collision_tile = m_map.collision_with(m_char) - 1.0;
-	if (collision_tile != m_char.get_color_change()) {
+	if (collision_tile != m_char.get_color_change())
+	{
 		return true;
 	}
 

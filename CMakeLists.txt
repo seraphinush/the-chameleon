@@ -40,6 +40,7 @@ set(SOURCE_FILES
   src/start_screen.cpp
   src/control_screen.cpp  
   src/story_screen.cpp
+  src/complete_screen.cpp  
   src/project_path.hpp
 	src/char.hpp
 	src/common.hpp
@@ -49,6 +50,7 @@ set(SOURCE_FILES
   src/start_screen.hpp
   src/control_screen.hpp
   src/story_screen.hpp
+  src/complete_screen.hpp
 	src/map.hpp
 	src/map.cpp
 	src/trophy.hpp
