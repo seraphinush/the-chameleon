@@ -8,8 +8,10 @@ class Wanderer;
 
 class Char : public Entity
 {
-public:
+	// shared texture
 	static Texture char_texture;
+
+public:
 	bool init();
 
 	void destroy();

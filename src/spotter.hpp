@@ -8,6 +8,9 @@ class Spotter : public Entity
 	// shared texture
 	static Texture spotter_texture;
 
+private:
+	float config_scale = 1.0f;
+
 public:
 	bool init();
 

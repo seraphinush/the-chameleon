@@ -5,6 +5,7 @@
 #include <string> 
 #include <iostream>
 
+// texture
 Texture Spotter::spotter_texture;
 using namespace std;
 
@@ -27,11 +28,11 @@ bool Spotter::init()
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.0f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].position = { +wr, +hr, -0.0f };
 	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.02f} ;
+	vertices[2].position = { +wr, -hr, -0.0f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].position = { -wr, -hr, -0.0f };
 	vertices[3].texcoord =  {0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
@@ -62,9 +63,7 @@ bool Spotter::init()
 	motion.radians = 0.f;
 	motion.speed = 0.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { -1.5f, 1.5f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -174,5 +173,5 @@ void Spotter::set_position(vec2 position)
 // fabs is to avoid negative scale due to the facing direction.
 vec2 Spotter::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * spotter_texture.width, std::fabs(physics.scale.y) * spotter_texture.height };
+	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
 }

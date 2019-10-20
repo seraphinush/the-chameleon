@@ -15,7 +15,7 @@ const size_t MAX_WANDERERS = 4;
 const size_t SPOTTER_DELAY_MS = 2000;
 
 // TODO
-vec2 spotter_loc[4] = {{100, 100}};
+vec2 spotter_loc[4] = { {100, 100} };
 
 namespace
 {
@@ -26,10 +26,11 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : m_points(0),
-				 m_next_wanderer_spawn(0.f),
-				 m_game_state(0),
-				 m_current_game_state(0)
+World::World() :
+  m_points(0),
+  m_next_wanderer_spawn(0.f),
+  m_game_state(0),
+  m_current_game_state(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -43,9 +44,9 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
-	spotter_loc[1] = {screen.x - 100, 100};
-	spotter_loc[2] = {100, screen.y - 100};
-	spotter_loc[3] = {screen.x - 100, screen.y - 100};
+	spotter_loc[1] = { screen.x - 100, 100 };
+	spotter_loc[2] = { 100, screen.y - 100 };
+	spotter_loc[3] = { screen.x - 100, screen.y - 100 };
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -279,7 +280,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn spotter
-		if (m_spotters.size() <= MAX_SPOTTERS)
+		if (m_spotters.size() < MAX_SPOTTERS)
 		{
 			if (!spawn_spotter())
 				return false;
@@ -292,7 +293,7 @@ bool World::update(float elapsed_ms)
 
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() <= MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
 		{
 			if (!spawn_wanderer())
 				return false;
@@ -345,7 +346,7 @@ void World::draw()
 	// clear backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = {0.3f, 0.3f, 0.3f};
+	const float clear_color[3] = { 0.3f, 0.3f, 0.3f };
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
