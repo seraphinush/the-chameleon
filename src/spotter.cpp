@@ -14,7 +14,7 @@ bool Spotter::init()
 	// load shared texture
 	if (!spotter_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("spotters/1.png")))
+		if (!spotter_texture.load_from_file(textures_path("spotter.png")))
 		{
 			fprintf(stderr, "Failed to load spotter texture!");
 			return false;
@@ -82,11 +82,7 @@ void Spotter::destroy()
 
 void Spotter::update(float ms)
 {
-	// movement
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
-
-	if (spotter_sprite_countdown > 0.f)
+	/* if (spotter_sprite_countdown > 0.f)
 		spotter_sprite_countdown -= ms;
 
 	if (spotter_sprite_switch < 4) {
@@ -95,7 +91,7 @@ void Spotter::update(float ms)
 	else {
 		spotter_sprite_switch = 1;
 
-	}
+	} */
 }
 
 void Spotter::draw(const mat3 &projection)
@@ -135,16 +131,6 @@ void Spotter::draw(const mat3 &projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
-	if (spotter_sprite_countdown < 0) {
-		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char* path = s.c_str();
-
-		spotter_texture.load_from_file(path);
-		spotter_sprite_countdown = 1500.f;
-	}
-
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, spotter_texture.id);
@@ -154,6 +140,17 @@ void Spotter::draw(const mat3 &projection)
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+
+	// sprite change
+	/* if (spotter_sprite_countdown < 0) {
+		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		spotter_texture.load_from_file(path);
+		spotter_sprite_countdown = 1500.f;
+	} */
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);

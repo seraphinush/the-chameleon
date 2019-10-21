@@ -9,7 +9,7 @@ class Trophy : public Entity
 	static Texture trophy_texture;
 
 private:
-	float config_scale = 0.05f;
+	float config_scale = 0.2f;
 
 public:
 	bool init();

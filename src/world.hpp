@@ -84,7 +84,7 @@ private:
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
-	std::vector<Trophy> m_trophy;
+	Trophy m_trophy;
 
 	// variables
 	float m_current_speed;

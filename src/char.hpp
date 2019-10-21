@@ -30,11 +30,13 @@ public:
 	void draw(const mat3 &projection) override;
 
 	// collision
+	bool collision(vec2 pos, vec2 box);
+
 	bool collides_with(const Spotter &spotter);
 
 	bool collides_with(const Wanderer &wanderer);
 
-	bool collides_with(const Trophy& trophy);
+	bool collides_with(const Trophy &trophy);
 
 	vec2 get_position() const;
 

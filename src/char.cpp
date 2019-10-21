@@ -2,6 +2,7 @@
 #include "char.hpp"
 
 // stlib
+#include <cmath>
 #include <string>
 #include <algorithm>
 
@@ -117,7 +118,7 @@ void Char::update(float ms)
 		m_wall_collision = false;
 
 
-		// find a bool in world and pass taht to char
+		// find a bool in world and pass that to char
 		if (m_moving_right && !m_bound_right)
 			move({step, 0.f});
 		if (m_moving_left && !m_bound_left)
@@ -199,55 +200,43 @@ void Char::draw(const mat3 &projection)
 }
 
 // collision
+bool Char::collision(vec2 pos, vec2 box)
+{
+	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
+	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
+
+	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) &&
+		(pos.x + box.x) >= (motion.position.x + half_width);
+	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) &&
+		(pos.x + box.x) >= (motion.position.x - half_width);
+	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) &&
+		(pos.y + box.y) >= (motion.position.y + half_height);
+	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) &&
+		(pos.y + box.y) >= (motion.position.y - half_height);
+
+	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
+}
+
 bool Char::collides_with(const Spotter &spotter)
 {
-	vec2 spotter_pos = spotter.get_position();
-	vec2 spotter_box = spotter.get_bounding_box();
-
-	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-		(spotter_pos.x + spotter_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
-	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-		(spotter_pos.x + spotter_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
-	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-		(spotter_pos.y + spotter_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
-	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-		(spotter_pos.y + spotter_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
-
-	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
+	vec2 pos = spotter.get_position();
+	vec2 box = spotter.get_bounding_box();
+	return collision(pos, box);
 }
 
 	bool Char::collides_with(const Wanderer& wanderer)
 {
-	vec2 wanderer_pos = wanderer.get_position();
-	vec2 wanderer_box = wanderer.get_bounding_box();
-
-	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
-	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
-	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
-	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
-
-	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
+	vec2 pos = wanderer.get_position();
+	vec2 box = wanderer.get_bounding_box();
+	return collision(pos, box);
 }
 
 bool Char::collides_with(const Trophy &trophy)
 {
-	float dx = motion.position.x - trophy.get_position().x;
-	float dy = motion.position.y - trophy.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(trophy.get_bounding_box().x, trophy.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
+	vec2 pos = trophy.get_position();
+	vec2 box = trophy.get_bounding_box();
+	return collision(pos, box);
 }
-
-
 
 vec2 Char::get_position() const
 {
@@ -344,8 +333,6 @@ bool Char::is_alive() const
 {
 	return m_is_alive;
 }
-
-
 
 void Char::kill()
 {

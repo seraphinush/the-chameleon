@@ -61,6 +61,7 @@ bool Trophy::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
+	motion.position = { 570.f, 140.f };
 	motion.radians = 0.f;
 	motion.speed = 0.f;
 
@@ -94,7 +95,7 @@ void Trophy::draw(const mat3& projection)
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
-	transform.scale(scale);
+	transform.scale(physics.scale);
 	transform.end();
 
 	// set shaders
@@ -157,5 +158,5 @@ void Trophy::set_rotation(float radians)
 // fabs is to avoid negative scale due to the facing direction.
 vec2 Trophy::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * trophy_texture.width, std::fabs(physics.scale.y) * trophy_texture.height };
+	return { std::fabs(physics.scale.x) * trophy_texture.width * 0.5f, std::fabs(physics.scale.y) * trophy_texture.height * 0.5f };
 }

@@ -1,4 +1,4 @@
-// Header
+// header
 #include "world.hpp"
 
 // stlib
@@ -10,12 +10,12 @@
 // Same as static in c, local to compilation unit
 namespace
 {
-const size_t MAX_SPOTTERS = 4;
-const size_t MAX_WANDERERS = 4;
+const size_t MAX_SPOTTERS = 5;
+const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 2000;
 
 // TODO
-vec2 spotter_loc[4] = {{100, 100}};
+vec2 spotter_loc[5];
 
 namespace
 {
@@ -43,9 +43,11 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
+	spotter_loc[0] = {100, 100};
 	spotter_loc[1] = {screen.x - 100, 100};
 	spotter_loc[2] = {100, screen.y - 100};
 	spotter_loc[3] = {screen.x - 100, screen.y - 100};
+	spotter_loc[4] = { 800, 500 };
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -112,7 +114,6 @@ bool World::init(vec2 screen)
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
-
 	m_char_win_sound = Mix_LoadWAV(audio_path("char_win.wav"));
 
 	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr)
@@ -130,7 +131,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init() && m_complete_screen.init();
+	return m_char.init() && m_trophy.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init() && m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -214,29 +215,21 @@ bool World::update(float elapsed_ms)
 		}
 
 		// check for trophy collision
-		for (const auto &trophy : m_trophy)
+		if (m_char.collides_with(m_trophy))
 		{
-			if (m_char.collides_with(trophy))
+			if (m_char.is_alive())
 			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_win_sound, 0);
-					m_char.set_direction('R', false);
-					m_char.set_direction('L', false);
-					m_char.set_direction('U', false);
-					m_char.set_direction('D', false);
-					m_map.set_char_dead();
-					m_game_state = 5;
-				}
-				m_char.kill();
-				break;
+				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				m_char.set_direction('R', false);
+				m_char.set_direction('L', false);
+				m_char.set_direction('U', false);
+				m_char.set_direction('D', false);
+				m_map.set_char_dead();
+				m_game_state = 5;
 			}
+			m_char.kill();
 		}
 
-		// update all entities, making the spotter and fish
-		// faster based on current.
-		// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
-		// rather than by their class.
 		m_char.update(elapsed_ms);
 
 		// TODO
@@ -289,20 +282,6 @@ bool World::update(float elapsed_ms)
 			spotter.update(elapsed_ms * m_current_speed);
 		}
 
-		// remove out of screen spotters
-		auto spotter_it = m_spotters.begin();
-		while (spotter_it != m_spotters.end())
-		{
-			float w = spotter_it->get_bounding_box().x / 2;
-			if (spotter_it->get_position().x + w < 0.f)
-			{
-				spotter_it = m_spotters.erase(spotter_it);
-				continue;
-			}
-
-			++spotter_it;
-		}
-
 		// spawn spotter
 		if (m_spotters.size() < MAX_SPOTTERS)
 		{
@@ -313,18 +292,6 @@ bool World::update(float elapsed_ms)
 
 			// set random initial position
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
-		}
-
-		//spawn trophy
-		if (m_trophy.size() <= 1)
-		{
-			if (!spawn_trophy())
-				return false;
-
-			Trophy &new_trophy = m_trophy.back();
-
-			// set random initial position
-			new_trophy.set_position({screen.x / 2 + 100, screen.y / 2 + 100});
 		}
 
 		// spawn wanderer
@@ -344,11 +311,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// restart game
-		if (!m_char.is_alive() &&
-			m_map.get_char_dead_time() > 2)
+		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
 		{
 			m_char.destroy();
+			m_trophy.destroy();
 			m_char.init();
+			m_trophy.init();
 			m_spotters.clear();
 			m_wanderers.clear();
 			m_map.reset_char_dead_time();
@@ -419,8 +387,7 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
-		for (auto &trophy : m_trophy)
-			trophy.draw(projection_2D);
+		m_trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -454,18 +421,6 @@ bool World::spawn_spotter()
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn spotter");
-	return false;
-}
-
-bool World::spawn_trophy()
-{
-	Trophy trophy;
-	if (trophy.init())
-	{
-		m_trophy.emplace_back(trophy);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn trophy");
 	return false;
 }
 
@@ -604,9 +559,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_char.destroy();
-		m_map.destroy();
+		m_trophy.destroy();
 		m_char.init();
-		m_map.init();
+		m_trophy.init();
 		m_wanderers.clear();
 		m_spotters.clear();
 		m_map.reset_char_dead_time();

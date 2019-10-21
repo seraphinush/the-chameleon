@@ -9,7 +9,7 @@ class Spotter : public Entity
 	static Texture spotter_texture;
 
 private:
-	float config_scale = 1.0f;
+	float config_scale = 0.05f;
 
 public:
 	bool init();
