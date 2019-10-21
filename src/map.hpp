@@ -1,14 +1,14 @@
 #pragma once
 
-#include "common.hpp"
+// internal
 #include "char.hpp"
+#include "common.hpp"
 
 class Char;
 
-// Salmon enemy 
 class Map : public Entity
 {
-	// Shared between all turtles, no need to load one for each instance
+	// shared texture
 	static Texture wall_texture;
 	static Texture corridor_texture;
 
@@ -17,37 +17,28 @@ class Map : public Entity
 	static Texture corridor_texture_green;
 	static Texture corridor_texture_yellow;
 
-public:
-	// Creates all the associated render resources and default transform
-	bool init();
+private:
+	vec2 translation_tile;
 
-	// Releases all the associated resources
+	float m_dead_time;
+
+public:
+	bool init();
 	void destroy();
 
-	// Renders the salmon
-	// projection is the 2D orthographic projection matrix
+	// draw tiles
 	void draw(const mat3& projection) override;
+	void draw_element(const mat3& projection, const Texture& texture);
 
-	void draw_wall(const mat3& projection);
-
-	void draw_corridor(const mat3& projection);
-
-
-	void draw_corridor_red(const mat3& projection);
-	void draw_corridor_blue(const mat3& projection);
-	void draw_corridor_green(const mat3& projection);
-	void draw_corridor_yellow(const mat3& projection);
-
-	// Returns the current turtle position
-	vec2 get_position()const;
-
-	// Sets the new turtle position
 	void set_position(vec2 position);
-
-	// Returns the turtle' bounding box for collision detection, called by collides_with()
+	vec2 get_position()const;
 	vec2 get_bounding_box() const;
 
-	float collision_with(Char m_char);
+	// color detection
+	float collides_with(Char m_char);
+
+	// wall collision
+	void is_wall(Char& m_char);
 
 	// char dead time getters and setters
 	void set_char_dead();
@@ -55,9 +46,4 @@ public:
 	void reset_char_dead_time();
 
 	float get_char_dead_time() const;
-
-private:
-	vec2 translation_tile;
-	float m_dead_time;
-
 };

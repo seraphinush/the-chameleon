@@ -7,7 +7,6 @@
 #include <sstream>
 #include <iostream>
 
-// Same as static in c, local to compilation unit
 namespace
 {
 const size_t MAX_SPOTTERS = 5;
@@ -26,10 +25,12 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : m_points(0),
-				 m_next_wanderer_spawn(0.f),
-				 m_game_state(0),
-				 m_current_game_state(0)
+World::World() :
+	m_control(0),
+	m_current_game_state(0),
+	m_game_state(0),
+	m_next_wanderer_spawn(0.f),
+	m_points(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -119,9 +120,9 @@ bool World::init(vec2 screen)
 	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-				audio_path("music.wav"),
-				audio_path("char_dead.wav"),
-				audio_path("char_win.wav"));
+			audio_path("music.wav"),
+			audio_path("char_dead.wav"),
+			audio_path("char_win.wav"));
 		return false;
 	}
 
@@ -131,7 +132,13 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_trophy.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init() && m_complete_screen.init();
+	return m_start_screen.init() && 
+		m_control_screen.init() && 
+		m_story_screen.init() && 
+		m_map.init() && 
+		m_char.init() && 
+		m_trophy.init() && 
+		m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -143,17 +150,20 @@ void World::destroy()
 		Mix_FreeMusic(m_background_music);
 	if (m_char_dead_sound != nullptr)
 		Mix_FreeChunk(m_char_dead_sound);
-
+	if (m_char_win_sound != nullptr)
+		Mix_FreeChunk(m_char_win_sound);
 	Mix_CloseAudio();
 
-	m_char.destroy();
-	m_map.destroy();
 	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_spotters.clear();
+	m_trophy.destroy();
+	m_char.destroy();
+	m_map.destroy();
+
 	glfwDestroyWindow(m_window);
 }
 
@@ -171,18 +181,8 @@ bool World::update(float elapsed_ms)
 
 	if (m_game_state == 3)
 	{
-		// bound
-		// TODO -- change to collision-base
-		m_char.set_bound('R', (m_char.get_position().x > screen.x));
-		m_char.set_bound('L', (m_char.get_position().x < 0));
-		m_char.set_bound('D', (m_char.get_position().y > screen.y));
-		m_char.set_bound('U', (m_char.get_position().y < 0));
-
 		// wall collisions
-		if (m_map.collision_with(m_char) == 1.0)
-		{
-			m_char.set_wall_collision(true);
-		}
+		m_map.is_wall(m_char);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -214,16 +214,12 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
-		// check for trophy collision
+		// collision, char-trophy
 		if (m_char.collides_with(m_trophy))
 		{
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
-				m_char.set_direction('R', false);
-				m_char.set_direction('L', false);
-				m_char.set_direction('U', false);
-				m_char.set_direction('D', false);
 				m_map.set_char_dead();
 				m_game_state = 5;
 			}
@@ -278,9 +274,7 @@ bool World::update(float elapsed_ms)
 
 		// update spotters
 		for (auto &spotter : m_spotters)
-		{
 			spotter.update(elapsed_ms * m_current_speed);
-		}
 
 		// spawn spotter
 		if (m_spotters.size() < MAX_SPOTTERS)
@@ -290,7 +284,6 @@ bool World::update(float elapsed_ms)
 
 			Spotter &new_spotter = m_spotters.back();
 
-			// set random initial position
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
@@ -311,7 +304,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// restart game
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
+		if (!m_char.is_alive() && m_map.get_char_dead_time() > 4)
 		{
 			m_char.destroy();
 			m_trophy.destroy();
@@ -357,6 +350,7 @@ void World::draw()
 
 	mat3 projection_2D = calculateProjectionMatrix(w, h);
 
+	// game state
 	switch (m_game_state)
 	{
 	case 0:
@@ -505,44 +499,44 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// movement
-		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
-		{
-			m_char.change_direction(0.0);
-			m_char.set_direction('R', true);
-		}
-		else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
-		{
-			m_char.change_direction(1.0);
-			m_char.set_direction('L', true);
-		}
-		else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+		if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
 			m_char.change_direction(2.0);
 			m_char.set_direction('U', true);
 		}
-		else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 		{
 			m_char.change_direction(3.0);
 			m_char.set_direction('D', true);
-
-			// red
 		}
-		else if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
+		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+		{
+			m_char.change_direction(0.0);
+			m_char.set_direction('R', true);
+		}
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
+		{
+			m_char.change_direction(1.0);
+			m_char.set_direction('L', true);
+		}
+
+		// red
+		else if ((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1))
 		{
 			m_char.change_color(1.0);
 		}
 		// yellow
-		else if ((key == GLFW_KEY_DOWN && !m_char.get_mode()) || (key == GLFW_KEY_S && m_char.get_mode()))
+		else if ((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1))
 		{
 			m_char.change_color(2.0);
 		}
 		// blue
-		else if ((key == GLFW_KEY_LEFT && !m_char.get_mode()) || (key == GLFW_KEY_A && m_char.get_mode()))
+		else if ((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1))
 		{
 			m_char.change_color(3.0);
 		}
 		// green
-		else if ((key == GLFW_KEY_RIGHT && !m_char.get_mode()) || (key == GLFW_KEY_D && m_char.get_mode()))
+		else if ((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1))
 		{
 			m_char.change_color(4.0);
 		}
@@ -551,13 +545,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// movement
 	if (action == GLFW_RELEASE && m_game_state == 3)
 	{
-		if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);
-		else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 			m_char.set_direction('L', false);
-		else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 			m_char.set_direction('U', false);
-		else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 			m_char.set_direction('D', false);
 	}
 
@@ -565,9 +559,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS)
 	{
 		if (key == GLFW_KEY_1)
-			m_char.set_mode(false);
+			m_control = 0;
 		else if (key == GLFW_KEY_2)
-			m_char.set_mode(true);
+			m_control = 1;
 	}
 
 	// reset
@@ -601,11 +595,6 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	float collision_tile = m_map.collision_with(m_char) - 1.0;
-	if (collision_tile != m_char.get_color_change())
-	{
-		return true;
-	}
-
-	return false;
+	float collision_tile = m_map.collides_with(m_char) - 1.0;
+	return collision_tile != m_char.get_color_change();
 }

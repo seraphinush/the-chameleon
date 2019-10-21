@@ -2,7 +2,7 @@
 
 #include "common.hpp"
 
-// guard type 1 : wanderer
+// goal
 class Trophy : public Entity
 {
 	// shared texture
@@ -13,19 +13,13 @@ private:
 
 public:
 	bool init();
-
 	void destroy();
-
-	void update(float ms);
-
-	// projection is the 2D orthographic projection matrix
 	void draw(const mat3& projection) override;
 
-	vec2 get_position()const;
-
+	// use to set position per level
 	void set_position(vec2 position);
-	void set_rotation(float radians);
 
 	// collision
+	vec2 get_position()const;
 	vec2 get_bounding_box() const;
 };

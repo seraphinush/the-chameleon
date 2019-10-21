@@ -66,21 +66,23 @@ bool Char::init()
 
 	physics.scale = { -config_scale, config_scale };
 
+	// initial values
 	m_is_alive = true;
-
 	m_color_change = 0.0;
 	m_direction_change = 0.0;
 
-	// bound
-	// TODO -- change to collision-base
-	m_bound_up = false;
-	m_bound_down = false;
-	m_bound_left = false;
-	m_bound_right = false;
+	m_moving_right = false;
+	m_moving_left = false;
+	m_moving_up = false;
+	m_moving_down = false;
+
+	m_wall_up = false;
+	m_wall_down = false;
+	m_wall_left = false;
+	m_wall_right = false;
 
 	return true;
 }
-
 
 // release all graphics resources
 void Char::destroy()
@@ -100,35 +102,16 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
+		fprintf(stderr, "%d %d %d %d\n", m_wall_right, m_wall_left, m_wall_up, m_wall_down);
 
-		if (m_moving_right && m_wall_collision) {
-			move({ -step * 5.f, 0.f });
-		}
-		if (m_moving_left && m_wall_collision) {
-			move({ step * 5.f, 0.f });
-		}
-		if (m_moving_up && m_wall_collision) {
-			move({ 0.f, step * 5.f });
-		}
-		if (m_moving_down && m_wall_collision) {
-			move({ 0.f, -step * 5.f });
-		}
-		m_wall_collision = false;
-
-
-		// find a bool in world and pass that to char
-		if (m_moving_right && !m_bound_right)
+		if (m_moving_right && !m_wall_right)
 			move({step, 0.f});
-		if (m_moving_left && !m_bound_left)
+		if (m_moving_left && !m_wall_left)
 			move({-step, 0.f});
-		if (m_moving_up && !m_bound_up)
+		if (m_moving_up && !m_wall_up)
 			move({0.f, -step});
-		if (m_moving_down && !m_bound_down)
+		if (m_moving_down && !m_wall_down)
 			move({0.f, step});
-	}
-	else
-	{
-		//
 	}
 }
 
@@ -242,6 +225,37 @@ vec2 Char::get_position() const
 	return motion.position;
 }
 
+vec2 Char::get_bounding_box() const
+{
+	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f };
+}
+
+void Char::set_wall_collision(char direction, bool value)
+{
+	if (direction == 'R')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_right = value;
+	}
+	else if (direction == 'L')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_left = value;
+	}
+	else if (direction == 'U')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_up = value;
+	}
+	else if (direction == 'D')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_down = value;
+	}
+
+	//if (value) fprintf(stderr, "%d %d %d %d\n", m_wall_right,m_wall_left,m_wall_up,m_wall_down);
+}
+
 void Char::move(vec2 offset)
 {
 	motion.position.x += offset.x;
@@ -256,61 +270,19 @@ void Char::set_rotation(float radians)
 void Char::set_direction(char direction, bool value)
 {
 	if (direction == 'R')
-	{
 		m_moving_right = value;
-	}
 	else if (direction == 'L')
-	{
 		m_moving_left = value;
-	}
 	else if (direction == 'U')
-	{
 		m_moving_up = value;
-	}
 	else if (direction == 'D')
-	{
 		m_moving_down = value;
-	}
 }
 
-// game mode
-bool Char::get_mode() const
-{
-	return m_game_mode;
-}
-
-void Char::set_mode(bool value)
-{
-	m_game_mode = value;
-}
-
-// bound
-// TODO -- change to collision-base
-void Char::set_bound(char direction, bool state)
-{
-	switch (direction)
-	{
-	case 'R':
-		m_bound_right = state;
-		break;
-	case 'L':
-		m_bound_left = state;
-		break;
-	case 'U':
-		m_bound_up = state;
-		break;
-	case 'D':
-		m_bound_down = state;
-		break;
-	default:
-		break;
-	}
-}
-
-void Char::change_color(float c)
+void Char::change_color(float color)
 {
 	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
-	m_color_change = c;
+	m_color_change = color;
 }
 
 float Char::get_color_change() const
@@ -318,9 +290,9 @@ float Char::get_color_change() const
 	return m_color_change;
 }
 
-void Char::change_direction(float c)
+void Char::change_direction(float direction)
 {
-	m_direction_change = c;
+	m_direction_change = direction;
 }
 
 float Char::get_direction_change() const
@@ -346,12 +318,4 @@ bool Char::is_win() const
 void Char::win()
 {
 	m_is_win = true;
-}
-
-void Char::set_wall_collision(bool c) {
-	m_wall_collision = c;
-}
-
-bool Char::get_wall_collision() {
-	return m_wall_collision;
 }

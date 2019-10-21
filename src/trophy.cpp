@@ -62,11 +62,7 @@ bool Trophy::init()
 		return false;
 
 	motion.position = { 570.f, 140.f };
-	motion.radians = 0.f;
-	motion.speed = 0.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
 	physics.scale = { config_scale, config_scale };
 
 	return true;
@@ -84,17 +80,11 @@ void Trophy::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Trophy::update(float ms)
-{
-	//
-}
-
 void Trophy::draw(const mat3& projection)
 {
 	// transformation
 	transform.begin();
 	transform.translate(motion.position);
-	transform.rotate(motion.radians);
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -140,22 +130,16 @@ void Trophy::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+void Trophy::set_position(vec2 position)
+{
+	motion.position = position;
+}
+
 vec2 Trophy::get_position() const
 {
 	return motion.position;
 }
 
-void Trophy::set_position(vec2 position)
-{
-	motion.position = position;
-}
-void Trophy::set_rotation(float radians)
-{
-	motion.radians = radians;
-}
-
-// returns the local bounding coordinates scaled by the current size of the trophy
-// fabs is to avoid negative scale due to the facing direction.
 vec2 Trophy::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * trophy_texture.width * 0.5f, std::fabs(physics.scale.y) * trophy_texture.height * 0.5f };
