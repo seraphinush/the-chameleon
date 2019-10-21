@@ -126,7 +126,7 @@ bool World::init(vec2 screen)
 	}
 
 	// play background music
-	// Mix_PlayMusic(m_background_music, -1);
+	Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
