@@ -5,7 +5,7 @@
 
 class Char;
 
-// Salmon enemy 
+// Salmon enemy
 class Map : public Entity
 {
 	// Shared between all turtles, no need to load one for each instance
@@ -26,20 +26,19 @@ public:
 
 	// Renders the salmon
 	// projection is the 2D orthographic projection matrix
-	void draw(const mat3& projection) override;
+	void draw(const mat3 &projection) override;
 
-	void draw_wall(const mat3& projection);
+	void draw_wall(const mat3 &projection);
 
-	void draw_corridor(const mat3& projection);
+	void draw_corridor(const mat3 &projection);
 
-
-	void draw_corridor_red(const mat3& projection);
-	void draw_corridor_blue(const mat3& projection);
-	void draw_corridor_green(const mat3& projection);
-	void draw_corridor_yellow(const mat3& projection);
+	void draw_corridor_red(const mat3 &projection);
+	void draw_corridor_blue(const mat3 &projection);
+	void draw_corridor_green(const mat3 &projection);
+	void draw_corridor_yellow(const mat3 &projection);
 
 	// Returns the current turtle position
-	vec2 get_position()const;
+	vec2 get_position() const;
 
 	// Sets the new turtle position
 	void set_position(vec2 position);
@@ -56,8 +55,16 @@ public:
 
 	float get_char_dead_time() const;
 
+	void set_flash(int value);
+
+	void reset_flash_time();
+
+	float get_flash_time() const;
+
+
 private:
 	vec2 translation_tile;
 	float m_dead_time;
-
+	float m_flash_time;
+	int flash_map;
 };

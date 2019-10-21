@@ -328,6 +328,11 @@ bool World::update(float elapsed_ms)
 			new_trophy.set_position({screen.x / 2 + 100, screen.y / 2 + 100});
 		}
 
+		if(m_map.get_flash_time() > 2){
+			m_map.reset_flash_time();
+			m_map.set_flash(0);
+		}
+
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
@@ -604,6 +609,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// yellow
 		else if ((key == GLFW_KEY_RIGHT && !m_char.get_mode()) || (key == GLFW_KEY_D && m_char.get_mode()))
 		{
+			m_map.set_flash(1);
 			m_char.change_color(4.0);
 		}
 	}
