@@ -38,7 +38,7 @@ public:
 	float collides_with(Char m_char);
 
 	// wall collision
-	void is_wall(Char m_char);
+	void is_wall(Char& m_char);
 
 	// char dead time getters and setters
 	void set_char_dead();

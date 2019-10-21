@@ -182,7 +182,7 @@ bool World::update(float elapsed_ms)
 	if (m_game_state == 3)
 	{
 		// wall collisions
-		m_map.is_wall(m_char);
+		m_map.is_wall(&m_char);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -483,44 +483,44 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// movement
-		if ((key == GLFW_KEY_W && m_control == 1) || (key == GLFW_KEY_UP && m_control == 0))
+		if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
 			m_char.change_direction(2.0);
 			m_char.set_direction('U', true);
 		}
-		else if ((key == GLFW_KEY_S && m_control == 1) || (key == GLFW_KEY_DOWN && m_control == 0))
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 		{
 			m_char.change_direction(3.0);
 			m_char.set_direction('D', true);
 		}
-		else if ((key == GLFW_KEY_D && m_control == 1) || (key == GLFW_KEY_RIGHT && m_control == 0))
+		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 		{
 			m_char.change_direction(0.0);
 			m_char.set_direction('R', true);
 		}
-		else if ((key == GLFW_KEY_A && m_control == 1) || (key == GLFW_KEY_LEFT && m_control == 0))
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 		{
 			m_char.change_direction(1.0);
 			m_char.set_direction('L', true);
 		}
 
 		// red
-		else if ((key == GLFW_KEY_UP && m_control == 1) || (key == GLFW_KEY_W && m_control == 0))
+		else if ((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1))
 		{
 			m_char.change_color(1.0);
 		}
 		// yellow
-		else if ((key == GLFW_KEY_DOWN && m_control == 1) || (key == GLFW_KEY_S && m_control == 0))
+		else if ((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1))
 		{
 			m_char.change_color(2.0);
 		}
 		// blue
-		else if ((key == GLFW_KEY_LEFT && m_control == 1) || (key == GLFW_KEY_A && m_control == 0))
+		else if ((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1))
 		{
 			m_char.change_color(3.0);
 		}
 		// green
-		else if ((key == GLFW_KEY_RIGHT && m_control == 1) || (key == GLFW_KEY_D && m_control == 0))
+		else if ((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1))
 		{
 			m_char.change_color(4.0);
 		}
@@ -529,13 +529,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// movement
 	if (action == GLFW_RELEASE && m_game_state == 3)
 	{
-		if ((key == GLFW_KEY_D && m_control == 1) || (key == GLFW_KEY_RIGHT && m_control == 0))
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);
-		else if ((key == GLFW_KEY_A && m_control == 1) || (key == GLFW_KEY_LEFT && m_control == 0))
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 			m_char.set_direction('L', false);
-		else if ((key == GLFW_KEY_W && m_control == 1) || (key == GLFW_KEY_UP && m_control == 0))
+		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 			m_char.set_direction('U', false);
-		else if ((key == GLFW_KEY_S && m_control == 1) || (key == GLFW_KEY_DOWN && m_control == 0))
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 			m_char.set_direction('D', false);
 	}
 

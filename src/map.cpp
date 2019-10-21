@@ -273,7 +273,7 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall(Char m_char)
+void Map::is_wall(Char &m_char)
 {
 	vec2 char_pos = m_char.get_position();
 	vec2 char_box = m_char.get_bounding_box();
@@ -306,6 +306,7 @@ void Map::is_wall(Char m_char)
 	{
 		m_char.set_wall_collision('U', false);
 	}
+
 	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
 	{
 		fprintf(stderr, "R ");
@@ -315,6 +316,7 @@ void Map::is_wall(Char m_char)
 	{
 		m_char.set_wall_collision('R', false);
 	}
+
 	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
 	{
 		fprintf(stderr, "D ");
@@ -324,6 +326,7 @@ void Map::is_wall(Char m_char)
 	{
 		m_char.set_wall_collision('D', false);
 	}
+
 	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
 	{
 		fprintf(stderr, "L ");
