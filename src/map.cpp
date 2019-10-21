@@ -243,6 +243,8 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
+	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
 
 	// set vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -266,6 +268,8 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniform1iv(flash_map_uloc, 1, &flash_map);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
