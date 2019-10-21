@@ -25,17 +25,17 @@ bool Char::init()
 	float hr = char_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.0f };
-	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.0f };
-	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.0f };
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.0f };
-	vertices[3].texcoord =  {0.f, 0.f };
+	vertices[0].position = {-wr, +hr, -0.0f};
+	vertices[0].texcoord = {0.f, 1.f};
+	vertices[1].position = {+wr, +hr, -0.0f};
+	vertices[1].texcoord = {1.f, 1.f};
+	vertices[2].position = {+wr, -hr, -0.0f};
+	vertices[2].texcoord = {1.f, 0.f};
+	vertices[3].position = {-wr, -hr, -0.0f};
+	vertices[3].texcoord = {0.f, 0.f};
 
 	// counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
 	// clear errors
 	gl_flush_errors();
@@ -59,13 +59,13 @@ bool Char::init()
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	motion.position = { 600.f, 600.f };
+	motion.position = {600.f, 600.f};
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.5f, 0.5f };
+	physics.scale = {-0.5f, 0.5f};
 
 	m_is_alive = true;
 
@@ -78,10 +78,10 @@ bool Char::init()
 	m_bound_down = false;
 	m_bound_left = false;
 	m_bound_right = false;
+	m_dash = false;
 
 	return true;
 }
-
 
 // release all graphics resources
 void Char::destroy()
@@ -155,9 +155,9 @@ void Char::draw(const mat3 &projection)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
- 
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, char_texture.id);
@@ -189,30 +189,30 @@ bool Char::collides_with(const Spotter &spotter)
 	vec2 spotter_box = spotter.get_bounding_box();
 
 	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-		(spotter_pos.x + spotter_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+							 (spotter_pos.x + spotter_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
 	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-		(spotter_pos.x + spotter_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+							(spotter_pos.x + spotter_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
 	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-		(spotter_pos.y + spotter_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+							 (spotter_pos.y + spotter_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
 	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-		(spotter_pos.y + spotter_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+							(spotter_pos.y + spotter_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
 
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
 
-	bool Char::collides_with(const Wanderer& wanderer)
+bool Char::collides_with(const Wanderer &wanderer)
 {
 	vec2 wanderer_pos = wanderer.get_position();
 	vec2 wanderer_box = wanderer.get_bounding_box();
 
 	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+							 (wanderer_pos.x + wanderer_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
 	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-		(wanderer_pos.x + wanderer_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+							(wanderer_pos.x + wanderer_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
 	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+							 (wanderer_pos.y + wanderer_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
 	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-		(wanderer_pos.y + wanderer_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+							(wanderer_pos.y + wanderer_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
 
 	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
 }
@@ -234,61 +234,63 @@ bool Char::collides_with(const Trophy &trophy)
 bool Char::collides_with_wall()
 {
 	char level_1[40][61] = {
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-	};
+		"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+		"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
-	for (int i = 0; i < 40; i++) {
+	for (int i = 0; i < 40; i++)
+	{
 		// Increment the row
-		for (int j = 0; j < 61; j++) {
-			if (level_1[i][j] == 'W') {
+		for (int j = 0; j < 61; j++)
+		{
+			if (level_1[i][j] == 'W')
+			{
 
 				bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
-					(j * 20 + 20) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+										 (j * 20 + 20) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
 				bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
-					(j * 20 + 20) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+										(j * 20 + 20) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
 				bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
-					(i * 20 + 20) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+										 (i * 20 + 20) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
 				bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
-					(i * 20 + 20) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+										(i * 20 + 20) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
 
 				if ((collision_x_right || collision_x_left) && (collision_y_right || collision_y_left))
 					return true;
@@ -298,8 +300,6 @@ bool Char::collides_with_wall()
 
 	return false;
 }
-
-
 
 vec2 Char::get_position() const
 {
@@ -337,20 +337,24 @@ void Char::set_direction(char direction, bool value)
 	}
 }
 
-char Char::get_direction() {
-	if (m_moving_up) {
+char Char::get_direction()
+{
+	if (m_moving_up)
+	{
 		return 'U';
 	}
-	else if (m_moving_down) {
+	else if (m_moving_down)
+	{
 		return 'D';
 	}
-	else if (m_moving_left) {
+	else if (m_moving_left)
+	{
 		return 'L';
 	}
-	else if (m_moving_right) {
+	else if (m_moving_right)
+	{
 		return 'R';
 	}
-	return 'R';
 }
 
 // game mode
@@ -413,8 +417,6 @@ bool Char::is_alive() const
 	return m_is_alive;
 }
 
-
-
 void Char::kill()
 {
 	m_is_alive = false;
@@ -428,4 +430,41 @@ bool Char::is_win() const
 void Char::win()
 {
 	m_is_win = true;
+}
+
+void Char::dash()
+{
+	// fprintf(stderr, "moving - %c", m_direction);
+
+	vec2 offset = {7.f, 0.f};
+	if (m_direction == 'U')
+	{
+		fprintf(stderr, "moving up");
+		offset = {0.f, 7.f};
+	}
+	else if (m_moving_down)
+	{
+		offset = {0.f, -7.f};
+	}
+	else if (m_direction == 'L')
+	{
+		fprintf(stderr, "moving left");
+		offset = {7.f, 0.f};
+	}
+	else if (m_moving_right)
+	{
+		offset = {-7.f, 0.f};
+	}
+	motion.position.x += offset.x;
+	motion.position.y += offset.y;
+}
+
+void Char::set_dash(bool value)
+{
+	m_dash = value;
+}
+
+bool Char::get_dash()
+{
+	return m_dash;
 }

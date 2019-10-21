@@ -33,7 +33,7 @@ public:
 
 	bool collides_with(const Wanderer &wanderer);
 
-	bool collides_with(const Trophy& trophy);
+	bool collides_with(const Trophy &trophy);
 
 	vec2 get_position() const;
 
@@ -59,7 +59,7 @@ public:
 	void change_direction(float c);
 
 	float get_direction_change() const;
-	
+
 	bool is_alive() const;
 
 	bool is_win() const;
@@ -72,6 +72,10 @@ public:
 
 	char get_direction();
 
+	void dash();
+	void set_dash(bool value);
+	bool get_dash();
+
 private:
 	bool m_is_alive;
 	bool m_is_win;
@@ -81,6 +85,7 @@ private:
 	bool m_moving_left;
 	bool m_moving_up;
 	bool m_moving_down;
+	char m_direction;
 
 	// game mode
 	bool m_game_mode;
@@ -89,13 +94,15 @@ private:
 	float m_color_change;
 	float m_direction_change;
 
-  // bound
+	// bound
 	// TODO -- change to collision-base
 	bool m_bound_right;
 	bool m_bound_left;
 	bool m_bound_up;
 	bool m_bound_down;
+	bool m_dash;
 
-  std::vector<Vertex> m_vertices;
+	std::vector<Vertex>
+		m_vertices;
 	std::vector<uint16_t> m_indices;
 };

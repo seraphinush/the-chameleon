@@ -94,9 +94,11 @@ private:
 	Mix_Music *m_background_music;
 	Mix_Chunk *m_char_dead_sound;
 	Mix_Chunk *m_char_green_sound;
-	Mix_Chunk* m_char_win_sound;
+	Mix_Chunk *m_char_win_sound;
 
 	// c++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	bool recent_dash = false;
 };

@@ -183,23 +183,28 @@ bool World::update(float elapsed_ms)
 		m_char.set_bound('U', (m_char.get_position().y < 0));
 
 		// Wall collisions
-		if (m_char.collides_with_wall()) {
+		if (m_char.collides_with_wall())
+		{
 			char direction = m_char.get_direction();
-			if (direction == 'R') {
+			if (direction == 'R')
+			{
 				m_char.set_direction('R', false);
-				m_char.move({ -7.f, 0.f });
+				m_char.move({-7.f, 0.f});
 			}
-			if (direction == 'L') {
+			if (direction == 'L')
+			{
 				m_char.set_direction('L', false);
-				m_char.move({ 7.f, 0.f });
+				m_char.move({7.f, 0.f});
 			}
-			if (direction == 'U') {
+			if (direction == 'U')
+			{
 				m_char.set_direction('U', false);
-				m_char.move({ 0.f, 7.f });
+				m_char.move({0.f, 7.f});
 			}
-			if (direction == 'D') {
+			if (direction == 'D')
+			{
 				m_char.set_direction('D', false);
-				m_char.move({ 0.f, -7.f });
+				m_char.move({0.f, -7.f});
 			}
 		}
 
@@ -347,11 +352,31 @@ bool World::update(float elapsed_ms)
 			new_trophy.set_position({screen.x / 2 + 100, screen.y / 2 + 100});
 		}
 
-		if(m_map.get_flash_time() > 2){
+		if (m_map.get_flash_time() > 2)
+		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
 		}
 
+		if (m_char.get_dash())
+		{
+			if (m_char.collides_with_wall())
+			{
+				m_char.set_dash(false);
+				recent_dash = true;
+			}
+			else
+			{
+				m_char.dash();
+			}
+		}
+		if (recent_dash)
+		{
+			recent_dash = false;
+			m_char.set_direction('L', true);
+			m_char.move({-15.f, 0.f});
+			m_char.set_direction('L', false);
+		}
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
@@ -613,6 +638,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
 		{
 			m_char.change_color(1.0);
+			m_char.set_dash(true);
+			m_char.dash();
 		}
 		// green
 		else if ((key == GLFW_KEY_DOWN && !m_char.get_mode()) || (key == GLFW_KEY_S && m_char.get_mode()))
