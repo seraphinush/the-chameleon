@@ -373,9 +373,30 @@ bool World::update(float elapsed_ms)
 		if (recent_dash)
 		{
 			recent_dash = false;
-			m_char.set_direction('L', true);
-			m_char.move({-15.f, 0.f});
-			m_char.set_direction('L', false);
+
+			// fprintf(stderr, "DIRECTION CHANGE - %f", m_char.get_direction_change());
+			switch((int) m_char.get_direction_change()){
+				case 0:
+					m_char.set_direction('L', true);
+					m_char.move({-15.f, 0.f});
+					m_char.set_direction('L', false);
+					break;
+				case 1:
+					m_char.set_direction('R', true);
+					m_char.move({15.f, 0.f});
+					m_char.set_direction('R', false);
+					break;
+				case 2:
+					m_char.set_direction('D', true);
+					m_char.move({0.f, 15.f});
+					m_char.set_direction('D', false);
+					break;
+				case 3:
+					m_char.set_direction('U', true);
+					m_char.move({0.f, -15.f});
+					m_char.set_direction('U', false);
+					break;
+			}
 		}
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;

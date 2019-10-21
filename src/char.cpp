@@ -439,7 +439,7 @@ void Char::dash()
 	vec2 offset = {7.f, 0.f};
 	if (m_direction_change == 2.0)
 	{
-		fprintf(stderr, "moving up");
+		// fprintf(stderr, "moving up");
 		offset = {0.f, 7.f};
 		motion.position.x += offset.x;
 		motion.position.y -= offset.y;
@@ -452,7 +452,7 @@ void Char::dash()
 	}
 	else if (m_direction_change == 1.0)
 	{
-		fprintf(stderr, "moving left");
+		// fprintf(stderr, "moving left");
 		offset = {7.f, 0.f};
 		motion.position.x -= offset.x;
 		motion.position.y += offset.y;
