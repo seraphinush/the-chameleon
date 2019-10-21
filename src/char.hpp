@@ -12,7 +12,6 @@
 
 class Spotter;
 class Wanderer;
-class Map;
 class Trophy;
 
 class Char : public Entity
@@ -68,8 +67,10 @@ public:
 	void win();
 
 	void kill();
-	void set_wall_collision(bool c);
-	bool get_wall_collision();
+
+	bool collides_with_wall();
+
+	char get_direction();
 
 private:
 	bool m_is_alive;
@@ -94,8 +95,6 @@ private:
 	bool m_bound_left;
 	bool m_bound_up;
 	bool m_bound_down;
-
-	bool m_wall_collision;
 
   std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

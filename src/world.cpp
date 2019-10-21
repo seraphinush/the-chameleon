@@ -183,9 +183,24 @@ bool World::update(float elapsed_ms)
 		m_char.set_bound('U', (m_char.get_position().y < 0));
 
 		// Wall collisions
-		if (m_map.collision_with(m_char) == 1.0)
-		{
-			m_char.set_wall_collision(true);
+		if (m_char.collides_with_wall()) {
+			char direction = m_char.get_direction();
+			if (direction == 'R') {
+				m_char.set_direction('R', false);
+				m_char.move({ -7.f, 0.f });
+			}
+			if (direction == 'L') {
+				m_char.set_direction('L', false);
+				m_char.move({ 7.f, 0.f });
+			}
+			if (direction == 'U') {
+				m_char.set_direction('U', false);
+				m_char.move({ 0.f, 7.f });
+			}
+			if (direction == 'D') {
+				m_char.set_direction('D', false);
+				m_char.move({ 0.f, -7.f });
+			}
 		}
 
 		// collision, char-spotter
@@ -226,6 +241,10 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					Mix_PlayChannel(-1, m_char_win_sound, 0);
+					m_char.set_direction('R', false);
+					m_char.set_direction('L', false);
+					m_char.set_direction('U', false);
+					m_char.set_direction('D', false);
 					m_map.set_char_dead();
 					m_game_state = 5;
 				}
