@@ -58,6 +58,7 @@ public:
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
+	bool get_wall_collision();
 
 	// collision
 	vec2 get_position() const;
@@ -77,7 +78,7 @@ public:
 	void change_direction(float c);
 
 	float get_direction_change() const;
-	
+
 	// alive
 	bool is_alive() const;
 	void kill();

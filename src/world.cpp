@@ -25,12 +25,11 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() :
-	m_control(0),
-	m_current_game_state(0),
-	m_game_state(0),
-	m_next_wanderer_spawn(0.f),
-	m_points(0)
+World::World() : m_control(0),
+				 m_current_game_state(0),
+				 m_game_state(0),
+				 m_next_wanderer_spawn(0.f),
+				 m_points(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -48,7 +47,7 @@ bool World::init(vec2 screen)
 	spotter_loc[1] = {screen.x - 100, 100};
 	spotter_loc[2] = {100, screen.y - 100};
 	spotter_loc[3] = {screen.x - 100, screen.y - 100};
-	spotter_loc[4] = { 800, 500 };
+	spotter_loc[4] = {800, 500};
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -129,18 +128,18 @@ bool World::init(vec2 screen)
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	// Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
 
-	return m_start_screen.init() && 
-		m_control_screen.init() && 
-		m_story_screen.init() && 
-		m_map.init() && 
-		m_char.init() && 
-		m_trophy.init() && 
-		m_complete_screen.init();
+	return m_start_screen.init() &&
+		   m_control_screen.init() &&
+		   m_story_screen.init() &&
+		   m_map.init() &&
+		   m_char.init() &&
+		   m_trophy.init() &&
+		   m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -300,7 +299,7 @@ bool World::update(float elapsed_ms)
 
 		if (m_char.get_dash())
 		{
-			if (m_char.collides_with_wall())
+			if (m_char.get_wall_collision())
 			{
 				m_char.set_dash(false);
 				recent_dash = true;
@@ -315,27 +314,28 @@ bool World::update(float elapsed_ms)
 			recent_dash = false;
 
 			// fprintf(stderr, "DIRECTION CHANGE - %f", m_char.get_direction_change());
-			switch((int) m_char.get_direction_change()){
-				case 0:
-					m_char.set_direction('L', true);
-					m_char.move({-15.f, 0.f});
-					m_char.set_direction('L', false);
-					break;
-				case 1:
-					m_char.set_direction('R', true);
-					m_char.move({15.f, 0.f});
-					m_char.set_direction('R', false);
-					break;
-				case 2:
-					m_char.set_direction('D', true);
-					m_char.move({0.f, 15.f});
-					m_char.set_direction('D', false);
-					break;
-				case 3:
-					m_char.set_direction('U', true);
-					m_char.move({0.f, -15.f});
-					m_char.set_direction('U', false);
-					break;
+			switch ((int)m_char.get_direction_change())
+			{
+			case 0:
+				m_char.set_direction('L', true);
+				m_char.move({-15.f, 0.f});
+				m_char.set_direction('L', false);
+				break;
+			case 1:
+				m_char.set_direction('R', true);
+				m_char.move({15.f, 0.f});
+				m_char.set_direction('R', false);
+				break;
+			case 2:
+				m_char.set_direction('D', true);
+				m_char.move({0.f, 15.f});
+				m_char.set_direction('D', false);
+				break;
+			case 3:
+				m_char.set_direction('U', true);
+				m_char.move({0.f, -15.f});
+				m_char.set_direction('U', false);
+				break;
 			}
 		}
 		// spawn wanderer
@@ -444,14 +444,14 @@ void World::draw()
 
 mat3 World::calculateProjectionMatrix(int width, int height)
 {
-	float left = 0.f;						  // *-0.5;
-	float top = 0.f;						  // (float)h * -0.5;
+	float left = 0.f; // *-0.5;
+	float top = 0.f;  // (float)h * -0.5;
 	float right = 0.f;
 	float bottom = 0.f;
 
 	if (m_game_state != 3)
 	{
-		right = (float)width / m_screen_scale;  // *0.5;
+		right = (float)width / m_screen_scale;   // *0.5;
 		bottom = (float)height / m_screen_scale; // *0.5;
 	}
 	else
@@ -465,7 +465,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
-	return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
 bool World::is_over() const
