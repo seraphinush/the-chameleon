@@ -126,7 +126,7 @@ bool World::init(vec2 screen)
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	// Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
@@ -602,7 +602,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			}
 			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
 			{
-				m_char.change_direction(3.0);
+				m_char.change_direction(2.0);
 				m_char.set_direction('U', true);
 			}
 		}
