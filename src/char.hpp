@@ -12,7 +12,6 @@
 
 class Spotter;
 class Wanderer;
-class Map;
 class Trophy;
 
 class Char : public Entity
@@ -43,6 +42,8 @@ private:
 	bool m_wall_left;
 	bool m_wall_right;
 
+	bool m_dash;
+
 public:
 	bool init();
 	void destroy();
@@ -57,6 +58,7 @@ public:
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
+	bool get_wall_collision();
 
 	// collision
 	vec2 get_position() const;
@@ -76,7 +78,7 @@ public:
 	void change_direction(float c);
 
 	float get_direction_change() const;
-	
+
 	// alive
 	bool is_alive() const;
 	void kill();
@@ -84,4 +86,12 @@ public:
 	// goal
 	bool is_win() const;
 	void win();
+
+	bool collides_with_wall();
+
+	char get_direction();
+
+	void dash();
+	void set_dash(bool value);
+	bool get_dash();
 };

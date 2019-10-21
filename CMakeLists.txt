@@ -31,18 +31,18 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
 set(SOURCE_FILES
-	src/char.cpp
 	src/common.cpp
 	src/main.cpp
 	src/spotter.cpp
   src/wanderer.cpp
 	src/world.cpp
+  src/char.cpp
+  src/map.cpp
   src/start_screen.cpp
   src/control_screen.cpp  
   src/story_screen.cpp
   src/complete_screen.cpp  
   src/project_path.hpp
-	src/char.hpp
 	src/common.hpp
 	src/spotter.hpp
   src/wanderer.hpp
@@ -51,8 +51,8 @@ set(SOURCE_FILES
   src/control_screen.hpp
   src/story_screen.hpp
   src/complete_screen.hpp
+  src/char.hpp
 	src/map.hpp
-	src/map.cpp
 	src/trophy.hpp
 	src/trophy.cpp
 	)

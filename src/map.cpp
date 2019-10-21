@@ -55,8 +55,7 @@ char level_1[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 bool Map::init()
 {
@@ -119,17 +118,17 @@ bool Map::init()
 
 	// vertex buffer in local coordinates
 	TexturedVertex vertices[4];
-	vertices[0].position = { 0.f, 20.f, 0.f }; // top left
-	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { 20.f, 20.f, 0.f }; // top right
-	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { 20.f, 0.f, 0.f }; // bottom right
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { 0.f, 0.f, 0.f }; // bottom left
-	vertices[3].texcoord = { 0.f, 0.f };
+	vertices[0].position = {0.f, 20.f, 0.f}; // top left
+	vertices[0].texcoord = {0.f, 1.f};
+	vertices[1].position = {20.f, 20.f, 0.f}; // top right
+	vertices[1].texcoord = {1.f, 1.f};
+	vertices[2].position = {20.f, 0.f, 0.f}; // bottom right
+	vertices[2].texcoord = {1.f, 0.f};
+	vertices[3].position = {0.f, 0.f, 0.f}; // bottom left
+	vertices[3].texcoord = {0.f, 0.f};
 
 	// counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
 	// clea errors
 	gl_flush_errors();
@@ -157,7 +156,7 @@ bool Map::init()
 	if (!effect.load_from_file(shader_path("map.vs.glsl"), shader_path("map.fs.glsl")))
 		return false;
 
-	physics.scale = { 1.0f, 1.0f };
+	physics.scale = {1.0f, 1.0f};
 
 	return true;
 }
@@ -174,34 +173,43 @@ void Map::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Map::draw(const mat3& projection) {
+void Map::draw(const mat3 &projection)
+{
 
-	translation_tile = vec2({ 0.0, 0.0 });
+	translation_tile = vec2({0.0, 0.0});
 
-	for (int i = 0; i < 40; i++) {
+	for (int i = 0; i < 40; i++)
+	{
 		// Increment the row
-		for (int j = 0; j < 61; j++) {
-			if (level_1[i][j] == 'W') {
+		for (int j = 0; j < 61; j++)
+		{
+			if (level_1[i][j] == 'W')
+			{
 				// Draw a Wall
 				draw_element(projection, wall_texture);
 			}
-			else if (level_1[i][j] == 'C') {
+			else if (level_1[i][j] == 'C')
+			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (level_1[i][j] == 'R') {
+			else if (level_1[i][j] == 'R')
+			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_red);
 			}
-			else if (level_1[i][j] == 'B') {
+			else if (level_1[i][j] == 'B')
+			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_blue);
 			}
-			else if (level_1[i][j] == 'G') {
+			else if (level_1[i][j] == 'G')
+			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_green);
 			}
-			else if (level_1[i][j] == 'Y') {
+			else if (level_1[i][j] == 'Y')
+			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_yellow);
 			}
@@ -213,7 +221,7 @@ void Map::draw(const mat3& projection) {
 	}
 }
 
-void Map::draw_element(const mat3& projection, const Texture& texture)
+void Map::draw_element(const mat3 &projection, const Texture &texture)
 {
 	// transformation
 	transform.begin();
@@ -235,6 +243,8 @@ void Map::draw_element(const mat3& projection, const Texture& texture)
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
+	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
 
 	// set vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -246,24 +256,26 @@ void Map::draw_element(const mat3& projection, const Texture& texture)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
-	float color[] = { 1.f, 1.f, 1.f };
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
+	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniform1iv(flash_map_uloc, 1, &flash_map);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Map::get_position()const
+vec2 Map::get_position() const
 {
 	return motion.position;
 }
@@ -273,29 +285,29 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall(Char& m_char)
+void Map::is_wall(Char &m_char)
 {
 	vec2 char_pos = m_char.get_position();
 	vec2 char_box = m_char.get_bounding_box();
 
 	// get 4 corners of char: top left, top right, bottom left, bottom right
-	vec2 pos_top_left = { char_pos.x - char_box.x, char_pos.y - char_box.y };
-	vec2 pos_top_right = { char_pos.x + char_box.x, char_pos.y - char_box.y };
-	vec2 pos_bottom_left = { char_pos.x - char_box.x, char_pos.y + char_box.y };
-	vec2 pos_bottom_right = { char_pos.x + char_box.x, char_pos.y + char_box.y };
+	vec2 pos_top_left = {char_pos.x - char_box.x, char_pos.y - char_box.y};
+	vec2 pos_top_right = {char_pos.x + char_box.x, char_pos.y - char_box.y};
+	vec2 pos_bottom_left = {char_pos.x - char_box.x, char_pos.y + char_box.y};
+	vec2 pos_bottom_right = {char_pos.x + char_box.x, char_pos.y + char_box.y};
 
 	int tile_x;
 	int tile_y;
 
 	// top left
-	int tile_x_top_left = (int) pos_top_left.x / 20;
-	int tile_y_top_left = (int) pos_top_left.y / 20;
-	int tile_x_top_right = (int) pos_top_right.x / 20;
-	int tile_y_top_right = (int) pos_top_right.y / 20;
-	int tile_x_bottom_left = (int) pos_bottom_left.x / 20;
-	int tile_y_bottom_left = (int) pos_bottom_left.y / 20;
-	int tile_x_bottom_right = (int) pos_bottom_right.x / 20;
-	int tile_y_bottom_right = (int) pos_bottom_right.y / 20;
+	int tile_x_top_left = (int)pos_top_left.x / 20;
+	int tile_y_top_left = (int)pos_top_left.y / 20;
+	int tile_x_top_right = (int)pos_top_right.x / 20;
+	int tile_y_top_right = (int)pos_top_right.y / 20;
+	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
+	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
+	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
 
 	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
 	{
@@ -334,37 +346,45 @@ void Map::is_wall(Char& m_char)
 	}
 }
 
-float Map::collides_with(Char m_char){
+float Map::collides_with(Char m_char)
+{
 	vec2 char_position = m_char.get_position();
-	int char_tile_x = (int) char_position.x / 20;
-	int char_tile_y = (int) char_position.y / 20;
+	int char_tile_x = (int)char_position.x / 20;
+	int char_tile_y = (int)char_position.y / 20;
 
-	if (level_1[char_tile_y][char_tile_x] == 'W') {
+	if (level_1[char_tile_y][char_tile_x] == 'W')
+	{
 		return 1.0;
 	}
-	else if (level_1[char_tile_y][char_tile_x] == 'C') {
+	else if (level_1[char_tile_y][char_tile_x] == 'C')
+	{
 		return 6.0;
 	}
-	else if (level_1[char_tile_y][char_tile_x] == 'R') {
+	else if (level_1[char_tile_y][char_tile_x] == 'R')
+	{
 		return 2.0;
 	}
-	else if (level_1[char_tile_y][char_tile_x] == 'G') {
+	else if (level_1[char_tile_y][char_tile_x] == 'G')
+	{
 		return 3.0;
 	}
-	else if (level_1[char_tile_y][char_tile_x] == 'B') {
+	else if (level_1[char_tile_y][char_tile_x] == 'B')
+	{
 		return 4.0;
 	}
-	else if (level_1[char_tile_y][char_tile_x] == 'Y') {
+	else if (level_1[char_tile_y][char_tile_x] == 'Y')
+	{
 		return 5.0;
 	}
-	else {
+	else
+	{
 		return 0.0;
 	}
 }
 
 vec2 Map::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height };
+	return {std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height};
 }
 
 void Map::set_char_dead()
@@ -380,4 +400,20 @@ void Map::reset_char_dead_time()
 float Map::get_char_dead_time() const
 {
 	return glfwGetTime() - m_dead_time;
+}
+
+void Map::set_flash(int value)
+{
+	flash_map = value;
+	m_flash_time = glfwGetTime();
+}
+
+void Map::reset_flash_time()
+{
+	m_flash_time = glfwGetTime();
+}
+
+float Map::get_flash_time() const
+{
+	return glfwGetTime() - m_flash_time;
 }

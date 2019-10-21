@@ -26,17 +26,17 @@ bool Char::init()
 	float hr = char_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.0f };
-	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.0f };
-	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.0f };
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.0f };
-	vertices[3].texcoord =  {0.f, 0.f };
+	vertices[0].position = {-wr, +hr, -0.0f};
+	vertices[0].texcoord = {0.f, 1.f};
+	vertices[1].position = {+wr, +hr, -0.0f};
+	vertices[1].texcoord = {1.f, 1.f};
+	vertices[2].position = {+wr, -hr, -0.0f};
+	vertices[2].texcoord = {1.f, 0.f};
+	vertices[3].position = {-wr, -hr, -0.0f};
+	vertices[3].texcoord = {0.f, 0.f};
 
 	// counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
 	// clear errors
 	gl_flush_errors();
@@ -60,11 +60,11 @@ bool Char::init()
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	motion.position = { 600.f, 600.f };
+	motion.position = {600.f, 600.f};
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	physics.scale = { -config_scale, config_scale };
+	physics.scale = {-config_scale, config_scale};
 
 	// initial values
 	m_is_alive = true;
@@ -80,6 +80,8 @@ bool Char::init()
 	m_wall_down = false;
 	m_wall_left = false;
 	m_wall_right = false;
+
+	m_dash = false;
 
 	return true;
 }
@@ -150,9 +152,9 @@ void Char::draw(const mat3 &projection)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
- 
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, char_texture.id);
@@ -183,12 +185,12 @@ bool Char::collision(vec2 pos, vec2 box)
 	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
 	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
 
-	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) &&	(motion.position.x + half_width) <= (pos.x + box.x);
-	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width)	<= (pos.x + box.x);
+	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) && (motion.position.x + half_width) <= (pos.x + box.x);
+	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width) <= (pos.x + box.x);
 	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
 	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
 
-	if ((motion.position.x + half_width) >= (pos.x + box.x) &&	(motion.position.x - half_width) <= (pos.x - box.x))
+	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
 		return collision_y_top || collision_y_down;
 
 	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
@@ -204,7 +206,7 @@ bool Char::collides_with(const Spotter &spotter)
 	return collision(pos, box);
 }
 
-	bool Char::collides_with(const Wanderer &wanderer)
+bool Char::collides_with(const Wanderer &wanderer)
 {
 	vec2 pos = wanderer.get_position();
 	vec2 box = wanderer.get_bounding_box();
@@ -225,7 +227,7 @@ vec2 Char::get_position() const
 
 vec2 Char::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f };
+	return {std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f};
 }
 
 void Char::set_wall_collision(char direction, bool value)
@@ -238,6 +240,13 @@ void Char::set_wall_collision(char direction, bool value)
 		m_wall_up = value;
 	else if (direction == 'D')
 		m_wall_down = value;
+}
+
+bool Char::get_wall_collision()
+{
+	if (m_wall_down || m_wall_left || m_wall_right || m_wall_up)
+		return true;
+	return false;
 }
 
 void Char::move(vec2 offset)
@@ -302,4 +311,47 @@ bool Char::is_win() const
 void Char::win()
 {
 	m_is_win = true;
+}
+
+void Char::dash()
+{
+	// fprintf(stderr, "moving - %f", m_direction_change);
+
+	vec2 offset = {7.f, 0.f};
+	if (m_direction_change == 2.0)
+	{
+		// fprintf(stderr, "moving up");
+		offset = {0.f, 7.f};
+		motion.position.x += offset.x;
+		motion.position.y -= offset.y;
+	}
+	else if (m_direction_change == 3.0)
+	{
+		offset = {0.f, 7.f};
+		motion.position.x += offset.x;
+		motion.position.y += offset.y;
+	}
+	else if (m_direction_change == 1.0)
+	{
+		// fprintf(stderr, "moving left");
+		offset = {7.f, 0.f};
+		motion.position.x -= offset.x;
+		motion.position.y += offset.y;
+	}
+	else if (m_direction_change == 0.0)
+	{
+		offset = {7.f, 0.f};
+		motion.position.x += offset.x;
+		motion.position.y += offset.y;
+	}
+}
+
+void Char::set_dash(bool value)
+{
+	m_dash = value;
+}
+
+bool Char::get_dash()
+{
+	return m_dash;
 }
