@@ -357,10 +357,10 @@ void World::draw()
 
 	// fake projection matrix, scales with respect to window coordinates
 	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-	float left = m_char.get_position().x - ((float)w / m_screen_scale);//0.f;						  // *-0.5;
-	float top = m_char.get_position().y - ((float)h / m_screen_scale);//0.f;						  // (float)h * -0.5;
-	float right = m_char.get_position().x + ((float)w / m_screen_scale);  // *0.5;
-	float bottom = m_char.get_position().y + ((float)h / m_screen_scale); // *0.5;
+	float left = 0.f;						  // *-0.5;
+	float top = 0.f;						  // (float)h * -0.5;
+	float right = (float)w / m_screen_scale;  // *0.5;
+	float bottom = (float)h / m_screen_scale; // *0.5;
 
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);
@@ -380,6 +380,17 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
+		left = m_char.get_position().x - ((float)w / (4*m_screen_scale));//0.f;						  // *-0.5;
+		top = m_char.get_position().y - ((float)h / (4*m_screen_scale));//0.f;						  // (float)h * -0.5;
+		right = m_char.get_position().x + ((float)w / (4*m_screen_scale));  // *0.5;
+		bottom = m_char.get_position().y + ((float)h / (4*m_screen_scale)); // *0.5;
+
+		sx = 2.f / (right - left);
+		sy = 2.f / (top - bottom);
+		tx = -(right + left) / (right - left);
+		ty = -(top + bottom) / (top - bottom);
+		projection_2D = { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+
 		// draw map
 		m_map.draw(projection_2D);
 
