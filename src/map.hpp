@@ -24,20 +24,21 @@ private:
 
 public:
 	bool init();
-
 	void destroy();
 
+	// draw tiles
 	void draw(const mat3& projection) override;
-
 	void draw_element(const mat3& projection, const Texture& texture);
 
 	void set_position(vec2 position);
-
 	vec2 get_position()const;
-	
 	vec2 get_bounding_box() const;
 
-	float collision_with(Char m_char);
+	// color detection
+	float collides_with(Char m_char);
+
+	// wall collision
+	void is_wall(Char m_char);
 
 	// char dead time getters and setters
 	void set_char_dead();

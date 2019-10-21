@@ -66,14 +66,13 @@ bool Char::init()
 
 	physics.scale = { -config_scale, config_scale };
 
+	// initial values
 	m_is_alive = true;
-
 	m_color_change = 0.0;
 	m_direction_change = 0.0;
 
 	return true;
 }
-
 
 // release all graphics resources
 void Char::destroy()
@@ -93,26 +92,15 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-		if (m_moving_right && m_wall_collision) {
-			move({ -step * 5.f, 0.f });
-		}
-		if (m_moving_left && m_wall_collision) {
-			move({ step * 5.f, 0.f });
-		}
-		if (m_moving_up && m_wall_collision) {
-			move({ 0.f, step * 5.f });
-		}
-		if (m_moving_down && m_wall_collision) {
-			move({ 0.f, -step * 5.f });
-		}
+		fprintf(stderr, "%d %d %d %d\n", m_wall_right, m_wall_left, m_wall_up, m_wall_down);
 
-		if (m_moving_right)
+		if (m_moving_right && !m_wall_right)
 			move({step, 0.f});
-		if (m_moving_left)
+		if (m_moving_left && !m_wall_left)
 			move({-step, 0.f});
-		if (m_moving_up)
+		if (m_moving_up && !m_wall_up)
 			move({0.f, -step});
-		if (m_moving_down)
+		if (m_moving_down && !m_wall_down)
 			move({0.f, step});
 	}
 }
@@ -227,6 +215,37 @@ vec2 Char::get_position() const
 	return motion.position;
 }
 
+vec2 Char::get_bounding_box() const
+{
+	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f };
+}
+
+void Char::set_wall_collision(char direction, bool value)
+{
+	if (direction == 'R')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_right = value;
+	}
+	else if (direction == 'L')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_left = value;
+	}
+	else if (direction == 'U')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_up = value;
+	}
+	else if (direction == 'D')
+	{
+		if (value) fprintf(stderr, "setting wall collision !\n");
+		m_wall_down = value;
+	}
+
+	//if (value) fprintf(stderr, "%d %d %d %d\n", m_wall_right,m_wall_left,m_wall_up,m_wall_down);
+}
+
 void Char::move(vec2 offset)
 {
 	motion.position.x += offset.x;
@@ -289,9 +308,4 @@ bool Char::is_win() const
 void Char::win()
 {
 	m_is_win = true;
-}
-
-vec2 Char::get_bounding_box() const
-{
-	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f };
 }

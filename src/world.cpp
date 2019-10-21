@@ -182,10 +182,7 @@ bool World::update(float elapsed_ms)
 	if (m_game_state == 3)
 	{
 		// wall collisions
-		if (m_map.collision_with(m_char) == 1.0)
-		{
-			//
-		}
+		m_map.is_wall(m_char);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -582,6 +579,6 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	float collision_tile = m_map.collision_with(m_char) - 1.0;
+	float collision_tile = m_map.collides_with(m_char) - 1.0;
 	return collision_tile != m_char.get_color_change();
 }

@@ -37,9 +37,6 @@ private:
 	float m_color_change;
 	float m_direction_change;
 
-  // wall collision
-	bool m_wall_collision;
-
 	// TODO -- wall collision
 	bool m_wall_up;
 	bool m_wall_down;
@@ -58,6 +55,9 @@ public:
 	bool collides_with(const Wanderer &wanderer);
 	bool collides_with(const Trophy &trophy);
 
+	// wall collision
+	void set_wall_collision(char direction, bool value);
+
 	// collision
 	vec2 get_position() const;
 	vec2 get_bounding_box() const;
@@ -69,11 +69,6 @@ public:
 
 	void set_direction(char direction, bool value);
 
-	// game mode
-	bool get_mode() const;
-
-	void set_mode(bool value);
-
 	void change_color(float c);
 
 	float get_color_change() const;
@@ -82,11 +77,11 @@ public:
 
 	float get_direction_change() const;
 	
+	// alive
 	bool is_alive() const;
-
-	bool is_win() const;
-
-	void win();
-
 	void kill();
+
+	// goal
+	bool is_win() const;
+	void win();
 };
