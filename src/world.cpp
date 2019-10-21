@@ -182,7 +182,7 @@ bool World::update(float elapsed_ms)
 	if (m_game_state == 3)
 	{
 		// wall collisions
-		m_map.is_wall(&m_char);
+		m_map.is_wall(m_char);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)

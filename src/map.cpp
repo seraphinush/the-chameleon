@@ -273,7 +273,7 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall(Char &m_char)
+void Map::is_wall(Char& m_char)
 {
 	vec2 char_pos = m_char.get_position();
 	vec2 char_box = m_char.get_bounding_box();
