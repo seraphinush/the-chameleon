@@ -16,6 +16,6 @@ void main()
 {
 	color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
 	if (flash_map == 1 && flash_timer > 0)
-		if (gl_FragCoord.x < 1200 && gl_FragCoord.y < 800)
+		if (gl_FragCoord.x < 2400 && gl_FragCoord.y < 1600)
 			color += 0.4 * flash_timer * vec4(0.1, 0.1, 0.1, 0);
 }
