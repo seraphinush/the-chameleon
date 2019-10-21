@@ -15,7 +15,7 @@ bool Wanderer::init()
 	if (!wanderer_texture.is_valid())
 	{
 
-		if (!wanderer_texture.load_from_file(textures_path("wanderer.png")))
+		if (!wanderer_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
 			fprintf(stderr, "Failed to load wanderer texture!\n");
 			return false;
@@ -64,8 +64,6 @@ bool Wanderer::init()
 	motion.radians = 0.f;
 	motion.speed = 150.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
 	physics.scale = { config_scale, config_scale };
 
 	return true;
@@ -154,7 +152,7 @@ void Wanderer::draw(const mat3& projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
-	/* if (wanderer_sprite_countdown < 0) {
+	if (wanderer_sprite_countdown < 0) {
 		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
@@ -162,7 +160,7 @@ void Wanderer::draw(const mat3& projection)
 
 		wanderer_texture.load_from_file(path);
 		wanderer_sprite_countdown = 200.f;
-	} */
+	}
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -171,11 +169,6 @@ void Wanderer::draw(const mat3& projection)
 void Wanderer::set_position(vec2 position)
 {
 	motion.position = position;
-}
-
-void Wanderer::set_rotation(float radians)
-{
-	motion.radians = radians;
 }
 
 vec2 Wanderer::get_position() const

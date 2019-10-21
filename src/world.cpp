@@ -178,7 +178,7 @@ bool World::update(float elapsed_ms)
 		m_char.set_bound('D', (m_char.get_position().y > screen.y));
 		m_char.set_bound('U', (m_char.get_position().y < 0));
 
-		// Wall collisions
+		// wall collisions
 		if (m_map.collision_with(m_char) == 1.0)
 		{
 			m_char.set_wall_collision(true);
@@ -380,6 +380,7 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
+		// draw map
 		m_map.draw(projection_2D);
 
 		// draw entities

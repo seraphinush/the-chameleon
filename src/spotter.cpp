@@ -14,7 +14,7 @@ bool Spotter::init()
 	// load shared texture
 	if (!spotter_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("spotter.png")))
+		if (!spotter_texture.load_from_file(textures_path("spotters/1.png")))
 		{
 			fprintf(stderr, "Failed to load spotter texture!");
 			return false;
@@ -82,7 +82,7 @@ void Spotter::destroy()
 
 void Spotter::update(float ms)
 {
-	/* if (spotter_sprite_countdown > 0.f)
+	if (spotter_sprite_countdown > 0.f)
 		spotter_sprite_countdown -= ms;
 
 	if (spotter_sprite_switch < 4) {
@@ -91,7 +91,7 @@ void Spotter::update(float ms)
 	else {
 		spotter_sprite_switch = 1;
 
-	} */
+	}
 }
 
 void Spotter::draw(const mat3 &projection)
@@ -142,7 +142,7 @@ void Spotter::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// sprite change
-	/* if (spotter_sprite_countdown < 0) {
+	if (spotter_sprite_countdown < 0) {
 		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
@@ -150,15 +150,10 @@ void Spotter::draw(const mat3 &projection)
 
 		spotter_texture.load_from_file(path);
 		spotter_sprite_countdown = 1500.f;
-	} */
+	}
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Spotter::get_position() const
-{
-	return motion.position;
 }
 
 void Spotter::set_position(vec2 position)
@@ -166,8 +161,11 @@ void Spotter::set_position(vec2 position)
 	motion.position = position;
 }
 
-// returns the local bounding coordinates scaled by the current size of the spotter
-// fabs is to avoid negative scale due to the facing direction.
+vec2 Spotter::get_position() const
+{
+	return motion.position;
+}
+
 vec2 Spotter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };

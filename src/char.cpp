@@ -64,9 +64,7 @@ bool Char::init()
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.5f, 0.5f };
+	physics.scale = { -config_scale, config_scale };
 
 	m_is_alive = true;
 
@@ -130,8 +128,7 @@ void Char::update(float ms)
 	}
 	else
 	{
-		// if dead, set upside down
-		//set_rotation(-3.1415f);
+		//
 	}
 }
 
@@ -199,20 +196,22 @@ void Char::draw(const mat3 &projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// collision
+// aabb-aabb collision
 bool Char::collision(vec2 pos, vec2 box)
 {
 	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
 	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
 
-	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) &&
-		(pos.x + box.x) >= (motion.position.x + half_width);
-	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) &&
-		(pos.x + box.x) >= (motion.position.x - half_width);
-	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) &&
-		(pos.y + box.y) >= (motion.position.y + half_height);
-	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) &&
-		(pos.y + box.y) >= (motion.position.y - half_height);
+	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) &&	(motion.position.x + half_width) <= (pos.x + box.x);
+	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width)	<= (pos.x + box.x);
+	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
+	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
+
+	if ((motion.position.x + half_width) >= (pos.x + box.x) &&	(motion.position.x - half_width) <= (pos.x - box.x))
+		return collision_y_top || collision_y_down;
+
+	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
+		return collision_x_right || collision_x_left;
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
@@ -224,7 +223,7 @@ bool Char::collides_with(const Spotter &spotter)
 	return collision(pos, box);
 }
 
-	bool Char::collides_with(const Wanderer& wanderer)
+	bool Char::collides_with(const Wanderer &wanderer)
 {
 	vec2 pos = wanderer.get_position();
 	vec2 box = wanderer.get_bounding_box();

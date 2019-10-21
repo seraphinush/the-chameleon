@@ -20,6 +20,38 @@ class Char : public Entity
 	// shared texture
 	static Texture char_texture;
 
+private:
+	// config
+	float config_scale = 0.2f;
+
+	bool m_is_alive;
+	bool m_is_win;
+
+	// key press
+	bool m_moving_right;
+	bool m_moving_left;
+	bool m_moving_up;
+	bool m_moving_down;
+
+	// game mode
+	bool m_game_mode;
+
+	// color
+	float m_color_change;
+	float m_direction_change;
+
+  // bound
+	// TODO -- change to collision-base
+	bool m_bound_right;
+	bool m_bound_left;
+	bool m_bound_up;
+	bool m_bound_down;
+
+	bool m_wall_collision;
+
+  std::vector<Vertex> m_vertices;
+	std::vector<uint16_t> m_indices;
+
 public:
 	bool init();
 
@@ -72,33 +104,4 @@ public:
 	void kill();
 	void set_wall_collision(bool c);
 	bool get_wall_collision();
-
-private:
-	bool m_is_alive;
-	bool m_is_win;
-
-	// key press
-	bool m_moving_right;
-	bool m_moving_left;
-	bool m_moving_up;
-	bool m_moving_down;
-
-	// game mode
-	bool m_game_mode;
-
-	// color
-	float m_color_change;
-	float m_direction_change;
-
-  // bound
-	// TODO -- change to collision-base
-	bool m_bound_right;
-	bool m_bound_left;
-	bool m_bound_up;
-	bool m_bound_down;
-
-	bool m_wall_collision;
-
-  std::vector<Vertex> m_vertices;
-	std::vector<uint16_t> m_indices;
 };
