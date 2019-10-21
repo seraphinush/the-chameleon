@@ -55,9 +55,9 @@ public:
 	void reset_char_dead_time();
 
 	float get_char_dead_time() const;
+	
 
 private:
 	vec2 translation_tile;
 	float m_dead_time;
-
 };
