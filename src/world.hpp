@@ -71,6 +71,9 @@ private:
 
 	Map m_map;
 
+	// movement control
+	unsigned int m_control; // 0: arrow keys, 1: wasd
+
 	// points
 	unsigned int m_points;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-// interval
+// internal
 #include "common.hpp"
 #include "map.hpp"
 #include "spotter.hpp"
@@ -33,45 +33,36 @@ private:
 	bool m_moving_up;
 	bool m_moving_down;
 
-	// game mode
-	bool m_game_mode;
-
 	// color
 	float m_color_change;
 	float m_direction_change;
 
-  // bound
-	// TODO -- change to collision-base
-	bool m_bound_right;
-	bool m_bound_left;
-	bool m_bound_up;
-	bool m_bound_down;
-
+  // wall collision
 	bool m_wall_collision;
 
-  std::vector<Vertex> m_vertices;
-	std::vector<uint16_t> m_indices;
+	// TODO -- wall collision
+	bool m_wall_up;
+	bool m_wall_down;
+	bool m_wall_left;
+	bool m_wall_right;
 
 public:
 	bool init();
-
 	void destroy();
-
 	void update(float ms);
-
 	void draw(const mat3 &projection) override;
 
 	// collision
 	bool collision(vec2 pos, vec2 box);
-
 	bool collides_with(const Spotter &spotter);
-
 	bool collides_with(const Wanderer &wanderer);
-
 	bool collides_with(const Trophy &trophy);
 
+	// collision
 	vec2 get_position() const;
+	vec2 get_bounding_box() const;
 
+	// movement
 	void move(vec2 off);
 
 	void set_rotation(float radians);
@@ -82,10 +73,6 @@ public:
 	bool get_mode() const;
 
 	void set_mode(bool value);
-
-	// bound
-	// TODO -- change to collision-base
-	void set_bound(char direction, bool state);
 
 	void change_color(float c);
 
@@ -102,6 +89,4 @@ public:
 	void win();
 
 	void kill();
-	void set_wall_collision(bool c);
-	bool get_wall_collision();
 };
