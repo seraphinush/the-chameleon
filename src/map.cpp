@@ -299,7 +299,6 @@ void Map::is_wall(Char& m_char)
 
 	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
 	{
-		fprintf(stderr, "U ");
 		m_char.set_wall_collision('U', true);
 	}
 	else
@@ -309,7 +308,6 @@ void Map::is_wall(Char& m_char)
 
 	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
 	{
-		fprintf(stderr, "R ");
 		m_char.set_wall_collision('R', true);
 	}
 	else
@@ -319,7 +317,6 @@ void Map::is_wall(Char& m_char)
 
 	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
 	{
-		fprintf(stderr, "D ");
 		m_char.set_wall_collision('D', true);
 	}
 	else
@@ -329,7 +326,6 @@ void Map::is_wall(Char& m_char)
 
 	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
 	{
-		fprintf(stderr, "L ");
 		m_char.set_wall_collision('L', true);
 	}
 	else

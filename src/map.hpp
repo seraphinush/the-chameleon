@@ -40,7 +40,7 @@ public:
 	// wall collision
 	void is_wall(Char& m_char);
 
-	// char dead time getters and setters
+	// char dead time getters and setters .. ported over from water
 	void set_char_dead();
 
 	void reset_char_dead_time();
