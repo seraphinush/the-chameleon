@@ -71,6 +71,16 @@ bool Char::init()
 	m_color_change = 0.0;
 	m_direction_change = 0.0;
 
+	m_moving_right = false;
+	m_moving_left = false;
+	m_moving_up = false;
+	m_moving_down = false;
+
+	m_wall_up = false;
+	m_wall_down = false;
+	m_wall_left = false;
+	m_wall_right = false;
+
 	return true;
 }
 
