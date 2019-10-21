@@ -17,7 +17,7 @@ bool Wanderer::init()
 
 		if (!wanderer_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
-			fprintf(stderr, "Failed to load wanderer texture!");
+			fprintf(stderr, "Failed to load wanderer texture!\n");
 			return false;
 		}
 	}
@@ -64,8 +64,6 @@ bool Wanderer::init()
 	motion.radians = 0.f;
 	motion.speed = 150.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
 	physics.scale = { config_scale, config_scale };
 
 	return true;
@@ -110,10 +108,10 @@ void Wanderer::draw(const mat3& projection)
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
-	vec2 scale = { 0, 0 };
+	/* vec2 scale = { 0, 0 };
 	scale.x = flip_in_x*4*physics.scale.x;
-	scale.y = 4* physics.scale.y;
-	transform.scale(scale);
+	scale.y = 4* physics.scale.y; */
+	transform.scale(physics.scale);
 	transform.end();
 
 	// set shaders
@@ -144,16 +142,6 @@ void Wanderer::draw(const mat3& projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
-	if (wanderer_sprite_countdown < 0) {
-		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char* path = s.c_str();
-
-		wanderer_texture.load_from_file(path);
-		wanderer_sprite_countdown = 200.f;
-	}
-
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, wanderer_texture.id);
@@ -164,8 +152,23 @@ void Wanderer::draw(const mat3& projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
+	if (wanderer_sprite_countdown < 0) {
+		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		wanderer_texture.load_from_file(path);
+		wanderer_sprite_countdown = 200.f;
+	}
+
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+void Wanderer::set_position(vec2 position)
+{
+	motion.position = position;
 }
 
 vec2 Wanderer::get_position() const
@@ -173,17 +176,6 @@ vec2 Wanderer::get_position() const
 	return motion.position;
 }
 
-void Wanderer::set_position(vec2 position)
-{
-	motion.position = position;
-}
-void Wanderer::set_rotation(float radians)
-{
-	motion.radians = radians;
-}
-
-// returns the local bounding coordinates scaled by the current size of the wanderer
-// fabs is to avoid negative scale due to the facing direction.
 vec2 Wanderer::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };

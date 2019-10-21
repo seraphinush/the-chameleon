@@ -82,10 +82,6 @@ void Spotter::destroy()
 
 void Spotter::update(float ms)
 {
-	// movement
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
-
 	if (spotter_sprite_countdown > 0.f)
 		spotter_sprite_countdown -= ms;
 
@@ -135,16 +131,6 @@ void Spotter::draw(const mat3 &projection)
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
-	if (spotter_sprite_countdown < 0) {
-		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char* path = s.c_str();
-
-		spotter_texture.load_from_file(path);
-		spotter_sprite_countdown = 1500.f;
-	}
-
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, spotter_texture.id);
@@ -155,13 +141,19 @@ void Spotter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
+	// sprite change
+	if (spotter_sprite_countdown < 0) {
+		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		spotter_texture.load_from_file(path);
+		spotter_sprite_countdown = 1500.f;
+	}
+
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Spotter::get_position() const
-{
-	return motion.position;
 }
 
 void Spotter::set_position(vec2 position)
@@ -169,8 +161,11 @@ void Spotter::set_position(vec2 position)
 	motion.position = position;
 }
 
-// returns the local bounding coordinates scaled by the current size of the spotter
-// fabs is to avoid negative scale due to the facing direction.
+vec2 Spotter::get_position() const
+{
+	return motion.position;
+}
+
 vec2 Spotter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };

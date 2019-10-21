@@ -37,6 +37,7 @@ public:
 	bool is_over() const;
 
 private:
+
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
@@ -47,6 +48,8 @@ private:
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
+
+	mat3 calculateProjectionMatrix(int width, int height);
 
 private:
 	// screen handle
@@ -71,6 +74,9 @@ private:
 
 	Map m_map;
 
+	// movement control
+	unsigned int m_control; // 0: wasd, 1: arrow keys
+
 	// points
 	unsigned int m_points;
 
@@ -84,7 +90,7 @@ private:
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
-	std::vector<Trophy> m_trophy;
+	Trophy m_trophy;
 
 	// variables
 	float m_current_speed;

@@ -61,12 +61,9 @@ bool Trophy::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 0.f;
+	motion.position = { 570.f, 140.f };
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { 0.05f, 0.05f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -83,28 +80,12 @@ void Trophy::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Trophy::update(float ms)
-{
-	
-	// movement
-	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
-	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
-	motion.position.x += step_in_x;
-	motion.position.y += step_in_y;
-
-	
-}
-
 void Trophy::draw(const mat3& projection)
 {
 	// transformation
 	transform.begin();
 	transform.translate(motion.position);
-	transform.rotate(motion.radians);
-	vec2 scale = { 0, 0 };
-	scale.x = flip_in_x*4*physics.scale.x;
-	scale.y = 4* physics.scale.y;
-	transform.scale(scale);
+	transform.scale(physics.scale);
 	transform.end();
 
 	// set shaders
@@ -149,23 +130,17 @@ void Trophy::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+void Trophy::set_position(vec2 position)
+{
+	motion.position = position;
+}
+
 vec2 Trophy::get_position() const
 {
 	return motion.position;
 }
 
-void Trophy::set_position(vec2 position)
-{
-	motion.position = position;
-}
-void Trophy::set_rotation(float radians)
-{
-	motion.radians = radians;
-}
-
-// returns the local bounding coordinates scaled by the current size of the wanderer
-// fabs is to avoid negative scale due to the facing direction.
 vec2 Trophy::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * trophy_texture.width, std::fabs(physics.scale.y) * trophy_texture.height };
+	return { std::fabs(physics.scale.x) * trophy_texture.width * 0.5f, std::fabs(physics.scale.y) * trophy_texture.height * 0.5f };
 }

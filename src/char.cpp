@@ -2,6 +2,7 @@
 #include "char.hpp"
 
 // stlib
+#include <cmath>
 #include <string>
 #include <algorithm>
 
@@ -63,21 +64,23 @@ bool Char::init()
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = {-0.5f, 0.5f};
+	physics.scale = { -config_scale, config_scale };
 
+	// initial values
 	m_is_alive = true;
-
 	m_color_change = 0.0;
 	m_direction_change = 0.0;
 
-	// bound
-	// TODO -- change to collision-base
-	m_bound_up = false;
-	m_bound_down = false;
-	m_bound_left = false;
-	m_bound_right = false;
+	m_moving_right = false;
+	m_moving_left = false;
+	m_moving_up = false;
+	m_moving_down = false;
+
+	m_wall_up = false;
+	m_wall_down = false;
+	m_wall_left = false;
+	m_wall_right = false;
+
 	m_dash = false;
 
 	return true;
@@ -101,20 +104,14 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-		// find a bool in world and pass taht to char
-		if (m_moving_right && !m_bound_right)
+		if (m_moving_right && !m_wall_right)
 			move({step, 0.f});
-		if (m_moving_left && !m_bound_left)
+		if (m_moving_left && !m_wall_left)
 			move({-step, 0.f});
-		if (m_moving_up && !m_bound_up)
+		if (m_moving_up && !m_wall_up)
 			move({0.f, -step});
-		if (m_moving_down && !m_bound_down)
+		if (m_moving_down && !m_wall_down)
 			move({0.f, step});
-	}
-	else
-	{
-		// if dead, set upside down
-		//set_rotation(-3.1415f);
 	}
 }
 
@@ -182,128 +179,67 @@ void Char::draw(const mat3 &projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// collision
-bool Char::collides_with(const Spotter &spotter)
+// aabb-aabb collision
+bool Char::collision(vec2 pos, vec2 box)
 {
-	vec2 spotter_pos = spotter.get_position();
-	vec2 spotter_box = spotter.get_bounding_box();
+	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
+	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
 
-	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-							 (spotter_pos.x + spotter_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
-	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (spotter_pos.x - spotter_box.x) &&
-							(spotter_pos.x + spotter_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
-	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-							 (spotter_pos.y + spotter_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
-	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (spotter_pos.y - spotter_box.y) &&
-							(spotter_pos.y + spotter_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) &&	(motion.position.x + half_width) <= (pos.x + box.x);
+	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width)	<= (pos.x + box.x);
+	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
+	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
 
-	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
+	if ((motion.position.x + half_width) >= (pos.x + box.x) &&	(motion.position.x - half_width) <= (pos.x - box.x))
+		return collision_y_top || collision_y_down;
+
+	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
+		return collision_x_right || collision_x_left;
+
+	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
 
-bool Char::collides_with(const Wanderer &wanderer)
+bool Char::collides_with(const Spotter &spotter)
 {
-	vec2 wanderer_pos = wanderer.get_position();
-	vec2 wanderer_box = wanderer.get_bounding_box();
+	vec2 pos = spotter.get_position();
+	vec2 box = spotter.get_bounding_box();
+	return collision(pos, box);
+}
 
-	bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-							 (wanderer_pos.x + wanderer_box.x) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
-	bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (wanderer_pos.x - wanderer_box.x) &&
-							(wanderer_pos.x + wanderer_box.x) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
-	bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-							 (wanderer_pos.y + wanderer_box.y) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
-	bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (wanderer_pos.y - wanderer_box.y) &&
-							(wanderer_pos.y + wanderer_box.y) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
-
-	return (collision_x_right || collision_x_left) && (collision_y_right || collision_y_left);
+	bool Char::collides_with(const Wanderer &wanderer)
+{
+	vec2 pos = wanderer.get_position();
+	vec2 box = wanderer.get_bounding_box();
+	return collision(pos, box);
 }
 
 bool Char::collides_with(const Trophy &trophy)
 {
-	float dx = motion.position.x - trophy.get_position().x;
-	float dy = motion.position.y - trophy.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(trophy.get_bounding_box().x, trophy.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
-
-bool Char::collides_with_wall()
-{
-	char level_1[40][61] = {
-		"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-		"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
-		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-		"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
-		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-		"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
-		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-		"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-		"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
-
-	for (int i = 0; i < 40; i++)
-	{
-		// Increment the row
-		for (int j = 0; j < 61; j++)
-		{
-			if (level_1[i][j] == 'W')
-			{
-
-				bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
-										 (j * 20 + 20) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
-				bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
-										(j * 20 + 20) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
-				bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
-										 (i * 20 + 20) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
-				bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
-										(i * 20 + 20) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
-
-				if ((collision_x_right || collision_x_left) && (collision_y_right || collision_y_left))
-					return true;
-			}
-		}
-	}
-
-	return false;
+	vec2 pos = trophy.get_position();
+	vec2 box = trophy.get_bounding_box();
+	return collision(pos, box);
 }
 
 vec2 Char::get_position() const
 {
 	return motion.position;
+}
+
+vec2 Char::get_bounding_box() const
+{
+	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f };
+}
+
+void Char::set_wall_collision(char direction, bool value)
+{
+	if (direction == 'R')
+		m_wall_right = value;
+	else if (direction == 'L')
+		m_wall_left = value;
+	else if (direction == 'U')
+		m_wall_up = value;
+	else if (direction == 'D')
+		m_wall_down = value;
 }
 
 void Char::move(vec2 offset)
@@ -320,81 +256,19 @@ void Char::set_rotation(float radians)
 void Char::set_direction(char direction, bool value)
 {
 	if (direction == 'R')
-	{
 		m_moving_right = value;
-	}
 	else if (direction == 'L')
-	{
 		m_moving_left = value;
-	}
 	else if (direction == 'U')
-	{
 		m_moving_up = value;
-	}
 	else if (direction == 'D')
-	{
 		m_moving_down = value;
-	}
 }
 
-char Char::get_direction()
-{
-	if (m_moving_up)
-	{
-		return 'U';
-	}
-	else if (m_moving_down)
-	{
-		return 'D';
-	}
-	else if (m_moving_left)
-	{
-		return 'L';
-	}
-	else if (m_moving_right)
-	{
-		return 'R';
-	}
-}
-
-// game mode
-bool Char::get_mode() const
-{
-	return m_game_mode;
-}
-
-void Char::set_mode(bool value)
-{
-	m_game_mode = value;
-}
-
-// bound
-// TODO -- change to collision-base
-void Char::set_bound(char direction, bool state)
-{
-	switch (direction)
-	{
-	case 'R':
-		m_bound_right = state;
-		break;
-	case 'L':
-		m_bound_left = state;
-		break;
-	case 'U':
-		m_bound_up = state;
-		break;
-	case 'D':
-		m_bound_down = state;
-		break;
-	default:
-		break;
-	}
-}
-
-void Char::change_color(float c)
+void Char::change_color(float color)
 {
 	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
-	m_color_change = c;
+	m_color_change = color;
 }
 
 float Char::get_color_change() const
@@ -402,9 +276,9 @@ float Char::get_color_change() const
 	return m_color_change;
 }
 
-void Char::change_direction(float c)
+void Char::change_direction(float direction)
 {
-	m_direction_change = c;
+	m_direction_change = direction;
 }
 
 float Char::get_direction_change() const

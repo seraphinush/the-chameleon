@@ -1,4 +1,4 @@
-// Header
+// header
 #include "world.hpp"
 
 // stlib
@@ -7,15 +7,14 @@
 #include <sstream>
 #include <iostream>
 
-// Same as static in c, local to compilation unit
 namespace
 {
-const size_t MAX_SPOTTERS = 4;
-const size_t MAX_WANDERERS = 4;
+const size_t MAX_SPOTTERS = 5;
+const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 2000;
 
 // TODO
-vec2 spotter_loc[4] = {{100, 100}};
+vec2 spotter_loc[5];
 
 namespace
 {
@@ -26,10 +25,12 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : m_points(0),
-				 m_next_wanderer_spawn(0.f),
-				 m_game_state(0),
-				 m_current_game_state(0)
+World::World() :
+	m_control(0),
+	m_current_game_state(0),
+	m_game_state(0),
+	m_next_wanderer_spawn(0.f),
+	m_points(0)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -43,9 +44,11 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
+	spotter_loc[0] = {100, 100};
 	spotter_loc[1] = {screen.x - 100, 100};
 	spotter_loc[2] = {100, screen.y - 100};
 	spotter_loc[3] = {screen.x - 100, screen.y - 100};
+	spotter_loc[4] = { 800, 500 };
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -131,7 +134,13 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_char.init() && m_map.init() && m_start_screen.init() && m_control_screen.init() && m_story_screen.init() && m_complete_screen.init();
+	return m_start_screen.init() && 
+		m_control_screen.init() && 
+		m_story_screen.init() && 
+		m_map.init() && 
+		m_char.init() && 
+		m_trophy.init() && 
+		m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -150,14 +159,16 @@ void World::destroy()
 
 	Mix_CloseAudio();
 
-	m_char.destroy();
-	m_map.destroy();
 	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_spotters.clear();
+	m_trophy.destroy();
+	m_char.destroy();
+	m_map.destroy();
+
 	glfwDestroyWindow(m_window);
 }
 
@@ -175,38 +186,8 @@ bool World::update(float elapsed_ms)
 
 	if (m_game_state == 3)
 	{
-		// bound
-		// TODO -- change to collision-base
-		m_char.set_bound('R', (m_char.get_position().x > screen.x));
-		m_char.set_bound('L', (m_char.get_position().x < 0));
-		m_char.set_bound('D', (m_char.get_position().y > screen.y));
-		m_char.set_bound('U', (m_char.get_position().y < 0));
-
-		// Wall collisions
-		if (m_char.collides_with_wall())
-		{
-			char direction = m_char.get_direction();
-			if (direction == 'R')
-			{
-				m_char.set_direction('R', false);
-				m_char.move({-7.f, 0.f});
-			}
-			if (direction == 'L')
-			{
-				m_char.set_direction('L', false);
-				m_char.move({7.f, 0.f});
-			}
-			if (direction == 'U')
-			{
-				m_char.set_direction('U', false);
-				m_char.move({0.f, 7.f});
-			}
-			if (direction == 'D')
-			{
-				m_char.set_direction('D', false);
-				m_char.move({0.f, -7.f});
-			}
-		}
+		// wall collisions
+		m_map.is_wall(m_char);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -238,30 +219,18 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
-		// check for trophy collision
-		for (const auto &trophy : m_trophy)
+		// collision, char-trophy
+		if (m_char.collides_with(m_trophy))
 		{
-			if (m_char.collides_with(trophy))
+			if (m_char.is_alive())
 			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_win_sound, 0);
-					m_char.set_direction('R', false);
-					m_char.set_direction('L', false);
-					m_char.set_direction('U', false);
-					m_char.set_direction('D', false);
-					m_map.set_char_dead();
-					m_game_state = 5;
-				}
-				m_char.kill();
-				break;
+				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				m_map.set_char_dead();
+				m_game_state = 5;
 			}
+			m_char.kill();
 		}
 
-		// update all entities, making the spotter and fish
-		// faster based on current.
-		// In a pure ECS engine we would classify entities by their bitmap tags during the update loop
-		// rather than by their class.
 		m_char.update(elapsed_ms);
 
 		// TODO
@@ -310,23 +279,7 @@ bool World::update(float elapsed_ms)
 
 		// update spotters
 		for (auto &spotter : m_spotters)
-		{
 			spotter.update(elapsed_ms * m_current_speed);
-		}
-
-		// remove out of screen spotters
-		auto spotter_it = m_spotters.begin();
-		while (spotter_it != m_spotters.end())
-		{
-			float w = spotter_it->get_bounding_box().x / 2;
-			if (spotter_it->get_position().x + w < 0.f)
-			{
-				spotter_it = m_spotters.erase(spotter_it);
-				continue;
-			}
-
-			++spotter_it;
-		}
 
 		// spawn spotter
 		if (m_spotters.size() < MAX_SPOTTERS)
@@ -336,20 +289,7 @@ bool World::update(float elapsed_ms)
 
 			Spotter &new_spotter = m_spotters.back();
 
-			// set random initial position
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
-		}
-
-		//spawn trophy
-		if (m_trophy.size() <= 1)
-		{
-			if (!spawn_trophy())
-				return false;
-
-			Trophy &new_trophy = m_trophy.back();
-
-			// set random initial position
-			new_trophy.set_position({screen.x / 2 + 100, screen.y / 2 + 100});
 		}
 
 		if (m_map.get_flash_time() > 2)
@@ -415,11 +355,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// restart game
-		if (!m_char.is_alive() &&
-			m_map.get_char_dead_time() > 2)
+		if (!m_char.is_alive() && m_map.get_char_dead_time() > 4)
 		{
 			m_char.destroy();
+			m_trophy.destroy();
 			m_char.init();
+			m_trophy.init();
 			m_spotters.clear();
 			m_wanderers.clear();
 			m_map.reset_char_dead_time();
@@ -458,19 +399,9 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// fake projection matrix, scales with respect to window coordinates
-	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-	float left = 0.f;						  // *-0.5;
-	float top = 0.f;						  // (float)h * -0.5;
-	float right = (float)w / m_screen_scale;  // *0.5;
-	float bottom = (float)h / m_screen_scale; // *0.5;
+	mat3 projection_2D = calculateProjectionMatrix(w, h);
 
-	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
-	float tx = -(right + left) / (right - left);
-	float ty = -(top + bottom) / (top - bottom);
-	mat3 projection_2D{{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
-
+	// game state
 	switch (m_game_state)
 	{
 	case 0:
@@ -483,6 +414,8 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
+
+		// draw map
 		m_map.draw(projection_2D);
 
 		// draw entities
@@ -490,8 +423,7 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
-		for (auto &trophy : m_trophy)
-			trophy.draw(projection_2D);
+		m_trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -510,6 +442,32 @@ void World::draw()
 	glfwSwapBuffers(m_window);
 }
 
+mat3 World::calculateProjectionMatrix(int width, int height)
+{
+	float left = 0.f;						  // *-0.5;
+	float top = 0.f;						  // (float)h * -0.5;
+	float right = 0.f;
+	float bottom = 0.f;
+
+	if (m_game_state != 3)
+	{
+		right = (float)width / m_screen_scale;  // *0.5;
+		bottom = (float)height / m_screen_scale; // *0.5;
+	}
+	else
+	{
+		left = m_char.get_position().x - ((float)width / (4 * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (4 * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (4 * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (4 * m_screen_scale));
+	}
+	float sx = 2.f / (right - left);
+	float sy = 2.f / (top - bottom);
+	float tx = -(right + left) / (right - left);
+	float ty = -(top + bottom) / (top - bottom);
+	return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+}
+
 bool World::is_over() const
 {
 	return glfwWindowShouldClose(m_window);
@@ -525,18 +483,6 @@ bool World::spawn_spotter()
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn spotter");
-	return false;
-}
-
-bool World::spawn_trophy()
-{
-	Trophy trophy;
-	if (trophy.init())
-	{
-		m_trophy.emplace_back(trophy);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn trophy");
 	return false;
 }
 
@@ -606,22 +552,22 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// opposite movements - when blue
 		if (m_char.get_color_change() == 3.0)
 		{
-			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			{
 				m_char.change_direction(1.0);
 				m_char.set_direction('L', true);
 			}
-			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 			{
 				m_char.change_direction(0.0);
 				m_char.set_direction('R', true);
 			}
-			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 			{
 				m_char.change_direction(3.0);
 				m_char.set_direction('D', true);
 			}
-			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 			{
 				m_char.change_direction(2.0);
 				m_char.set_direction('U', true);
@@ -630,22 +576,22 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// proper movement
 		else
 		{
-			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			{
 				m_char.change_direction(0.0);
 				m_char.set_direction('R', true);
 			}
-			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 			{
 				m_char.change_direction(1.0);
 				m_char.set_direction('L', true);
 			}
-			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 			{
 				m_char.change_direction(2.0);
 				m_char.set_direction('U', true);
 			}
-			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 			{
 				m_char.change_direction(3.0);
 				m_char.set_direction('D', true);
@@ -656,25 +602,25 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// red
-		if ((key == GLFW_KEY_UP && !m_char.get_mode()) || (key == GLFW_KEY_W && m_char.get_mode()))
+		if ((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1))
 		{
 			m_char.change_color(1.0);
 			m_char.set_dash(true);
 			m_char.dash();
 		}
 		// green
-		else if ((key == GLFW_KEY_DOWN && !m_char.get_mode()) || (key == GLFW_KEY_S && m_char.get_mode()))
+		else if ((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1))
 		{
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.change_color(2.0);
 		}
 		// blue
-		else if ((key == GLFW_KEY_LEFT && !m_char.get_mode()) || (key == GLFW_KEY_A && m_char.get_mode()))
+		else if ((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1))
 		{
 			m_char.change_color(3.0);
 		}
 		// yellow
-		else if ((key == GLFW_KEY_RIGHT && !m_char.get_mode()) || (key == GLFW_KEY_D && m_char.get_mode()))
+		else if ((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1))
 		{
 			m_map.set_flash(1);
 			m_char.change_color(4.0);
@@ -686,24 +632,24 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	{
 		if (m_char.get_color_change() == 3.0)
 		{
-			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 				m_char.set_direction('L', false);
-			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 				m_char.set_direction('R', false);
-			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 				m_char.set_direction('D', false);
-			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 				m_char.set_direction('U', false);
 		}
 		else
 		{
-			if ((key == GLFW_KEY_D && !m_char.get_mode()) || (key == GLFW_KEY_RIGHT && m_char.get_mode()))
+			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 				m_char.set_direction('R', false);
-			else if ((key == GLFW_KEY_A && !m_char.get_mode()) || (key == GLFW_KEY_LEFT && m_char.get_mode()))
+			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 				m_char.set_direction('L', false);
-			else if ((key == GLFW_KEY_W && !m_char.get_mode()) || (key == GLFW_KEY_UP && m_char.get_mode()))
+			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 				m_char.set_direction('U', false);
-			else if ((key == GLFW_KEY_S && !m_char.get_mode()) || (key == GLFW_KEY_DOWN && m_char.get_mode()))
+			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 				m_char.set_direction('D', false);
 		}
 	}
@@ -712,9 +658,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS)
 	{
 		if (key == GLFW_KEY_1)
-			m_char.set_mode(false);
+			m_control = 0;
 		else if (key == GLFW_KEY_2)
-			m_char.set_mode(true);
+			m_control = 1;
 	}
 
 	// reset
@@ -723,9 +669,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_char.destroy();
-		m_map.destroy();
+		m_trophy.destroy();
 		m_char.init();
-		m_map.init();
+		m_trophy.init();
 		m_wanderers.clear();
 		m_spotters.clear();
 		m_map.reset_char_dead_time();
@@ -748,11 +694,6 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	float collision_tile = m_map.collision_with(m_char) - 1.0;
-	if (collision_tile != m_char.get_color_change())
-	{
-		return true;
-	}
-
-	return false;
+	float collision_tile = m_map.collides_with(m_char) - 1.0;
+	return collision_tile != m_char.get_color_change();
 }

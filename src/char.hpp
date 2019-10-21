@@ -1,6 +1,6 @@
 #pragma once
 
-// interval
+// internal
 #include "common.hpp"
 #include "map.hpp"
 #include "spotter.hpp"
@@ -19,64 +19,10 @@ class Char : public Entity
 	// shared texture
 	static Texture char_texture;
 
-public:
-	bool init();
-
-	void destroy();
-
-	void update(float ms);
-
-	void draw(const mat3 &projection) override;
-
-	// collision
-	bool collides_with(const Spotter &spotter);
-
-	bool collides_with(const Wanderer &wanderer);
-
-	bool collides_with(const Trophy &trophy);
-
-	vec2 get_position() const;
-
-	void move(vec2 off);
-
-	void set_rotation(float radians);
-
-	void set_direction(char direction, bool value);
-
-	// game mode
-	bool get_mode() const;
-
-	void set_mode(bool value);
-
-	// bound
-	// TODO -- change to collision-base
-	void set_bound(char direction, bool state);
-
-	void change_color(float c);
-
-	float get_color_change() const;
-
-	void change_direction(float c);
-
-	float get_direction_change() const;
-
-	bool is_alive() const;
-
-	bool is_win() const;
-
-	void win();
-
-	void kill();
-
-	bool collides_with_wall();
-
-	char get_direction();
-
-	void dash();
-	void set_dash(bool value);
-	bool get_dash();
-
 private:
+	// config
+	float config_scale = 0.2f;
+
 	bool m_is_alive;
 	bool m_is_win;
 
@@ -85,24 +31,66 @@ private:
 	bool m_moving_left;
 	bool m_moving_up;
 	bool m_moving_down;
-	char m_direction;
-
-	// game mode
-	bool m_game_mode;
 
 	// color
 	float m_color_change;
 	float m_direction_change;
 
-	// bound
-	// TODO -- change to collision-base
-	bool m_bound_right;
-	bool m_bound_left;
-	bool m_bound_up;
-	bool m_bound_down;
+	// TODO -- wall collision
+	bool m_wall_up;
+	bool m_wall_down;
+	bool m_wall_left;
+	bool m_wall_right;
+
 	bool m_dash;
 
-	std::vector<Vertex>
-		m_vertices;
-	std::vector<uint16_t> m_indices;
+public:
+	bool init();
+	void destroy();
+	void update(float ms);
+	void draw(const mat3 &projection) override;
+
+	// collision
+	bool collision(vec2 pos, vec2 box);
+	bool collides_with(const Spotter &spotter);
+	bool collides_with(const Wanderer &wanderer);
+	bool collides_with(const Trophy &trophy);
+
+	// wall collision
+	void set_wall_collision(char direction, bool value);
+
+	// collision
+	vec2 get_position() const;
+	vec2 get_bounding_box() const;
+
+	// movement
+	void move(vec2 off);
+
+	void set_rotation(float radians);
+
+	void set_direction(char direction, bool value);
+
+	void change_color(float c);
+
+	float get_color_change() const;
+
+	void change_direction(float c);
+
+	float get_direction_change() const;
+	
+	// alive
+	bool is_alive() const;
+	void kill();
+
+	// goal
+	bool is_win() const;
+	void win();
+
+	bool collides_with_wall();
+
+	char get_direction();
+
+	void dash();
+	void set_dash(bool value);
+	bool get_dash();
 };

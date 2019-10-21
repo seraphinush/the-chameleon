@@ -1,6 +1,7 @@
-// Header
+// header
 #include "map.hpp"
 
+// stlib
 #include <cmath>
 #include <iostream>
 
@@ -54,13 +55,14 @@ char level_1[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 bool Map::init()
 {
 	m_dead_time = -1;
-	flash_map = 0;
-	// Load shared texture
+
+	// load shared texture
 	if (!wall_texture.is_valid())
 	{
 		if (!wall_texture.load_from_file(textures_path("wall_tile.png")))
@@ -70,7 +72,6 @@ bool Map::init()
 		}
 	}
 
-	// Load shared texture
 	if (!corridor_texture.is_valid())
 	{
 		if (!corridor_texture.load_from_file(textures_path("corridor_tile.png")))
@@ -80,7 +81,6 @@ bool Map::init()
 		}
 	}
 
-	// Load shared texture
 	if (!corridor_texture_red.is_valid())
 	{
 		if (!corridor_texture_red.load_from_file(textures_path("corridor_tile_red.png")))
@@ -90,7 +90,6 @@ bool Map::init()
 		}
 	}
 
-	// Load shared texture
 	if (!corridor_texture_blue.is_valid())
 	{
 		if (!corridor_texture_blue.load_from_file(textures_path("corridor_tile_blue.png")))
@@ -100,7 +99,6 @@ bool Map::init()
 		}
 	}
 
-	// Load shared texture
 	if (!corridor_texture_green.is_valid())
 	{
 		if (!corridor_texture_green.load_from_file(textures_path("corridor_tile_green.png")))
@@ -110,7 +108,6 @@ bool Map::init()
 		}
 	}
 
-	// Load shared texture
 	if (!corridor_texture_yellow.is_valid())
 	{
 		if (!corridor_texture_yellow.load_from_file(textures_path("corridor_tile_yellow.png")))
@@ -120,58 +117,52 @@ bool Map::init()
 		}
 	}
 
-	// Vertex Buffer in local coordinates
+	// vertex buffer in local coordinates
 	TexturedVertex vertices[4];
-	// Top Left
-	vertices[0].position = {0.f, 20.f, 0.f};
-	vertices[0].texcoord = {0.f, 1.f};
-	// Top Right
-	vertices[1].position = {20.f, 20.f, 0.f};
-	vertices[1].texcoord = {1.f, 1.f};
-	// Bottom Right
-	vertices[2].position = {20.f, 0.f, 0.f};
-	vertices[2].texcoord = {1.f, 0.f};
-	// Bottom Left
-	vertices[3].position = {0.f, 0.f, 0.f};
-	vertices[3].texcoord = {0.f, 0.f};
+	vertices[0].position = { 0.f, 20.f, 0.f }; // top left
+	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[1].position = { 20.f, 20.f, 0.f }; // top right
+	vertices[1].texcoord = { 1.f, 1.f };
+	vertices[2].position = { 20.f, 0.f, 0.f }; // bottom right
+	vertices[2].texcoord = { 1.f, 0.f };
+	vertices[3].position = { 0.f, 0.f, 0.f }; // bottom left
+	vertices[3].texcoord = { 0.f, 0.f };
 
-	// Counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
 
-	// Clearing errors
+	// clea errors
 	gl_flush_errors();
 
-	// Vertex Buffer creation
+	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
-	// Index Buffer creation
+	// index buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
-	// Vertex Array (Container for Vertex + Index buffer)
+	// vertex array (Container for Vertex + Index buffer)
 	glGenVertexArrays(1, &mesh.vao);
 
-	// Clearing errors
+	// clear errors
 	gl_flush_errors();
 
 	if (gl_has_errors())
 		return false;
 
-	// Loading shaders
+	// load shaders
 	if (!effect.load_from_file(shader_path("map.vs.glsl"), shader_path("map.fs.glsl")))
 		return false;
 
-	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = {1.0f, 1.0f};
+	physics.scale = { 1.0f, 1.0f };
 
 	return true;
 }
 
-// Releases all graphics resources
+// release all graphics resources
 void Map::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
@@ -183,45 +174,36 @@ void Map::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Map::draw(const mat3 &projection)
-{
+void Map::draw(const mat3& projection) {
 
-	translation_tile = vec2({0.0, 0.0});
+	translation_tile = vec2({ 0.0, 0.0 });
 
-	for (int i = 0; i < 40; i++)
-	{
+	for (int i = 0; i < 40; i++) {
 		// Increment the row
-		for (int j = 0; j < 61; j++)
-		{
-			if (level_1[i][j] == 'W')
-			{
+		for (int j = 0; j < 61; j++) {
+			if (level_1[i][j] == 'W') {
 				// Draw a Wall
-				draw_wall(projection);
+				draw_element(projection, wall_texture);
 			}
-			else if (level_1[i][j] == 'C')
-			{
+			else if (level_1[i][j] == 'C') {
 				// Draw a Corridor
-				draw_corridor(projection);
+				draw_element(projection, corridor_texture);
 			}
-			else if (level_1[i][j] == 'R')
-			{
+			else if (level_1[i][j] == 'R') {
 				// Draw a Corridor
-				draw_corridor_red(projection);
+				draw_element(projection, corridor_texture_red);
 			}
-			else if (level_1[i][j] == 'B')
-			{
+			else if (level_1[i][j] == 'B') {
 				// Draw a Corridor
-				draw_corridor_blue(projection);
+				draw_element(projection, corridor_texture_blue);
 			}
-			else if (level_1[i][j] == 'G')
-			{
+			else if (level_1[i][j] == 'G') {
 				// Draw a Corridor
-				draw_corridor_green(projection);
+				draw_element(projection, corridor_texture_green);
 			}
-			else if (level_1[i][j] == 'Y')
-			{
+			else if (level_1[i][j] == 'Y') {
 				// Draw a Corridor
-				draw_corridor_yellow(projection);
+				draw_element(projection, corridor_texture_yellow);
 			}
 
 			translation_tile.x += 20.0;
@@ -231,330 +213,57 @@ void Map::draw(const mat3 &projection)
 	}
 }
 
-void Map::draw_wall(const mat3 &projection)
+void Map::draw_element(const mat3& projection, const Texture& texture)
 {
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+	// transformation
 	transform.begin();
 	transform.translate(translation_tile);
 	transform.scale(physics.scale);
 	transform.end();
 
-	// Setting shaders
+	// set shaders
 	glUseProgram(effect.program);
 
-	// Enabling alpha channel for textures
+	// enable alpha channel for textures
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Depth
+	// depth
 	glEnable(GL_DEPTH_TEST);
 
-	// Getting uniform locations for glUniform* calls
+	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
 
-
-	// Setting vertices and indices
+	// set vertices and indices
 	glBindVertexArray(mesh.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
-	// Input data location as in the vertex buffer
+	// input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
+	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, wall_texture.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
 
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
+	// set uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
-	// Drawing!
+	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void Map::draw_corridor(const mat3 &projection)
-{
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(translation_tile);
-	transform.scale(physics.scale);
-	transform.end();
-
-	// Setting shaders
-	glUseProgram(effect.program);
-
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
-
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, corridor_texture.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
-
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-void Map::draw_corridor_red(const mat3 &projection)
-{
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(translation_tile);
-	transform.scale(physics.scale);
-	transform.end();
-
-	// Setting shaders
-	glUseProgram(effect.program);
-
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, corridor_texture_red.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-void Map::draw_corridor_blue(const mat3 &projection)
-{
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(translation_tile);
-	transform.scale(physics.scale);
-	transform.end();
-
-	// Setting shaders
-	glUseProgram(effect.program);
-
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, corridor_texture_blue.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-void Map::draw_corridor_green(const mat3 &projection)
-{
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(translation_tile);
-	transform.scale(physics.scale);
-	transform.end();
-
-	// Setting shaders
-	glUseProgram(effect.program);
-
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, corridor_texture_green.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-void Map::draw_corridor_yellow(const mat3 &projection)
-{
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(translation_tile);
-	transform.scale(physics.scale);
-	transform.end();
-
-	// Setting shaders
-	glUseProgram(effect.program);
-
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Depth
-	glEnable(GL_DEPTH_TEST);
-
-	// Getting uniform locations for glUniform* calls
-	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
-	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
-
-	// Setting vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// Input data location as in the vertex buffer
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, corridor_texture_yellow.id);
-
-	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
-
-	// Drawing!
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Map::get_position() const
+vec2 Map::get_position()const
 {
 	return motion.position;
 }
@@ -564,47 +273,98 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-float Map::collision_with(Char m_char)
+void Map::is_wall(Char& m_char)
 {
-	vec2 char_position = m_char.get_position();
-	int char_tile_x = (int)char_position.x / 20;
-	int char_tile_y = (int)char_position.y / 20;
+	vec2 char_pos = m_char.get_position();
+	vec2 char_box = m_char.get_bounding_box();
 
-	if (level_1[char_tile_y][char_tile_x] == 'W')
+	// get 4 corners of char: top left, top right, bottom left, bottom right
+	vec2 pos_top_left = { char_pos.x - char_box.x, char_pos.y - char_box.y };
+	vec2 pos_top_right = { char_pos.x + char_box.x, char_pos.y - char_box.y };
+	vec2 pos_bottom_left = { char_pos.x - char_box.x, char_pos.y + char_box.y };
+	vec2 pos_bottom_right = { char_pos.x + char_box.x, char_pos.y + char_box.y };
+
+	int tile_x;
+	int tile_y;
+
+	// top left
+	int tile_x_top_left = (int) pos_top_left.x / 20;
+	int tile_y_top_left = (int) pos_top_left.y / 20;
+	int tile_x_top_right = (int) pos_top_right.x / 20;
+	int tile_y_top_right = (int) pos_top_right.y / 20;
+	int tile_x_bottom_left = (int) pos_bottom_left.x / 20;
+	int tile_y_bottom_left = (int) pos_bottom_left.y / 20;
+	int tile_x_bottom_right = (int) pos_bottom_right.x / 20;
+	int tile_y_bottom_right = (int) pos_bottom_right.y / 20;
+
+	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
 	{
-		return 1.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'C')
-	{
-		return 6.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'R')
-	{
-		return 2.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'G')
-	{
-		return 3.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'B')
-	{
-		return 4.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'Y')
-	{
-		return 5.0;
+		m_char.set_wall_collision('U', true);
 	}
 	else
 	{
+		m_char.set_wall_collision('U', false);
+	}
+
+	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
+	{
+		m_char.set_wall_collision('R', true);
+	}
+	else
+	{
+		m_char.set_wall_collision('R', false);
+	}
+
+	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	{
+		m_char.set_wall_collision('D', true);
+	}
+	else
+	{
+		m_char.set_wall_collision('D', false);
+	}
+
+	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	{
+		m_char.set_wall_collision('L', true);
+	}
+	else
+	{
+		m_char.set_wall_collision('L', false);
+	}
+}
+
+float Map::collides_with(Char m_char){
+	vec2 char_position = m_char.get_position();
+	int char_tile_x = (int) char_position.x / 20;
+	int char_tile_y = (int) char_position.y / 20;
+
+	if (level_1[char_tile_y][char_tile_x] == 'W') {
+		return 1.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'C') {
+		return 6.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'R') {
+		return 2.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'G') {
+		return 3.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'B') {
+		return 4.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'Y') {
+		return 5.0;
+	}
+	else {
 		return 0.0;
 	}
 }
 
 vec2 Map::get_bounding_box() const
 {
-	// Returns the local bounding coordinates scaled by the current size of the turtle
-	// fabs is to avoid negative scale due to the facing direction.
-	return {std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height};
+	return { std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height };
 }
 
 void Map::set_char_dead()
@@ -620,19 +380,4 @@ void Map::reset_char_dead_time()
 float Map::get_char_dead_time() const
 {
 	return glfwGetTime() - m_dead_time;
-}
-
-void Map::set_flash(int value)
-{
-	flash_map = value;
-	m_flash_time = glfwGetTime();
-}
-
-void Map::reset_flash_time()
-{
-	m_flash_time = glfwGetTime();
-}
-
-float Map::get_flash_time() const {
-	return glfwGetTime() - m_flash_time;
 }
