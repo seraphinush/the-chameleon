@@ -101,22 +101,6 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-
-		if (m_moving_right && m_wall_collision) {
-			move({ -step * 5.f, 0.f });
-		}
-		if (m_moving_left && m_wall_collision) {
-			move({ step * 5.f, 0.f });
-		}
-		if (m_moving_up && m_wall_collision) {
-			move({ 0.f, step * 5.f });
-		}
-		if (m_moving_down && m_wall_collision) {
-			move({ 0.f, -step * 5.f });
-		}
-		m_wall_collision = false;
-
-
 		// find a bool in world and pass taht to char
 		if (m_moving_right && !m_bound_right)
 			move({step, 0.f});
@@ -247,6 +231,74 @@ bool Char::collides_with(const Trophy &trophy)
 	return false;
 }
 
+bool Char::collides_with_wall()
+{
+	char level_1[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWCCCCCWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBWWWWWWWGGGGGW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYBBBBBBBBBBBBBBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBWWWWWWWWWWWWWCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WYYYYYWWWWWWWWWWWWWBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWCCCCCCCCCCCCCCCCCCCCCCCCCCCWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCWWWWWWWWWWWWWWWWWWGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWRRRRRW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+	};
+
+	for (int i = 0; i < 40; i++) {
+		// Increment the row
+		for (int j = 0; j < 61; j++) {
+			if (level_1[i][j] == 'W') {
+
+				bool collision_x_right = (motion.position.x + char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
+					(j * 20 + 20) >= (motion.position.x + char_texture.width * 0.5f * physics.scale.x);
+				bool collision_x_left = (motion.position.x - char_texture.width * 0.5f * physics.scale.x) >= (j * 20) &&
+					(j * 20 + 20) >= (motion.position.x - char_texture.width * 0.5f * physics.scale.x);
+				bool collision_y_right = (motion.position.y + char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
+					(i * 20 + 20) >= (motion.position.y + char_texture.height * 0.5f * physics.scale.y);
+				bool collision_y_left = (motion.position.y - char_texture.height * 0.5f * physics.scale.y) >= (i * 20) &&
+					(i * 20 + 20) >= (motion.position.y - char_texture.height * 0.5f * physics.scale.y);
+
+				if ((collision_x_right || collision_x_left) && (collision_y_right || collision_y_left))
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 
 
 vec2 Char::get_position() const
@@ -283,6 +335,22 @@ void Char::set_direction(char direction, bool value)
 	{
 		m_moving_down = value;
 	}
+}
+
+char Char::get_direction() {
+	if (m_moving_up) {
+		return 'U';
+	}
+	else if (m_moving_down) {
+		return 'D';
+	}
+	else if (m_moving_left) {
+		return 'L';
+	}
+	else if (m_moving_right) {
+		return 'R';
+	}
+	return 'R';
 }
 
 // game mode
@@ -360,12 +428,4 @@ bool Char::is_win() const
 void Char::win()
 {
 	m_is_win = true;
-}
-
-void Char::set_wall_collision(bool c) {
-	m_wall_collision = c;
-}
-
-bool Char::get_wall_collision() {
-	return m_wall_collision;
 }

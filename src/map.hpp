@@ -54,6 +54,7 @@ public:
 	void reset_char_dead_time();
 
 	float get_char_dead_time() const;
+	
 
 	void set_flash(int value);
 
