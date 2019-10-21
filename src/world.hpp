@@ -37,6 +37,7 @@ public:
 	bool is_over() const;
 
 private:
+
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
@@ -47,6 +48,8 @@ private:
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
+
+	mat3 calculateProjectionMatrix(int width, int height);
 
 private:
 	// screen handle

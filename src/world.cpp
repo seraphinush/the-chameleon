@@ -355,18 +355,7 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// fake projection matrix, scales with respect to window coordinates
-	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-	float left = 0.f;						  // *-0.5;
-	float top = 0.f;						  // (float)h * -0.5;
-	float right = (float)w / m_screen_scale;  // *0.5;
-	float bottom = (float)h / m_screen_scale; // *0.5;
-
-	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
-	float tx = -(right + left) / (right - left);
-	float ty = -(top + bottom) / (top - bottom);
-	mat3 projection_2D{{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
+	mat3 projection_2D = calculateProjectionMatrix(w, h);
 
 	switch (m_game_state)
 	{
@@ -380,6 +369,7 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
+
 		// draw map
 		m_map.draw(projection_2D);
 
@@ -405,6 +395,32 @@ void World::draw()
 
 	// present
 	glfwSwapBuffers(m_window);
+}
+
+mat3 World::calculateProjectionMatrix(int width, int height)
+{
+	float left = 0.f;						  // *-0.5;
+	float top = 0.f;						  // (float)h * -0.5;
+	float right = 0.f;
+	float bottom = 0.f;
+
+	if (m_game_state != 3)
+	{
+		right = (float)width / m_screen_scale;  // *0.5;
+		bottom = (float)height / m_screen_scale; // *0.5;
+	}
+	else
+	{
+		left = m_char.get_position().x - ((float)width / (4 * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (4 * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (4 * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (4 * m_screen_scale));
+	}
+	float sx = 2.f / (right - left);
+	float sy = 2.f / (top - bottom);
+	float tx = -(right + left) / (right - left);
+	float ty = -(top + bottom) / (top - bottom);
+	return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
 }
 
 bool World::is_over() const
