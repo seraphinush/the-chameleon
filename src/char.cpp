@@ -318,31 +318,34 @@ void Char::dash()
 	// fprintf(stderr, "moving - %f", m_direction_change);
 
 	vec2 offset = {7.f, 0.f};
-	if (m_direction_change == 2.0)
+	if (m_is_alive)
 	{
-		// fprintf(stderr, "moving up");
-		offset = {0.f, 7.f};
-		motion.position.x += offset.x;
-		motion.position.y -= offset.y;
-	}
-	else if (m_direction_change == 3.0)
-	{
-		offset = {0.f, 7.f};
-		motion.position.x += offset.x;
-		motion.position.y += offset.y;
-	}
-	else if (m_direction_change == 1.0)
-	{
-		// fprintf(stderr, "moving left");
-		offset = {7.f, 0.f};
-		motion.position.x -= offset.x;
-		motion.position.y += offset.y;
-	}
-	else if (m_direction_change == 0.0)
-	{
-		offset = {7.f, 0.f};
-		motion.position.x += offset.x;
-		motion.position.y += offset.y;
+		if (m_direction_change == 2.0)
+		{
+			// fprintf(stderr, "moving up");
+			offset = {0.f, 7.f};
+			motion.position.x += offset.x;
+			motion.position.y -= offset.y;
+		}
+		else if (m_direction_change == 3.0)
+		{
+			offset = {0.f, 7.f};
+			motion.position.x += offset.x;
+			motion.position.y += offset.y;
+		}
+		else if (m_direction_change == 1.0)
+		{
+			// fprintf(stderr, "moving left");
+			offset = {7.f, 0.f};
+			motion.position.x -= offset.x;
+			motion.position.y += offset.y;
+		}
+		else if (m_direction_change == 0.0)
+		{
+			offset = {7.f, 0.f};
+			motion.position.x += offset.x;
+			motion.position.y += offset.y;
+		}
 	}
 }
 

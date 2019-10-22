@@ -602,25 +602,25 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// red
-		if ((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1))
+		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color_change() != 1.0)
 		{
 			m_char.change_color(1.0);
 			m_char.set_dash(true);
 			m_char.dash();
 		}
 		// green
-		else if ((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1))
+		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color_change() != 2.0)
 		{
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.change_color(2.0);
 		}
 		// blue
-		else if ((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1))
+		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color_change() != 3.0)
 		{
 			m_char.change_color(3.0);
 		}
 		// yellow
-		else if ((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1))
+		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color_change() != 4.0)
 		{
 			m_map.set_flash(1);
 			m_char.change_color(4.0);
