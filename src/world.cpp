@@ -25,10 +25,12 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : m_control(0),
-				 m_current_game_state(0),
-				 m_game_state(0),
-				 m_next_wanderer_spawn(0.f)
+World::World() : 
+	m_control(0),
+	m_current_game_state(0),
+	m_game_state(0),
+	m_next_wanderer_spawn(0.f),
+	m_show_story_screen(true)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -511,7 +513,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			}
 			else if (m_current_game_state == 0)
 			{
-				m_game_state = 4;
+				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
+				m_show_story_screen ? m_game_state = 4 : m_game_state = 3;
+				m_show_story_screen = false;
 			}
 			else if (m_game_state == 1)
 			{

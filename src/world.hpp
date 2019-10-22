@@ -60,17 +60,15 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-	// start screen
+	// screens
 	StartScreen m_start_screen;
-
-	// controls screen
 	ControlScreen m_control_screen;
-
-	// story screen
 	StoryScreen m_story_screen;
-
-	// Complete screen
 	CompleteScreen m_complete_screen;
+
+	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
+	// story screen handle
+	bool m_show_story_screen;
 
 	Map m_map;
 
