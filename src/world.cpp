@@ -439,10 +439,10 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	}
 	else
 	{
-		left = m_char.get_position().x - ((float)width / (1 * m_screen_scale));
-		top = m_char.get_position().y - ((float)height / (1 * m_screen_scale));
-		right = m_char.get_position().x + ((float)width / (1 * m_screen_scale));
-		bottom = m_char.get_position().y + ((float)height / (1 * m_screen_scale));
+		left = m_char.get_position().x - ((float)width / (4 * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (4 * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (4 * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (4 * m_screen_scale));
 	}
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);
