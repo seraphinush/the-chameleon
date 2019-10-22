@@ -184,12 +184,21 @@ bool World::update(float elapsed_ms)
 
 	if (m_game_state == 3)
 	{
-		// wall collisions
+
+		//////////////////////
+		// COLLISION
+		//////////////////////
+		
+		// collision, char-wall
 		m_map.is_wall(m_char);
+		
+		// TO REMOVE - placeholder for randomize path wall collision
+		// collision, wanderer-wall
+		for (auto &wanderer : m_wanderers)
+			m_map.is_wall(wanderer);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
-		{
 			if (m_char.collides_with(spotter) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
@@ -200,7 +209,6 @@ bool World::update(float elapsed_ms)
 				m_char.kill();
 				break;
 			}
-		}
 
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
@@ -229,55 +237,24 @@ bool World::update(float elapsed_ms)
 			m_char.kill();
 		}
 
+		//////////////////////
+		// UPDATE
+		//////////////////////
+
+		// update char
 		m_char.update(elapsed_ms);
-
-		// TODO
-		for (auto &wanderer : m_wanderers)
-		{
-			int xPos = wanderer.get_position().x;
-			int yPos = wanderer.get_position().y;
-			if (wanderer.m_direction_wanderer.x > 0)
-			{
-				if (xPos > screen.x - 150)
-				{
-					wanderer.m_direction_wanderer.y = 0.75;
-					wanderer.m_direction_wanderer.x = 0;
-				}
-			}
-			else if (wanderer.m_direction_wanderer.y > 0)
-			{
-				if (yPos > screen.y - 150)
-				{
-					wanderer.m_direction_wanderer.x = -0.75;
-					wanderer.m_direction_wanderer.y = 0;
-
-					wanderer.flip_in_x = 1;
-				}
-			}
-			else if (wanderer.m_direction_wanderer.x < 0)
-			{
-				if (xPos < 150)
-				{
-					wanderer.m_direction_wanderer.x = 0;
-					wanderer.m_direction_wanderer.y = -0.75;
-				}
-			}
-			else if (wanderer.m_direction_wanderer.y < 1)
-			{
-				if (yPos < 150)
-				{
-					wanderer.m_direction_wanderer.x = 0.75;
-					wanderer.m_direction_wanderer.y = 0;
-
-					wanderer.flip_in_x = -1;
-				}
-			}
-			wanderer.update(elapsed_ms * m_current_speed);
-		}
 
 		// update spotters
 		for (auto &spotter : m_spotters)
 			spotter.update(elapsed_ms * m_current_speed);
+
+		// update wanderers
+		for (auto &wanderer : m_wanderers)
+			wanderer.update(elapsed_ms * m_current_speed);
+
+		//////////////////////
+		// DYNAMIC SPAWN
+		//////////////////////
 
 		// spawn spotter
 		if (m_spotters.size() < MAX_SPOTTERS)
@@ -289,6 +266,26 @@ bool World::update(float elapsed_ms)
 
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
+
+		// spawn wanderer
+		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
+		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		{
+			if (!spawn_wanderer())
+				return false;
+
+			Wanderer &new_wanderer = m_wanderers.back();
+
+			// set initial position
+			new_wanderer.set_position({screen.x - 50, 100 + m_dist(m_rng) * (screen.y - 100)});
+
+			// next spawn
+			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
+		}
+
+		//////////////////////
+		// CONSEQUENCES
+		//////////////////////
 
 		if (m_map.get_flash_time() > 2)
 		{
@@ -312,7 +309,6 @@ bool World::update(float elapsed_ms)
 		{
 			recent_dash = false;
 
-			// fprintf(stderr, "DIRECTION CHANGE - %f", m_char.get_direction_change());
 			switch ((int)m_char.get_direction_change())
 			{
 			case 0:
@@ -337,24 +333,12 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 		}
-		// spawn wanderer
-		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
-		{
-			if (!spawn_wanderer())
-				return false;
 
-			Wanderer &new_wanderer = m_wanderers.back();
+		//////////////////////
+		// RESET LEVEL
+		//////////////////////
 
-			// set initial position
-			new_wanderer.set_position({screen.x - 50, 50 + m_dist(m_rng) * (screen.y - 50)});
-
-			// next spawn
-			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
-		}
-
-		// restart game
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 4)
+		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
 		{
 			m_char.destroy();
 			m_trophy.destroy();
@@ -455,10 +439,10 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	}
 	else
 	{
-		left = m_char.get_position().x - ((float)width / (4 * m_screen_scale));
-		top = m_char.get_position().y - ((float)height / (4 * m_screen_scale));
-		right = m_char.get_position().x + ((float)width / (4 * m_screen_scale));
-		bottom = m_char.get_position().y + ((float)height / (4 * m_screen_scale));
+		left = m_char.get_position().x - ((float)width / (1 * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (1 * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (1 * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (1 * m_screen_scale));
 	}
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);

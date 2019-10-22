@@ -78,7 +78,7 @@ private:
 	unsigned int m_control; // 0: wasd, 1: arrow keys
 
 	// game state
-	unsigned int m_game_state; // 0 - Start, 1 - Controls, 2 - Quit, 3 - Level 1,
+	unsigned int m_game_state; // 0: start, 1: controls, 2: quit, 3: level 1,
 
 	// current game state
 	unsigned int m_current_game_state;
