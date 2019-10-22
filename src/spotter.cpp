@@ -2,17 +2,21 @@
 #include "spotter.hpp"
 
 #include <cmath>
+#include <string> 
+#include <iostream>
 
+// texture
 Texture Spotter::spotter_texture;
+using namespace std;
 
 bool Spotter::init()
 {
 	// load shared texture
 	if (!spotter_texture.is_valid())
 	{
-		if (!spotter_texture.load_from_file(textures_path("spotter.png")))
+		if (!spotter_texture.load_from_file(textures_path("spotters/1.png")))
 		{
-			fprintf(stderr, "Failed to load thief texture!");
+			fprintf(stderr, "Failed to load spotter texture!");
 			return false;
 		}
 	}
@@ -24,11 +28,11 @@ bool Spotter::init()
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.0f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].position = { +wr, +hr, -0.0f };
 	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.02f} ;
+	vertices[2].position = { +wr, -hr, -0.0f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].position = { -wr, -hr, -0.0f };
 	vertices[3].texcoord =  {0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
@@ -57,11 +61,9 @@ bool Spotter::init()
 		return false;
 
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 0.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -80,9 +82,16 @@ void Spotter::destroy()
 
 void Spotter::update(float ms)
 {
-	// movement
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
+	if (spotter_sprite_countdown > 0.f)
+		spotter_sprite_countdown -= ms;
+
+	if (spotter_sprite_switch < 4) {
+		spotter_sprite_switch++;
+	}
+	else {
+		spotter_sprite_switch = 1;
+
+	}
 }
 
 void Spotter::draw(const mat3 &projection)
@@ -132,13 +141,19 @@ void Spotter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
+	// sprite change
+	if (spotter_sprite_countdown < 0) {
+		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		spotter_texture.load_from_file(path);
+		spotter_sprite_countdown = 1500.f;
+	}
+
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Spotter::get_position() const
-{
-	return motion.position;
 }
 
 void Spotter::set_position(vec2 position)
@@ -146,9 +161,12 @@ void Spotter::set_position(vec2 position)
 	motion.position = position;
 }
 
-// returns the local bounding coordinates scaled by the current size of the spotter
-// fabs is to avoid negative scale due to the facing direction.
+vec2 Spotter::get_position() const
+{
+	return motion.position;
+}
+
 vec2 Spotter::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * spotter_texture.width, std::fabs(physics.scale.y) * spotter_texture.height };
+	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
 }

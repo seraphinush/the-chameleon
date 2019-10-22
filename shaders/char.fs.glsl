@@ -1,35 +1,36 @@
 #version 330
 
-// From Vertex Shader
-in vec3 vcolor;
-in vec2 vpos; // Distance from local origin
+// from vertex shader
+in vec2 texcoord;
 
-// Application data
+// application data
 uniform sampler2D sampler0;
 uniform vec3 fcolor;
+
+// color change
 uniform float color_change;
 uniform bool is_alive;
 
-// Output color
-layout(location = 0) out  vec4 color;
+// output color
+layout(location = 0) out vec4 color;
 
 void main()
 {
-	color = vec4(fcolor * vcolor, 1.0);
-	vec3 char_color = vec3(1.0, 1.0, 1.0);
+	color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
+	vec3 char_color = color.xyz;
 	if (is_alive) {
 		if (color_change == 1.0) {
-			char_color = vec3(1.0, 0.0, 0.0);
+			char_color = vec3(color.x * 1.00, color.y * 0.50, color.z * 0.50);
 		} else if (color_change == 2.0) {
-			char_color = vec3(1.0, 1.0, 0.0);
+			char_color = vec3(color.x * 0.50, color.y * 1.00, color.z * 0.50);
 		} else if (color_change == 3.0) {
-			char_color = vec3(0.0, 0.0, 1.0);
+			char_color = vec3(color.x * 0.50, color.y * 0.50, color.z * 1.00);
 		} else if (color_change == 4.0) {
-			char_color = vec3(0.0, 1.0, 0.0);
+			char_color = vec3(color.x * 1.00, color.y * 1.00, color.z * 0.50);
 		}
 	}
 	else {
-		char_color = vec3(0.0, 0.0, 0.0);
+		char_color = vec3(0.00, 0.00, 0.00);
 	}
 	color.xyz = char_color;
 }

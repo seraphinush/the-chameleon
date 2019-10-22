@@ -1,53 +1,42 @@
 // Header
 #include "char.hpp"
 
-// internal
-#include "spotter.hpp"
-#include "wanderer.hpp"
-
 // stlib
+#include <cmath>
 #include <string>
 #include <algorithm>
 
+Texture Char::char_texture;
+using namespace std;
+
 bool Char::init()
 {
-	m_vertices.clear();
-	m_indices.clear();
-
-	// read the char mesh from a file, which contains a list of vertices and indices
-	FILE *mesh_file = fopen(mesh_path("char.mesh"), "r");
-	if (mesh_file == nullptr)
-		return false;
-
-	// read vertices and colors
-	size_t num_vertices;
-	fscanf(mesh_file, "%zu\n", &num_vertices);
-	for (size_t i = 0; i < num_vertices; ++i)
+	// load shared texture
+	if (!char_texture.is_valid())
 	{
-		float x, y, z;
-		float _u[3]; // unused
-		int r, g, b;
-		fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u + 1, _u + 2, &r, &g, &b);
-		Vertex vertex;
-		vertex.position = {x, y, -z};
-		vertex.color = {(float)r / 255, (float)g / 255, (float)b / 255};
-		m_vertices.push_back(vertex);
+		if (!char_texture.load_from_file(textures_path("char.png")))
+		{
+			fprintf(stderr, "Failed to load char texture!");
+			return false;
+		}
 	}
 
-	// read associated indices
-	size_t num_indices;
-	fscanf(mesh_file, "%zu\n", &num_indices);
-	for (size_t i = 0; i < num_indices; ++i)
-	{
-		int idx[3];
-		fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		m_indices.push_back((uint16_t)idx[0]);
-		m_indices.push_back((uint16_t)idx[1]);
-		m_indices.push_back((uint16_t)idx[2]);
-	}
+	// the position corresponds to the center of the texture
+	float wr = char_texture.width * 0.5f;
+	float hr = char_texture.height * 0.5f;
 
-	// close
-	fclose(mesh_file);
+	TexturedVertex vertices[4];
+	vertices[0].position = {-wr, +hr, -0.0f};
+	vertices[0].texcoord = {0.f, 1.f};
+	vertices[1].position = {+wr, +hr, -0.0f};
+	vertices[1].texcoord = {1.f, 1.f};
+	vertices[2].position = {+wr, -hr, -0.0f};
+	vertices[2].texcoord = {1.f, 0.f};
+	vertices[3].position = {-wr, -hr, -0.0f};
+	vertices[3].texcoord = {0.f, 0.f};
+
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
 	// clear errors
 	gl_flush_errors();
@@ -55,12 +44,12 @@ bool Char::init()
 	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
 
 	// index buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
 
 	// vertex array (container for vertex + index buffer)
 	glGenVertexArrays(1, &mesh.vao);
@@ -71,24 +60,28 @@ bool Char::init()
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	// set initial values
-	motion.position = {600.f, 400.f};
+	motion.position = {600.f, 600.f};
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	physics.scale = {-35.f, 35.f};
+	physics.scale = {-config_scale, config_scale};
 
+	// initial values
 	m_is_alive = true;
-
 	m_color_change = 0.0;
 	m_direction_change = 0.0;
 
-	// bound
-	// TODO -- change to collision-base
-	m_bound_up = false;
-	m_bound_down = false;
-	m_bound_left = false;
-	m_bound_right = false;
+	m_moving_right = false;
+	m_moving_left = false;
+	m_moving_up = false;
+	m_moving_down = false;
+
+	m_wall_up = false;
+	m_wall_down = false;
+	m_wall_left = false;
+	m_wall_right = false;
+
+	m_dash = false;
 
 	return true;
 }
@@ -111,19 +104,14 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
-		if (m_moving_right && !m_bound_right)
+		if (m_moving_right && !m_wall_right)
 			move({step, 0.f});
-		if (m_moving_left && !m_bound_left)
+		if (m_moving_left && !m_wall_left)
 			move({-step, 0.f});
-		if (m_moving_up && !m_bound_up)
+		if (m_moving_up && !m_wall_up)
 			move({0.f, -step});
-		if (m_moving_down && !m_bound_down)
+		if (m_moving_down && !m_wall_down)
 			move({0.f, step});
-	}
-	else
-	{
-		// if dead, set upside down
-		set_rotation(-3.1415f);
 	}
 }
 
@@ -131,11 +119,9 @@ void Char::draw(const mat3 &projection)
 {
 	// transformation
 	transform.begin();
-
-	transform.translate(get_position());
+	transform.translate(motion.position);
 	transform.rotate(motion.radians);
 	transform.scale(physics.scale);
-
 	transform.end();
 
 	// set shaders
@@ -163,11 +149,15 @@ void Char::draw(const mat3 &projection)
 
 	// input data location as in the vertex buffer
 	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
+	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_color_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-	glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)sizeof(vec3));
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+
+	// enable and binding texture to slot 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, char_texture.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -185,48 +175,49 @@ void Char::draw(const mat3 &projection)
 
 	glUniform1f(is_alive_uloc, is_alive());
 
-	// get number of indices from buffer,
-	// we know our vbo contains both colour and position information, so...
-	GLint size = 0;
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	GLsizei num_indices = size / sizeof(uint16_t);
-
 	// draw
-	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// collision
-// Simple bounding box collision check
-// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
-// if the center point of either object is inside the other's bounding-box-circle. You don't
-// need to try to use this technique.
+// aabb-aabb collision
+bool Char::collision(vec2 pos, vec2 box)
+{
+	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
+	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
+
+	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) && (motion.position.x + half_width) <= (pos.x + box.x);
+	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width) <= (pos.x + box.x);
+	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
+	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
+
+	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
+		return collision_y_top || collision_y_down;
+
+	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
+		return collision_x_right || collision_x_left;
+
+	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
+}
+
 bool Char::collides_with(const Spotter &spotter)
 {
-	float dx = motion.position.x - spotter.get_position().x;
-	float dy = motion.position.y - spotter.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(spotter.get_bounding_box().x, spotter.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
+	vec2 pos = spotter.get_position();
+	vec2 box = spotter.get_bounding_box();
+	return collision(pos, box);
 }
 
 bool Char::collides_with(const Wanderer &wanderer)
 {
-	float dx = motion.position.x - wanderer.get_position().x;
-	float dy = motion.position.y - wanderer.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(wanderer.get_bounding_box().x, wanderer.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
+	vec2 pos = wanderer.get_position();
+	vec2 box = wanderer.get_bounding_box();
+	return collision(pos, box);
+}
+
+bool Char::collides_with(const Trophy &trophy)
+{
+	vec2 pos = trophy.get_position();
+	vec2 box = trophy.get_bounding_box();
+	return collision(pos, box);
 }
 
 vec2 Char::get_position() const
@@ -234,10 +225,34 @@ vec2 Char::get_position() const
 	return motion.position;
 }
 
-void Char::move(vec2 off)
+vec2 Char::get_bounding_box() const
 {
-	motion.position.x += off.x;
-	motion.position.y += off.y;
+	return {std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f};
+}
+
+void Char::set_wall_collision(char direction, bool value)
+{
+	if (direction == 'R')
+		m_wall_right = value;
+	else if (direction == 'L')
+		m_wall_left = value;
+	else if (direction == 'U')
+		m_wall_up = value;
+	else if (direction == 'D')
+		m_wall_down = value;
+}
+
+bool Char::get_wall_collision()
+{
+	if (m_wall_down || m_wall_left || m_wall_right || m_wall_up)
+		return true;
+	return false;
+}
+
+void Char::move(vec2 offset)
+{
+	motion.position.x += offset.x;
+	motion.position.y += offset.y;
 }
 
 void Char::set_rotation(float radians)
@@ -248,60 +263,19 @@ void Char::set_rotation(float radians)
 void Char::set_direction(char direction, bool value)
 {
 	if (direction == 'R')
-	{
 		m_moving_right = value;
-	}
 	else if (direction == 'L')
-	{
 		m_moving_left = value;
-	}
 	else if (direction == 'U')
-	{
 		m_moving_up = value;
-	}
 	else if (direction == 'D')
-	{
 		m_moving_down = value;
-	}
 }
 
-// game mode
-bool Char::get_mode() const
+void Char::change_color(float color)
 {
-	return m_game_mode;
-}
-
-void Char::set_mode(bool value)
-{
-	m_game_mode = value;
-}
-
-// bound
-// TODO -- change to collision-base
-void Char::set_bound(char direction, bool state)
-{
-	switch (direction)
-	{
-	case 'R':
-		m_bound_right = state;
-		break;
-	case 'L':
-		m_bound_left = state;
-		break;
-	case 'U':
-		m_bound_up = state;
-		break;
-	case 'D':
-		m_bound_down = state;
-		break;
-	default:
-		break;
-	}
-}
-
-void Char::change_color(float c)
-{
-	m_color_change = c;
+	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
+	m_color_change = color;
 }
 
 float Char::get_color_change() const
@@ -309,9 +283,9 @@ float Char::get_color_change() const
 	return m_color_change;
 }
 
-void Char::change_direction(float c)
+void Char::change_direction(float direction)
 {
-	m_direction_change = c;
+	m_direction_change = direction;
 }
 
 float Char::get_direction_change() const
@@ -327,4 +301,60 @@ bool Char::is_alive() const
 void Char::kill()
 {
 	m_is_alive = false;
+}
+
+bool Char::is_win() const
+{
+	return m_is_win;
+}
+
+void Char::win()
+{
+	m_is_win = true;
+}
+
+void Char::dash()
+{
+	// fprintf(stderr, "moving - %f", m_direction_change);
+
+	vec2 offset = {7.f, 0.f};
+	if (m_is_alive)
+	{
+		if (m_direction_change == 2.0)
+		{
+			// fprintf(stderr, "moving up");
+			offset = {0.f, 7.f};
+			motion.position.x += offset.x;
+			motion.position.y -= offset.y;
+		}
+		else if (m_direction_change == 3.0)
+		{
+			offset = {0.f, 7.f};
+			motion.position.x += offset.x;
+			motion.position.y += offset.y;
+		}
+		else if (m_direction_change == 1.0)
+		{
+			// fprintf(stderr, "moving left");
+			offset = {7.f, 0.f};
+			motion.position.x -= offset.x;
+			motion.position.y += offset.y;
+		}
+		else if (m_direction_change == 0.0)
+		{
+			offset = {7.f, 0.f};
+			motion.position.x += offset.x;
+			motion.position.y += offset.y;
+		}
+	}
+}
+
+void Char::set_dash(bool value)
+{
+	m_dash = value;
+}
+
+bool Char::get_dash()
+{
+	return m_dash;
 }

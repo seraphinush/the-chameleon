@@ -2,18 +2,22 @@
 #include "wanderer.hpp"
 
 #include <cmath>
+#include <string> 
+#include <iostream>
 
 // texture
 Texture Wanderer::wanderer_texture;
+using namespace std;
 
 bool Wanderer::init()
 {
 	// load shared texture
 	if (!wanderer_texture.is_valid())
 	{
-		if (!wanderer_texture.load_from_file(textures_path("wanderer.png")))
+
+		if (!wanderer_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
-			fprintf(stderr, "Failed to load wanderer texture!");
+			fprintf(stderr, "Failed to load wanderer texture!\n");
 			return false;
 		}
 	}
@@ -23,13 +27,13 @@ bool Wanderer::init()
 	float hr = wanderer_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.02f };
+	vertices[0].position = { -wr, +hr, -0.00f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].position = { +wr, +hr, -0.00f };
 	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.02f };
+	vertices[2].position = { +wr, -hr, -0.00f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.02f };
+	vertices[3].position = { -wr, -hr, -0.00f };
 	vertices[3].texcoord = { 0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
@@ -58,11 +62,9 @@ bool Wanderer::init()
 		return false;
 
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 150.f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { config_scale, config_scale };
 
 	return true;
 }
@@ -81,11 +83,23 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
+	
 	// movement
 	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
 	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
 	motion.position.x += step_in_x;
 	motion.position.y += step_in_y;
+
+	if (wanderer_sprite_countdown > 0.f)
+		wanderer_sprite_countdown -= ms;
+
+	if (sprite_switch < 6) {
+		sprite_switch++;
+	}
+	else {
+		sprite_switch = 1;
+
+	}
 }
 
 void Wanderer::draw(const mat3& projection)
@@ -94,6 +108,9 @@ void Wanderer::draw(const mat3& projection)
 	transform.begin();
 	transform.translate(motion.position);
 	transform.rotate(motion.radians);
+	/* vec2 scale = { 0, 0 };
+	scale.x = flip_in_x*4*physics.scale.x;
+	scale.y = 4* physics.scale.y; */
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -105,7 +122,7 @@ void Wanderer::draw(const mat3& projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -135,13 +152,18 @@ void Wanderer::draw(const mat3& projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
+	if (wanderer_sprite_countdown < 0) {
+		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		wanderer_texture.load_from_file(path);
+		wanderer_sprite_countdown = 200.f;
+	}
+
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Wanderer::get_position() const
-{
-	return motion.position;
 }
 
 void Wanderer::set_position(vec2 position)
@@ -149,9 +171,12 @@ void Wanderer::set_position(vec2 position)
 	motion.position = position;
 }
 
-// returns the local bounding coordinates scaled by the current size of the wanderer
-// fabs is to avoid negative scale due to the facing direction.
+vec2 Wanderer::get_position() const
+{
+	return motion.position;
+}
+
 vec2 Wanderer::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * wanderer_texture.width, std::fabs(physics.scale.y) * wanderer_texture.height };
+	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
 }
