@@ -10,6 +10,13 @@ class Wanderer : public Entity
 
 private:
 	float config_scale = 0.5f;
+	float config_speed = 150.f;
+
+	// TO REMOVE - placeholder for randomize path wall collision
+	bool m_wall_up;
+	bool m_wall_down;
+	bool m_wall_left;
+	bool m_wall_right;
 
 public:
 	bool init();
@@ -29,11 +36,12 @@ public:
 
 	// collision
 	vec2 get_bounding_box() const;
+	void set_wall_collision(char direction, bool value);
 
 	// direction
-	vec2 m_direction_wanderer = { -1, 0 };
+	vec2 direction = { 1, 0 };
 
 	int sprite_switch = 1;
-	float wanderer_sprite_countdown = 200.f;
+	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 };

@@ -5,6 +5,10 @@
 #include "common.hpp"
 class Char;
 
+// TO REMOVE - placeholder for randomize path wall collision
+#include "wanderer.hpp"
+class Wanderer;
+
 class Map : public Entity
 {
 	// shared texture
@@ -35,10 +39,13 @@ public:
 	vec2 get_bounding_box() const;
 
 	// color detection
-	float collides_with(Char m_char);
+	float collides_with(Char character);
 
 	// wall collision
-	void is_wall(Char &m_char);
+	void is_wall(Char &character);
+	
+	// TO REMOVE - placeholder for randomize path wall collision
+	void is_wall(Wanderer &wanderer);
 
 	// char dead time getters and setters .. ported over from water
 	void set_char_dead();
