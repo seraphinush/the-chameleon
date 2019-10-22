@@ -11,7 +11,7 @@ namespace
 {
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_WANDERERS = 10;
-const size_t SPOTTER_DELAY_MS = 2000;
+const size_t SPOTTER_DELAY_MS = 800;
 
 // TODO
 vec2 spotter_loc[5];
@@ -28,8 +28,7 @@ void glfw_err_cb(int error, const char *desc)
 World::World() : m_control(0),
 				 m_current_game_state(0),
 				 m_game_state(0),
-				 m_next_wanderer_spawn(0.f),
-				 m_points(0)
+				 m_next_wanderer_spawn(0.f)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -347,8 +346,8 @@ bool World::update(float elapsed_ms)
 
 			Wanderer &new_wanderer = m_wanderers.back();
 
-			// set random initial position
-			new_wanderer.set_position({screen.x + 200, 50 + m_dist(m_rng) * (screen.y - 50)});
+			// set initial position
+			new_wanderer.set_position({screen.x - 50, 50 + m_dist(m_rng) * (screen.y - 50)});
 
 			// next spawn
 			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
@@ -385,7 +384,7 @@ void World::draw()
 
 	// update window title with points
 	std::stringstream title_ss;
-	title_ss << "Points: " << m_points;
+	title_ss << "The Chameleon";
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// first render to the custom framebuffer

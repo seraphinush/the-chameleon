@@ -77,9 +77,6 @@ private:
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
 
-	// points
-	unsigned int m_points;
-
 	// game state
 	unsigned int m_game_state; // 0 - Start, 1 - Controls, 2 - Quit, 3 - Level 1,
 
