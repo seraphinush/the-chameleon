@@ -7,6 +7,7 @@
 
 Texture Map::wall_texture;
 Texture Map::corridor_texture;
+Texture Map::wall_light_texture;
 
 Texture Map::corridor_texture_red;
 Texture Map::corridor_texture_blue;
@@ -14,8 +15,9 @@ Texture Map::corridor_texture_green;
 Texture Map::corridor_texture_yellow;
 
 // 800 * 1200 Map of Level 1
-// 31 for the \n of all chars
-char level_1[40][61] = {
+// 61 for the \n of all chars
+// W = Wall, S = Wall_Shadow, R = Red Tile, G = Green tile, B = Blue Tile, Y = Yellow Tile, C = Plain_Corridor
+char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
@@ -55,7 +57,51 @@ char level_1[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
+
+char level_1[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WSSSSSSWSSSSSSSSSWSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSWSSSSSSSSW",
+	"WBBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
+	"WBBBBBBSYYYYYYYYYSRRRSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
+	"WBBBBBBBYYYYYYYYYRRRRRRRWWWWWWWWWWBWWWWWWWBBWWWWBBSWCCCCCCCW",
+	"WBBBBBBBYYYYYYYYYRRRRRRRSSSSSSSWSSBSSWSSSSBBSSSWBBBWCCCCCCCW",
+	"WBBBBBBWYYYYYYYYYWRRRRRRRRRRRRRWGGGGGWCCCCCCCCCSBBBSWCCCCCCW",
+	"WWWBBWWWWWWWWWWYYWRRRWWWWWWWWRRWGGGGGWCCCCCCCCCCCCCCSCCCCCCW",
+	"WSSBBSSSSSSSSSSYYWRRRWSSSSSSSRRWGGGGGWCCCCCCCCCCCCCCCCCCCCCW",
+	"WRRRRRRRYYYYYYBBBWRRRWGGGGGGGGGWGGGGGWCCCCCCCCCCCCCCCCWCCCCW",
+	"WRRRRRRWYYYYYYWBBWRRRWGGWWWWWWWWGGGGGWCCCCCCCCCCCCCCCCSWWCCW",
+	"WRRRRRRWYYYYYYWBBWRRRSGGSSSSSSSSGGGGGSCCCCCCCCCCCCCCCCCSSWWW",
+	"WRRWWWWWWWWWWWWWWWRRRBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCSSW",
+	"WRRSSSSSSSSSSSSSSWRRRWBBWWWWWWWWWWWBBWCCCCCCCCCCCCCCCCCCCCCW",
+	"WGGGGGGGGGGGGGGGGWRRRWBBSSSWWSSSSSSBBWCCCCCCCCCCCCCCCCCCCCCW",
+	"WWWWWWWWWWWGGWYYYWRRRWRRRRRSWYYYYYYYYSWCCCCCCCCCCCCCCCCCCCCW",
+	"WSSSSSSSSSSGGWYYYWRRWWWWWRRRSWYYYYYYYYWWGGGWWWWWWWWWWWWRRRWW",
+	"WBBBBBBBBBBBBWYYYSRRSSSSSWRRRSWYYYYYYYWSGGWSSSSSSSSSSWSRRRSW",
+	"WBBBBBBBBBBBBWYYYYYYBBBBBSWRRRSWYYYYYWSGGWSRRGGGGGGGGWRRRRRW",
+	"WWWWWWBBWWWWWWYYYYYYBBBBBBSWRRRSYYYYWSGGWSRRWGGGGGGGGWRRRRRW",
+	"WSSSSSBBSSSSSWYYYWWWWWWWWBBSWRRRYYYWSGGWWRRWWGGWWWWGGWWWRWWW",
+	"WCCCCCCCCCCCCWYYYWSSSSSSSWBBSWRRYYWSGGWSSRRSSGGSSSSGGSSSRSSW",
+	"WCCCCCCCCCCCCWYYYWYYYYYYYSWBBSWWWWSGGWSRRRRRRGGGGGGGGBBBBBBW",
+	"WCCCCCCCCCCCCWYYYWYYYYYYYYSWBBSSSSGGWSRRRWWWWGGWWWWGGWWWWWWW",
+	"WCCCCCCCCCCCWSYYYSWYYYYYYYYSWBBBGGGWSRRRWSSSSGGSSSSGGSSSSSSW",
+	"WCCCCCCCCCCWSCCCCCSWYYYYYYYYWBBBGGGWRRRWSYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCCWSCCCCCCCSWYYYYYYYSWWBGWWSRRWSYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCCWCCCCCCCCCSYYYYYYYYSSBGSSRRRWYYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCWSCCCCCCCCCCWYYYYYYYYYYRRRRRWSYYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCWCCCCCCCCCCCWWWWWYYWWWWWWWWWWYYWWWWBBWWWWWGGWWWRRWW",
+	"WCCCCCCCWSCCWWWWWWWCCSWSSSYYSSSWRRRRRWYYWSSSBBSSSWSGGSWSRRSW",
+	"WCCCCCCCWCCCSSSSSSSCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
+	"WCCCCCCCWCCCCCCCCCCCCCSBBBBBBBBSRRRRRSYYSBBBBBBBBSGGGGSRRRRW",
+	"WCCCCCCCWCCCCCCCCCCCCCBBBBBBBBBBRRRRRRYYBBBBBBBBBBGGGGGRRRRW",
+	"WCCCCCCCWCCCWWWWWWWCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
+	"WCCCCCCCWCCCSSSSSSSCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRWW",
+	"WCCCCCCCWCCCCCCCCCCCCCSSSSBBSSSSRRSSSSYYSSSSBBSSSSSGGSSSRRSW",
+	"WCCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WWCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 bool Map::init()
 {
@@ -65,6 +111,16 @@ bool Map::init()
 	if (!wall_texture.is_valid())
 	{
 		if (!wall_texture.load_from_file(textures_path("wall_tile.png")))
+		{
+			fprintf(stderr, "Failed to load wall texture!");
+			return false;
+		}
+	}
+
+
+	if (!wall_light_texture.is_valid())
+	{
+		if (!wall_light_texture.load_from_file(textures_path("wall_tile_light.png")))
 		{
 			fprintf(stderr, "Failed to load wall texture!");
 			return false;
@@ -188,6 +244,11 @@ void Map::draw(const mat3 &projection)
 				// Draw a Wall
 				draw_element(projection, wall_texture);
 			}
+			else if (level_1[i][j] == 'S')
+			{
+				// Draw a Shadow Wall
+				draw_element(projection, wall_light_texture);
+			}
 			else if (level_1[i][j] == 'C')
 			{
 				// Draw a Corridor
@@ -309,7 +370,8 @@ void Map::is_wall(Char &m_char)
 	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
 	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
 
-	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
+	if ((level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W') || 
+		(level_1[tile_y_top_left][tile_x_top_left] == 'S' && level_1[tile_y_top_right][tile_x_top_right] == 'S'))
 	{
 		m_char.set_wall_collision('U', true);
 	}
@@ -318,7 +380,8 @@ void Map::is_wall(Char &m_char)
 		m_char.set_wall_collision('U', false);
 	}
 
-	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
+	if ((level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
+		(level_1[tile_y_top_right][tile_x_top_right] == 'S' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
 	{
 		m_char.set_wall_collision('R', true);
 	}
@@ -327,7 +390,8 @@ void Map::is_wall(Char &m_char)
 		m_char.set_wall_collision('R', false);
 	}
 
-	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	if ((level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
+		(level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
 	{
 		m_char.set_wall_collision('D', true);
 	}
@@ -336,7 +400,8 @@ void Map::is_wall(Char &m_char)
 		m_char.set_wall_collision('D', false);
 	}
 
-	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	if ((level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W') ||
+		(level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' && level_1[tile_y_top_left][tile_x_top_left] == 'S'))
 	{
 		m_char.set_wall_collision('L', true);
 	}
@@ -355,6 +420,10 @@ float Map::collides_with(Char m_char)
 	if (level_1[char_tile_y][char_tile_x] == 'W')
 	{
 		return 1.0;
+	}
+	else if (level_1[char_tile_y][char_tile_x] == 'S')
+	{
+		return 6.0;
 	}
 	else if (level_1[char_tile_y][char_tile_x] == 'C')
 	{
