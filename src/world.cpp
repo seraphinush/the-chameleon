@@ -201,7 +201,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
-			if (m_char.collides_with(spotter) && is_char_detectable(m_map))
+			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{
@@ -215,7 +215,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
-			if (m_char.collides_with(wanderer) && is_char_detectable(m_map))
+			if (m_char.is_colliding(wanderer) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{
@@ -228,7 +228,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-trophy
-		if (m_char.collides_with(m_trophy))
+		if (m_char.is_colliding(m_trophy))
 		{
 			if (m_char.is_alive())
 			{
@@ -289,52 +289,17 @@ bool World::update(float elapsed_ms)
 		// CONSEQUENCES
 		//////////////////////
 
+		// yellow
 		if (m_map.get_flash_time() > 2)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
 		}
 
+		// red
 		if (m_char.get_dash())
-		{
-			if (m_char.get_wall_collision())
-			{
+			if (m_char.is_wall_collision())
 				m_char.set_dash(false);
-				recent_dash = true;
-			}
-			else
-			{
-				m_char.dash();
-			}
-		}
-		if (recent_dash)
-		{
-			recent_dash = false;
-
-			switch ((int)m_char.get_direction_change())
-			{
-			case 0:
-				m_char.set_direction('L', true);
-				m_char.move({-15.f, 0.f});
-				m_char.set_direction('L', false);
-				break;
-			case 1:
-				m_char.set_direction('R', true);
-				m_char.move({15.f, 0.f});
-				m_char.set_direction('R', false);
-				break;
-			case 2:
-				m_char.set_direction('D', true);
-				m_char.move({0.f, 15.f});
-				m_char.set_direction('D', false);
-				break;
-			case 3:
-				m_char.set_direction('U', true);
-				m_char.move({0.f, -15.f});
-				m_char.set_direction('U', false);
-				break;
-			}
-		}
 
 		//////////////////////
 		// RESET LEVEL
@@ -487,158 +452,89 @@ bool World::spawn_wanderer()
 // key callback function
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
+	// start screen, control screen, story screen
 	if (m_game_state != 3)
 	{
 		if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
-		{
-			if (m_current_game_state < 2)
-				m_current_game_state++;
-		}
+			if (m_current_game_state < 2)	m_current_game_state++;
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_UP)
-		{
-			if (m_current_game_state > 0)
-				m_current_game_state--;
-		}
+			if (m_current_game_state > 0) m_current_game_state--;
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
-			if (m_game_state == 4)
-			{
-				m_game_state = 3;
-			}
-			else if (m_game_state == 5)
-			{
-				m_game_state = 0;
-			}
+			if (m_game_state == 4) m_game_state = 3;
+			else if (m_game_state == 5) m_game_state = 0;
 			else if (m_current_game_state == 0)
 			{
 				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 				m_show_story_screen ? m_game_state = 4 : m_game_state = 3;
 				m_show_story_screen = false;
 			}
-			else if (m_game_state == 1)
-			{
-				m_game_state = 0;
-			}
-			else
-			{
-				m_game_state = m_current_game_state;
-			}
+			else if (m_game_state == 1) m_game_state = 0;
+			else m_game_state = m_current_game_state;
 		}
 	}
 
+	// ESC: return to start screen
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
 	{
 		m_current_game_state = 0;
 		m_game_state = 0;
 	}
 
+	// movement, set movement
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
-		// opposite movements - when blue
-		if (m_char.get_color_change() == 3.0)
-		{
-			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
-			{
-				m_char.change_direction(1.0);
-				m_char.set_direction('L', true);
-			}
-			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
-			{
-				m_char.change_direction(0.0);
-				m_char.set_direction('R', true);
-			}
-			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-			{
-				m_char.change_direction(3.0);
-				m_char.set_direction('D', true);
-			}
-			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
-			{
-				m_char.change_direction(2.0);
-				m_char.set_direction('U', true);
-			}
-		}
-		// proper movement
-		else
-		{
-			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
-			{
-				m_char.change_direction(0.0);
-				m_char.set_direction('R', true);
-			}
-			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
-			{
-				m_char.change_direction(1.0);
-				m_char.set_direction('L', true);
-			}
-			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-			{
-				m_char.change_direction(2.0);
-				m_char.set_direction('U', true);
-			}
-			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
-			{
-				m_char.change_direction(3.0);
-				m_char.set_direction('D', true);
-			}
-		}
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+			m_char.set_direction('R', true);
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
+			m_char.set_direction('L', true);
+		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
+			m_char.set_direction('U', true);
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
+			m_char.set_direction('D', true);
 	}
 
+	// color, set color, consequences
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
 		// red
-		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color_change() != 1.0)
+		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
-			m_char.change_color(1.0);
+			m_char.set_color(1);
 			m_char.set_dash(true);
-			m_char.dash();
 		}
 		// green
-		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color_change() != 2.0)
+		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
-			m_char.change_color(2.0);
+			m_char.set_color(2);
 		}
 		// blue
-		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color_change() != 3.0)
+		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
 		{
-			m_char.change_color(3.0);
+			m_char.set_color(3);
 		}
 		// yellow
-		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color_change() != 4.0)
+		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
 		{
+			m_char.set_color(4);
 			m_map.set_flash(1);
-			m_char.change_color(4.0);
 		}
 	}
 
 	// remove movement
 	if (action == GLFW_RELEASE && m_game_state == 3)
 	{
-		if (m_char.get_color_change() == 3.0)
-		{
-			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
-				m_char.set_direction('L', false);
-			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
-				m_char.set_direction('R', false);
-			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-				m_char.set_direction('D', false);
-			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
-				m_char.set_direction('U', false);
-		}
-		else
-		{
-			if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
-				m_char.set_direction('R', false);
-			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
-				m_char.set_direction('L', false);
-			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-				m_char.set_direction('U', false);
-			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
-				m_char.set_direction('D', false);
-		}
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+			m_char.set_direction('R', false);
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
+			m_char.set_direction('L', false);
+		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
+			m_char.set_direction('U', false);
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
+			m_char.set_direction('D', false);
 	}
 
 	// game mode
@@ -682,5 +578,5 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 bool World::is_char_detectable(Map m_map)
 {
 	float collision_tile = m_map.collides_with(m_char) - 1.0;
-	return collision_tile != m_char.get_color_change();
+	return collision_tile != m_char.get_color();
 }

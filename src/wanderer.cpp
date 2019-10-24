@@ -206,12 +206,8 @@ vec2 Wanderer::get_bounding_box() const
 
 void Wanderer::set_wall_collision(char direction, bool value)
 {
-	if (direction == 'R')
-		m_wall_right = value;
-	else if (direction == 'L')
-		m_wall_left = value;
-	else if (direction == 'U')
-		m_wall_up = value;
-	else if (direction == 'D')
-		m_wall_down = value;
+	if (direction == 'R') m_wall_right = value;
+	else if (direction == 'L') m_wall_left = value;
+	else if (direction == 'U') m_wall_up = value;
+	else if (direction == 'D') m_wall_down = value;
 }

@@ -15,7 +15,6 @@ uniform mat3 transform;
 uniform mat3 projection;
 
 //
-uniform float direction_change;
 uniform bool is_alive;
 
 void main()
