@@ -25,12 +25,11 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : 
-	m_control(0),
-	m_current_game_state(0),
-	m_game_state(0),
-	m_next_wanderer_spawn(0.f),
-	m_show_story_screen(true)
+World::World() : m_control(0),
+				 m_current_game_state(0),
+				 m_game_state(0),
+				 m_next_wanderer_spawn(0.f),
+				 m_show_story_screen(true)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -190,10 +189,10 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 		// COLLISION
 		//////////////////////
-		
+
 		// collision, char-wall
 		m_map.is_wall(m_char);
-		
+
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
 		for (auto &wanderer : m_wanderers)
