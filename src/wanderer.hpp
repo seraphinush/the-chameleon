@@ -41,6 +41,7 @@ public:
 	// direction
 	vec2 direction = { 1, 0 };
 
+	// animation
 	int sprite_switch = 1;
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;

@@ -90,28 +90,29 @@ void Wanderer::update(float ms)
 {
 	// TO REMOVE - placeholder for randomize path wall collision
 	// movement
+	int r = rand() % 3;
 	if (direction.x < 0 && m_wall_left)
 	{
 		direction.x = 1;
 		if (!m_wall_up && !m_wall_down)
-			direction.y = rand() % 2 == 0 ? (rand() % 2 == 0 ? -1 : 0) : 1;
+			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
 	}
 	if (direction.x > 0 && m_wall_right)
 	{
 		direction.x = -1;
 		if (!m_wall_up && !m_wall_down)
-			direction.y = rand() % 2 == 0 ? (rand() % 2 == 0 ? -1 : 0) : 1;
+			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
 	}
 	if (direction.y < 0 && m_wall_up)
 	{
 		if (!m_wall_left && !m_wall_right)
-			direction.x = rand() % 2 == 0 ? (rand() % 2 == 0 ? -1 : 0) : 1;
+			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
 		direction.y = 1;
 	}
 	if (direction.y > 0 && m_wall_down)
 	{
 		if (!m_wall_left && !m_wall_right)
-			direction.x = rand() % 2 == 0 ? (rand() % 2 == 0 ? -1 : 0) : 1;
+			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
 		direction.y = -1;
 	}
 	
