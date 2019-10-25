@@ -1,5 +1,6 @@
 #pragma once
 
+// internal
 #include "common.hpp"
 
 // goal
@@ -9,7 +10,8 @@ class Trophy : public Entity
 	static Texture trophy_texture;
 
 private:
-	float config_scale = 0.2f;
+	// config
+	const float config_scale = 0.2f;
 
 public:
 	bool init();

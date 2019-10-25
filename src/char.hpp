@@ -21,7 +21,7 @@ class Char : public Entity
 
 private:
 	// config
-	float config_scale = 0.2f;
+	const float config_scale = 0.2f;
 
 	bool m_is_alive;
 

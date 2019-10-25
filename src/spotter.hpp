@@ -1,5 +1,6 @@
 #pragma once
 
+// internal
 #include "common.hpp"
 
 // guard type 2 : spotter
@@ -9,7 +10,8 @@ class Spotter : public Entity
 	static Texture spotter_texture;
 
 private:
-	float config_scale = 0.5f;
+	// config
+	#const float config_scale = 0.5;
 
 	// animation
 	int spotter_sprite_switch = 1;
