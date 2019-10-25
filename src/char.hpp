@@ -42,7 +42,6 @@ private:
 
 	// dash
 	bool m_dash;
-	int m_direction;
 
 public:
 	bool init();
