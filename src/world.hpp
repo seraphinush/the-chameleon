@@ -89,7 +89,6 @@ public:
 	bool is_over() const;
 
 private:
-
 	bool spawn_spotter();
 
 	bool spawn_wanderer();

@@ -1,6 +1,7 @@
 // header
 #include "wanderer.hpp"
 
+// stlib
 #include <cmath>
 #include <string> 
 #include <iostream>
@@ -131,10 +132,6 @@ void Wanderer::draw(const mat3& projection)
 	// transformation
 	transform.begin();
 	transform.translate(motion.position);
-	/*transform.rotate(motion.radians);
-	vec2 scale = { 0, 0 };
-	scale.x = flip_in_x*4*physics.scale.x;
-	scale.y = 4* physics.scale.y; */
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -190,6 +187,7 @@ void Wanderer::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+// movement
 void Wanderer::set_position(vec2 position)
 {
 	motion.position = position;
@@ -200,15 +198,16 @@ vec2 Wanderer::get_position() const
 	return motion.position;
 }
 
-vec2 Wanderer::get_bounding_box() const
-{
-	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
-}
-
+// collision
 void Wanderer::set_wall_collision(char direction, bool value)
 {
 	if (direction == 'R') m_wall_right = value;
 	else if (direction == 'L') m_wall_left = value;
 	else if (direction == 'U') m_wall_up = value;
 	else if (direction == 'D') m_wall_down = value;
+}
+
+vec2 Wanderer::get_bounding_box() const
+{
+	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
 }
