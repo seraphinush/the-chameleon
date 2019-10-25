@@ -444,11 +444,6 @@ float Map::collides_with(Char character)
 	}
 }
 
-vec2 Map::get_bounding_box() const
-{
-	return {std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height};
-}
-
 void Map::set_char_dead()
 {
 	m_dead_time = glfwGetTime();

@@ -35,7 +35,6 @@ public:
 	void draw_element(const mat3 &projection, const Texture &texture);
 	void set_position(vec2 position);
 	vec2 get_position() const;
-	vec2 get_bounding_box() const;
 
 	// color detection
 	float collides_with(Char character);
