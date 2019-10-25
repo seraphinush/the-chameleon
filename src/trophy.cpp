@@ -1,6 +1,7 @@
 // header
 #include "trophy.hpp"
 
+// stlib
 #include <cmath>
 #include <string> 
 #include <iostream>
@@ -130,6 +131,7 @@ void Trophy::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+// movement
 void Trophy::set_position(vec2 position)
 {
 	motion.position = position;
@@ -140,6 +142,7 @@ vec2 Trophy::get_position() const
 	return motion.position;
 }
 
+// collision
 vec2 Trophy::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * trophy_texture.width * 0.5f, std::fabs(physics.scale.y) * trophy_texture.height * 0.5f };

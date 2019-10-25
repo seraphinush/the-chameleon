@@ -33,19 +33,17 @@ public:
 	// draw tiles
 	void draw(const mat3 &projection) override;
 	void draw_element(const mat3 &projection, const Texture &texture);
-
 	void set_position(vec2 position);
 	vec2 get_position() const;
-	vec2 get_bounding_box() const;
 
 	// color detection
-	float collides_with(Char character);
+	int get_tile(Char character);
 
 	// wall collision
-	void is_wall(Char &character);
+	void is_wall_collision(Char &character);
 	
 	// TO REMOVE - placeholder for randomize path wall collision
-	void is_wall(Wanderer &wanderer);
+	void is_wall_collision(Wanderer &wanderer);
 
 	// char dead time getters and setters .. ported over from water
 	void set_char_dead();

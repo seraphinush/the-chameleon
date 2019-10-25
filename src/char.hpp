@@ -21,10 +21,9 @@ class Char : public Entity
 
 private:
 	// config
-	float config_scale = 0.2f;
+	const float config_scale = 0.2f;
 
 	bool m_is_alive;
-	bool m_is_win;
 
 	// key press
 	bool m_moving_right;
@@ -33,8 +32,7 @@ private:
 	bool m_moving_down;
 
 	// color
-	float m_color_change;
-	float m_direction_change;
+	int m_color;
 
 	// TODO -- wall collision
 	bool m_wall_up;
@@ -42,7 +40,9 @@ private:
 	bool m_wall_left;
 	bool m_wall_right;
 
+	// dash
 	bool m_dash;
+	int m_direction;
 
 public:
 	bool init();
@@ -50,48 +50,34 @@ public:
 	void update(float ms);
 	void draw(const mat3 &projection) override;
 
-	// collision
-	bool collision(vec2 pos, vec2 box);
-	bool collides_with(const Spotter &spotter);
-	bool collides_with(const Wanderer &wanderer);
-	bool collides_with(const Trophy &trophy);
-
-	// wall collision
-	void set_wall_collision(char direction, bool value);
-	bool get_wall_collision();
-
-	// collision
-	vec2 get_position() const;
-	vec2 get_bounding_box() const;
-
-	// movement
-	void move(vec2 off);
-
-	void set_rotation(float radians);
-
-	void set_direction(char direction, bool value);
-
-	void change_color(float c);
-
-	float get_color_change() const;
-
-	void change_direction(float c);
-
-	float get_direction_change() const;
-
 	// alive
 	bool is_alive() const;
 	void kill();
 
-	// goal
-	bool is_win() const;
-	void win();
+	// collision
+	bool collision(vec2 pos, vec2 box);
+	bool is_colliding(const Spotter &spotter);
+	bool is_colliding(const Wanderer &wanderer);
+	bool is_colliding(const Trophy &trophy);
+	vec2 get_bounding_box() const;
 
-	bool collides_with_wall();
+	// wall collision
+	void set_wall_collision(char direction, bool value);
+	bool is_wall_collision() const;
 
-	char get_direction();
+	// movement
+	void set_direction(char direction, bool value);
+	void change_position(vec2 off);
+	vec2 get_position() const;
+	bool is_moving() const;
 
-	void dash();
+	// color change
+	void set_color(int color);
+	int get_color() const;
+
+	// dash
 	void set_dash(bool value);
-	bool get_dash();
+	bool is_dashing();
+
+	void set_rotation(float radians);
 };
