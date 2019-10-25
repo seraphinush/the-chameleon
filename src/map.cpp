@@ -296,9 +296,6 @@ void Map::is_wall_collision(Char &character)
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
 
-	int tile_x;
-	int tile_y;
-
 	// top left
 	int tile_x_top_left = (int)pos_top_left.x / 20;
 	int tile_y_top_left = (int)pos_top_left.y / 20;
