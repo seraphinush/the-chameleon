@@ -28,12 +28,8 @@ private:
 
 public:
 	bool init();
-
 	void destroy();
-
 	void update(float ms);
-
-	// projection is the 2D orthographic projection matrix
 	void draw(const mat3& projection) override;
 
 	// movemnt

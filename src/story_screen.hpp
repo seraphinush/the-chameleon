@@ -16,11 +16,7 @@ class StoryScreen : public Entity
 
 public:
 	bool init();
-
 	void destroy();
-
 	void update(unsigned int game_state);
-
-	// projection is the 2D orthographic projection matrix
 	void draw(const mat3 &projection) override;
 };

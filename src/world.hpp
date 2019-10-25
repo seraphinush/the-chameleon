@@ -79,26 +79,20 @@ public:
 	~World();
 
 	bool init(vec2 screen);
-
 	void destroy();
-
 	bool update(float ms);
-
 	void draw();
-
 	bool is_over() const;
 
 private:
+	mat3 calculateProjectionMatrix(int width, int height);
+
 	bool spawn_spotter();
-
 	bool spawn_wanderer();
-
-	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
 
-	mat3 calculateProjectionMatrix(int width, int height);
 };
