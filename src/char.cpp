@@ -107,6 +107,17 @@ void Char::update(float ms)
 
 	if (m_is_alive)
 	{ 
+		// go in random direction on dash
+		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
+		{
+			int random = rand() % 4;
+			// chose direction
+			if (random == 0) m_moving_up = true;
+			else if (random == 1) m_moving_down = true;
+			else if (random == 2) m_moving_left = true;
+			else if (random == 3) m_moving_right = true;
+		}
+
 		// opposite direction if blue
 		if (m_color == 3) step = (-step);
 
@@ -193,20 +204,6 @@ bool Char::is_alive() const
 void Char::kill()
 {
 	m_is_alive = false;
-}
-
-////////////////////
-// GOAL
-////////////////////
-
-bool Char::is_win() const
-{
-	return m_is_win;
-}
-
-void Char::win()
-{
-	m_is_win = true;
 }
 
 ////////////////////

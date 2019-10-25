@@ -24,7 +24,6 @@ private:
 	float config_scale = 0.2f;
 
 	bool m_is_alive;
-	bool m_is_win;
 
 	// key press
 	bool m_moving_right;
@@ -41,6 +40,7 @@ private:
 	bool m_wall_left;
 	bool m_wall_right;
 
+	// dash
 	bool m_dash;
 	int m_direction;
 
@@ -53,10 +53,6 @@ public:
 	// alive
 	bool is_alive() const;
 	void kill();
-	
-	// goal
-	bool is_win() const;
-	void win();
 
 	// collision
 	bool collision(vec2 pos, vec2 box);
@@ -79,6 +75,7 @@ public:
 	void set_color(int color);
 	int get_color() const;
 
+	// dash
 	void set_dash(bool value);
 	bool get_dash();
 
