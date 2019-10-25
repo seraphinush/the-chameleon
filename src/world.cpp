@@ -28,7 +28,7 @@ void glfw_err_cb(int error, const char *desc)
 World::World() : 
 	m_control(0),
 	m_current_game_state(0),
-	m_game_state(0),
+	m_game_state(START_SCREEN),
 	m_next_wanderer_spawn(0.f),
 	m_show_story_screen(true)
 {
@@ -184,9 +184,8 @@ bool World::update(float elapsed_ms)
 	m_story_screen.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
-	if (m_game_state == 3)
+	if (m_game_state == LEVEL_1)
 	{
-
 		//////////////////////
 		// COLLISION
 		//////////////////////
@@ -234,7 +233,7 @@ bool World::update(float elapsed_ms)
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
 				m_map.set_char_dead();
-				m_game_state = 5;
+				m_game_state = WIN_SCREEN;
 			}
 			m_char.kill();
 		}
@@ -307,14 +306,7 @@ bool World::update(float elapsed_ms)
 
 		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
 		{
-			m_char.destroy();
-			m_trophy.destroy();
-			m_char.init();
-			m_trophy.init();
-			m_spotters.clear();
-			m_wanderers.clear();
-			m_map.reset_char_dead_time();
-			m_current_speed = 1.f;
+			reset_game();
 		}
 		return true;
 	}
@@ -354,17 +346,16 @@ void World::draw()
 	// game state
 	switch (m_game_state)
 	{
-	case 0:
+	case START_SCREEN:
 		m_start_screen.draw(projection_2D);
 		break;
-	case 1:
+	case CONTROL_SCREEN:
 		m_control_screen.draw(projection_2D);
 		break;
-	case 2:
-		glfwDestroyWindow(m_window);
+	case STORY_SCREEN:
+		m_story_screen.draw(projection_2D);
 		break;
-	case 3:
-
+	case LEVEL_1:
 		// draw map
 		m_map.draw(projection_2D);
 
@@ -380,10 +371,7 @@ void World::draw()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
-	case 4:
-		m_story_screen.draw(projection_2D);
-		break;
-	case 5:
+	case WIN_SCREEN:
 		m_complete_screen.draw(projection_2D);
 		break;
 	}
@@ -399,7 +387,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float right = 0.f;
 	float bottom = 0.f;
 
-	if (m_game_state != 3)
+	if (m_game_state != LEVEL_1)
 	{
 		right = (float)width / m_screen_scale;   // *0.5;
 		bottom = (float)height / m_screen_scale; // *0.5;
@@ -453,7 +441,7 @@ bool World::spawn_wanderer()
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
 	// start screen, control screen, story screen
-	if (m_game_state != 3)
+	if (m_game_state != LEVEL_1)
 	{
 		if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
 			if (m_current_game_state < 2)	m_current_game_state++;
@@ -463,15 +451,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
-			if (m_game_state == 4) m_game_state = 3;
-			else if (m_game_state == 5) m_game_state = 0;
+			if (m_game_state == STORY_SCREEN) m_game_state= LEVEL_1;
+			else if (m_game_state == WIN_SCREEN) m_game_state = START_SCREEN;
 			else if (m_current_game_state == 0)
 			{
 				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
-				m_show_story_screen ? m_game_state = 4 : m_game_state = 3;
+				m_show_story_screen ? m_game_state = STORY_SCREEN : m_game_state= LEVEL_1;
 				m_show_story_screen = false;
 			}
-			else if (m_game_state == 1) m_game_state = 0;
+			else if (m_game_state == CONTROL_SCREEN) m_game_state = STORY_SCREEN;
 			else m_game_state = m_current_game_state;
 		}
 	}
@@ -480,11 +468,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
 	{
 		m_current_game_state = 0;
-		m_game_state = 0;
+		m_game_state = START_SCREEN;
 	}
 
 	// movement, set movement
-	if (action == GLFW_PRESS && m_game_state == 3)
+	if (action == GLFW_PRESS && m_game_state == LEVEL_1)
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', true);
@@ -497,7 +485,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// color, set color, consequences
-	if (action == GLFW_PRESS && m_game_state == 3)
+	if (action == GLFW_PRESS && m_game_state == LEVEL_1)
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
@@ -525,7 +513,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// remove movement
-	if (action == GLFW_RELEASE && m_game_state == 3)
+	if (action == GLFW_RELEASE && m_game_state == LEVEL_1)
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);
@@ -549,16 +537,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// reset
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-		m_char.destroy();
-		m_trophy.destroy();
-		m_char.init();
-		m_trophy.init();
-		m_wanderers.clear();
-		m_spotters.clear();
-		m_map.reset_char_dead_time();
-		m_current_speed = 1.f;
+		reset_game();
 	}
 
 	// game current speed
@@ -578,4 +557,16 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 bool World::is_char_detectable(Map m_map)
 {
 	return m_map.get_tile(m_char) != m_char.get_color() + 1;
+}
+
+void World::reset_game()
+{
+	m_char.destroy();
+	m_trophy.destroy();
+	m_char.init();
+	m_trophy.init();
+	m_spotters.clear();
+	m_wanderers.clear();
+	m_map.reset_char_dead_time();
+	m_current_speed = 1.f;
 }
