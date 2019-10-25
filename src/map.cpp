@@ -285,7 +285,7 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall(Char &character)
+void Map::is_wall_collision(Char &character)
 {
 	vec2 pos = character.get_position();
 	vec2 box = character.get_bounding_box();
@@ -347,7 +347,7 @@ void Map::is_wall(Char &character)
 }
 
 // TO REMOVE - placeholder for randomize path wall collision
-void Map::is_wall(Wanderer &wanderer)
+void Map::is_wall_collision(Wanderer &wanderer)
 {
 	vec2 pos = wanderer.get_position();
 	vec2 box = wanderer.get_bounding_box();
@@ -408,40 +408,19 @@ void Map::is_wall(Wanderer &wanderer)
 	}
 }
 
-float Map::collides_with(Char character)
+int Map::get_tile(Char character)
 {
-	vec2 char_position = character.get_position();
-	int char_tile_x = (int)char_position.x / 20;
-	int char_tile_y = (int)char_position.y / 20;
+	vec2 pos = character.get_position();
+	int x = (int)pos.x / 20;
+	int y = (int)pos.y / 20;
 
-	if (level_1[char_tile_y][char_tile_x] == 'W')
-	{
-		return 1.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'C')
-	{
-		return 6.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'R')
-	{
-		return 2.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'G')
-	{
-		return 3.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'B')
-	{
-		return 4.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'Y')
-	{
-		return 5.0;
-	}
-	else
-	{
-		return 0.0;
-	}
+	if (level_1[y][x] == 'W') return 1;
+	else if (level_1[y][x] == 'C') return 6;
+	else if (level_1[y][x] == 'R') return 2;
+	else if (level_1[y][x] == 'G') return 3;
+	else if (level_1[y][x] == 'B') return 4;
+	else if (level_1[y][x] == 'Y') return 5;
+	else return 0;
 }
 
 void Map::set_char_dead()

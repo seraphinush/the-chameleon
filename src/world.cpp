@@ -192,12 +192,12 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 		
 		// collision, char-wall
-		m_map.is_wall(m_char);
+		m_map.is_wall_collision(m_char);
 		
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
 		for (auto &wanderer : m_wanderers)
-			m_map.is_wall(wanderer);
+			m_map.is_wall_collision(wanderer);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -577,6 +577,5 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	float collision_tile = m_map.collides_with(m_char) - 1.0;
-	return collision_tile != m_char.get_color();
+	return m_map.get_tile(m_char) != m_char.get_color() + 1;
 }
