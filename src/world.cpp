@@ -459,7 +459,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_show_story_screen ? m_game_state = STORY_SCREEN : m_game_state= LEVEL_1;
 				m_show_story_screen = false;
 			}
-			else if (m_game_state == CONTROL_SCREEN) m_game_state = STORY_SCREEN;
+			else if (m_game_state == CONTROL_SCREEN) m_game_state = START_SCREEN;
 			else m_game_state = m_current_game_state;
 		}
 	}
