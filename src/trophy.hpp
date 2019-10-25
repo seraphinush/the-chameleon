@@ -21,7 +21,7 @@ public:
 	// movement
 	// use to set position per level
 	void set_position(vec2 position);
-	vec2 get_position()const;
+	vec2 get_position() const;
 
 	// collision
 	vec2 get_bounding_box() const;

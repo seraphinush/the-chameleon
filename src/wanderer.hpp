@@ -28,16 +28,16 @@ private:
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 
-	// direction
-	vec2 direction = { 1, 0 };
-	// animation
-	float sprite_countdown = 200.f;
 public:
 	bool init();
-	// movemnt
 	void destroy();
-	// movemnt
-	void set_position(vec2 position);
-	vec2 get_position()const;
-	void set_wall_collision(char direction, bool value);
+	void update(float ms);
+	void draw(const mat3& projection) override;
 
+	void set_position(vec2 position);
+	vec2 get_position() const;
+
+	// collision
+	void set_wall_collision(char direction, bool value);
+	vec2 get_bounding_box() const;
+};
