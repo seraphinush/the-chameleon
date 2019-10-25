@@ -560,7 +560,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	return m_map.get_tile(m_char) != m_char.get_color() + 1;
+	return m_char.is_moving() || (m_map.get_tile(m_char) != m_char.get_color() + 1);
 }
 
 void World::reset_game()
