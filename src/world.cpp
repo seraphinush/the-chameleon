@@ -296,7 +296,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// red
-		if (m_char.get_dash())
+		if (m_char.is_dashing())
 			if (m_char.is_wall_collision())
 				m_char.set_dash(false);
 
@@ -490,23 +490,27 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
+			if (m_char.is_dashing()) return;
 			m_char.set_color(1);
 			m_char.set_dash(true);
 		}
 		// green
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
+			if (m_char.is_dashing()) return;
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.set_color(2);
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
 		{
+			if (m_char.is_dashing()) return;
 			m_char.set_color(3);
 		}
 		// yellow
 		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
 		{
+			if (m_char.is_dashing()) return;
 			m_char.set_color(4);
 			m_map.set_flash(1);
 		}

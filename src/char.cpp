@@ -329,7 +329,7 @@ void Char::set_dash(bool value)
 	if (!value)	m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
-bool Char::get_dash()
+bool Char::is_dashing()
 {
 	return m_dash;
 }

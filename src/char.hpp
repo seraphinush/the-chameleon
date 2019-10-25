@@ -77,7 +77,7 @@ public:
 
 	// dash
 	void set_dash(bool value);
-	bool get_dash();
+	bool is_dashing();
 
 	void set_rotation(float radians);
 };
