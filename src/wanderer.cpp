@@ -1,6 +1,7 @@
 // header
 #include "wanderer.hpp"
 
+// stlib
 #include <cmath>
 #include <string> 
 #include <iostream>
@@ -61,10 +62,15 @@ bool Wanderer::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 150.f;
-
+	//motion.radians = 0.f;
+	motion.speed = config_speed;
 	physics.scale = { config_scale, config_scale };
+
+	// TO REMOVE - placeholder for randomize path wall collision
+	m_wall_up = false;
+	m_wall_down = false;
+	m_wall_left = false;
+	m_wall_right = false;
 
 	return true;
 }
@@ -83,23 +89,42 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	
+	// TO REMOVE - placeholder for randomize path wall collision
 	// movement
-	float step_in_x = m_direction_wanderer.x * motion.speed * (ms / 1000);
-	float step_in_y = m_direction_wanderer.y * motion.speed * (ms / 1000);
-	motion.position.x += step_in_x;
-	motion.position.y += step_in_y;
-
-	if (wanderer_sprite_countdown > 0.f)
-		wanderer_sprite_countdown -= ms;
-
-	if (sprite_switch < 6) {
-		sprite_switch++;
+	int r = rand() % 3;
+	if (direction.x < 0 && m_wall_left)
+	{
+		direction.x = 1;
+		if (!m_wall_up && !m_wall_down)
+			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
 	}
-	else {
-		sprite_switch = 1;
-
+	if (direction.x > 0 && m_wall_right)
+	{
+		direction.x = -1;
+		if (!m_wall_up && !m_wall_down)
+			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
 	}
+	if (direction.y < 0 && m_wall_up)
+	{
+		if (!m_wall_left && !m_wall_right)
+			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
+		direction.y = 1;
+	}
+	if (direction.y > 0 && m_wall_down)
+	{
+		if (!m_wall_left && !m_wall_right)
+			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
+		direction.y = -1;
+	}
+	
+	motion.position.x += direction.x * motion.speed * (ms / 1000);
+	motion.position.y += direction.y * motion.speed * (ms / 1000);
+
+	// sprite change
+	if (sprite_countdown > 0.f)
+		sprite_countdown -= ms;
+
+	sprite_switch < 6 ? sprite_switch++ : sprite_switch = 1;
 }
 
 void Wanderer::draw(const mat3& projection)
@@ -107,10 +132,6 @@ void Wanderer::draw(const mat3& projection)
 	// transformation
 	transform.begin();
 	transform.translate(motion.position);
-	transform.rotate(motion.radians);
-	/* vec2 scale = { 0, 0 };
-	scale.x = flip_in_x*4*physics.scale.x;
-	scale.y = 4* physics.scale.y; */
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -152,20 +173,21 @@ void Wanderer::draw(const mat3& projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 
-	if (wanderer_sprite_countdown < 0) {
+	if (sprite_countdown < 0) {
 		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char* path = s.c_str();
 
 		wanderer_texture.load_from_file(path);
-		wanderer_sprite_countdown = 200.f;
+		sprite_countdown = 200.f;
 	}
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+// movement
 void Wanderer::set_position(vec2 position)
 {
 	motion.position = position;
@@ -174,6 +196,15 @@ void Wanderer::set_position(vec2 position)
 vec2 Wanderer::get_position() const
 {
 	return motion.position;
+}
+
+// collision
+void Wanderer::set_wall_collision(char direction, bool value)
+{
+	if (direction == 'R') m_wall_right = value;
+	else if (direction == 'L') m_wall_left = value;
+	else if (direction == 'U') m_wall_up = value;
+	else if (direction == 'D') m_wall_down = value;
 }
 
 vec2 Wanderer::get_bounding_box() const

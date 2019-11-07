@@ -389,19 +389,16 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall(Char &m_char)
+void Map::is_wall_collision(Char &character)
 {
-	vec2 char_pos = m_char.get_position();
-	vec2 char_box = m_char.get_bounding_box();
+	vec2 pos = character.get_position();
+	vec2 box = character.get_bounding_box();
 
 	// get 4 corners of char: top left, top right, bottom left, bottom right
-	vec2 pos_top_left = {char_pos.x - char_box.x, char_pos.y - char_box.y};
-	vec2 pos_top_right = {char_pos.x + char_box.x, char_pos.y - char_box.y};
-	vec2 pos_bottom_left = {char_pos.x - char_box.x, char_pos.y + char_box.y};
-	vec2 pos_bottom_right = {char_pos.x + char_box.x, char_pos.y + char_box.y};
-
-	int tile_x;
-	int tile_y;
+	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
+	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
+	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
+	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
 
 	// top left
 	int tile_x_top_left = (int)pos_top_left.x / 20;
@@ -416,87 +413,119 @@ void Map::is_wall(Char &m_char)
 	if ((level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W') || 
 		(level_1[tile_y_top_left][tile_x_top_left] == 'S' && level_1[tile_y_top_right][tile_x_top_right] == 'S'))
 	{
-		m_char.set_wall_collision('U', true);
+		character.set_wall_collision('U', true);
 	}
 	else
 	{
-		m_char.set_wall_collision('U', false);
+		character.set_wall_collision('U', false);
 	}
 
 	if ((level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
 		(level_1[tile_y_top_right][tile_x_top_right] == 'S' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
 	{
-		m_char.set_wall_collision('R', true);
+		character.set_wall_collision('R', true);
 	}
 	else
 	{
-		m_char.set_wall_collision('R', false);
+		character.set_wall_collision('R', false);
 	}
 
 	if ((level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
 		(level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
 	{
-		m_char.set_wall_collision('D', true);
+		character.set_wall_collision('D', true);
 	}
 	else
 	{
-		m_char.set_wall_collision('D', false);
+		character.set_wall_collision('D', false);
 	}
 
 	if ((level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W') ||
 		(level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' && level_1[tile_y_top_left][tile_x_top_left] == 'S'))
 	{
-		m_char.set_wall_collision('L', true);
+		character.set_wall_collision('L', true);
 	}
 	else
 	{
-		m_char.set_wall_collision('L', false);
+		character.set_wall_collision('L', false);
 	}
 }
 
-float Map::collides_with(Char m_char)
+// TO REMOVE - placeholder for randomize path wall collision
+void Map::is_wall_collision(Wanderer &wanderer)
 {
-	vec2 char_position = m_char.get_position();
-	int char_tile_x = (int)char_position.x / 20;
-	int char_tile_y = (int)char_position.y / 20;
+	vec2 pos = wanderer.get_position();
+	vec2 box = wanderer.get_bounding_box();
 
-	if (level_1[char_tile_y][char_tile_x] == 'W')
+	// get 4 corners of wanderer: top left, top right, bottom left, bottom right
+	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
+	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
+	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
+	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
+
+	int tile_x;
+	int tile_y;
+
+	// top left
+	int tile_x_top_left = (int)pos_top_left.x / 20;
+	int tile_y_top_left = (int)pos_top_left.y / 20;
+	int tile_x_top_right = (int)pos_top_right.x / 20;
+	int tile_y_top_right = (int)pos_top_right.y / 20;
+	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
+	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
+	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+
+	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
 	{
-		return 1.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'S')
-	{
-		return 6.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'C')
-	{
-		return 6.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'R')
-	{
-		return 2.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'G')
-	{
-		return 3.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'B')
-	{
-		return 4.0;
-	}
-	else if (level_1[char_tile_y][char_tile_x] == 'Y')
-	{
-		return 5.0;
+		wanderer.set_wall_collision('U', true);
 	}
 	else
 	{
-		return 0.0;
+		wanderer.set_wall_collision('U', false);
+	}
+
+	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
+	{
+		wanderer.set_wall_collision('R', true);
+	}
+	else
+	{
+		wanderer.set_wall_collision('R', false);
+	}
+
+	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	{
+		wanderer.set_wall_collision('D', true);
+	}
+	else
+	{
+		wanderer.set_wall_collision('D', false);
+	}
+
+	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	{
+		wanderer.set_wall_collision('L', true);
+	}
+	else
+	{
+		wanderer.set_wall_collision('L', false);
 	}
 }
 
-vec2 Map::get_bounding_box() const
+int Map::get_tile(Char character)
 {
-	return {std::fabs(physics.scale.x) * wall_texture.width, std::fabs(physics.scale.y) * wall_texture.height};
+	vec2 pos = character.get_position();
+	int x = (int)pos.x / 20;
+	int y = (int)pos.y / 20;
+
+	if (level_1[y][x] == 'W') return 1;
+	else if (level_1[y][x] == 'C') return 6;
+	else if (level_1[y][x] == 'R') return 2;
+	else if (level_1[y][x] == 'G') return 3;
+	else if (level_1[y][x] == 'B') return 4;
+	else if (level_1[y][x] == 'Y') return 5;
+	else return 0;
 }
 
 void Map::set_char_dead()

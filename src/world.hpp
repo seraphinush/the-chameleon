@@ -20,37 +20,20 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
+// constants
+// game state
+#define START_SCREEN 0
+#define CONTROL_SCREEN 1
+#define STORY_SCREEN 4
+#define WIN_SCREEN 5
+#define LEVEL_1 1000
+#define LEVEL_2 2000
+#define LEVEL_3 3000
+#define LEVEL_4 4000
+#define LEVEL_5 5000
+
 class World
 {
-public:
-	World();
-	~World();
-
-	bool init(vec2 screen);
-
-	void destroy();
-
-	bool update(float ms);
-
-	void draw();
-
-	bool is_over() const;
-
-private:
-
-	bool spawn_spotter();
-
-	bool spawn_wanderer();
-
-	bool spawn_trophy();
-
-	void on_key(GLFWwindow *, int key, int, int action, int mod);
-	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
-
-	bool is_char_detectable(Map m_map);
-
-	mat3 calculateProjectionMatrix(int width, int height);
-
 private:
 	// screen handle
 	GLFWwindow *m_window;
@@ -60,28 +43,23 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-	// start screen
+	// screens
 	StartScreen m_start_screen;
-
-	// controls screen
 	ControlScreen m_control_screen;
-
-	// story screen
 	StoryScreen m_story_screen;
-
-	// Complete screen
 	CompleteScreen m_complete_screen;
+
+	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
+	// story screen handle
+	bool m_show_story_screen;
 
 	Map m_map;
 
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
 
-	// points
-	unsigned int m_points;
-
 	// game state
-	unsigned int m_game_state; // 0 - Start, 1 - Controls, 2 - Quit, 3 - Level 1,
+	unsigned int m_game_state;
 
 	// current game state
 	unsigned int m_current_game_state;
@@ -107,4 +85,28 @@ private:
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
 	bool recent_dash = false;
+
+public:
+	World();
+	~World();
+
+	bool init(vec2 screen);
+	void destroy();
+	bool update(float ms);
+	void draw();
+	bool is_over() const;
+
+private:
+	mat3 calculateProjectionMatrix(int width, int height);
+
+	bool spawn_spotter();
+	bool spawn_wanderer();
+
+	void on_key(GLFWwindow *, int key, int, int action, int mod);
+	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
+
+	bool is_char_detectable(Map m_map);
+
+	// reset
+	void reset_game();
 };

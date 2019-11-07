@@ -1,4 +1,4 @@
-// Header
+// header
 #include "char.hpp"
 
 // stlib
@@ -16,7 +16,7 @@ bool Char::init()
 	{
 		if (!char_texture.load_from_file(textures_path("char.png")))
 		{
-			fprintf(stderr, "Failed to load char texture!");
+			fprintf(stderr, "Failed to load char texture!\n");
 			return false;
 		}
 	}
@@ -68,8 +68,7 @@ bool Char::init()
 
 	// initial values
 	m_is_alive = true;
-	m_color_change = 0.0;
-	m_direction_change = 0.0;
+	m_color = 0;
 
 	m_moving_right = false;
 	m_moving_left = false;
@@ -102,16 +101,34 @@ void Char::destroy()
 void Char::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
+
+	// speed up on dash
+	if (m_dash) step *= 2;
+
 	if (m_is_alive)
-	{
+	{ 
+		// go in random direction on dash
+		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
+		{
+			int random = rand() % 4;
+			// chose direction
+			if (random == 0) m_moving_up = true;
+			else if (random == 1) m_moving_down = true;
+			else if (random == 2) m_moving_left = true;
+			else if (random == 3) m_moving_right = true;
+		}
+
+		// opposite direction if blue
+		if (m_color == 3) step = (-step);
+
 		if (m_moving_right && !m_wall_right)
-			move({step, 0.f});
+			change_position({step, 0.f});
 		if (m_moving_left && !m_wall_left)
-			move({-step, 0.f});
+			change_position({-step, 0.f});
 		if (m_moving_up && !m_wall_up)
-			move({0.f, -step});
+			change_position({0.f, -step});
 		if (m_moving_down && !m_wall_down)
-			move({0.f, step});
+			change_position({0.f, step});
 	}
 }
 
@@ -139,7 +156,6 @@ void Char::draw(const mat3 &projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
-	GLint direction_change_uloc = glGetUniformLocation(effect.program, "direction_change");
 	GLint is_alive_uloc = glGetUniformLocation(effect.program, "is_alive");
 
 	// set vertices and indices
@@ -167,17 +183,32 @@ void Char::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
-	float color_change = get_color_change();
+	float color_change = get_color();
 	glUniform1f(color_change_uloc, color_change);
-
-	float direction_change = get_direction_change();
-	glUniform1f(direction_change_uloc, direction_change);
 
 	glUniform1f(is_alive_uloc, is_alive());
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
+
+////////////////////
+// ALIVE
+////////////////////
+
+bool Char::is_alive() const
+{
+	return m_is_alive;
+}
+
+void Char::kill()
+{
+	m_is_alive = false;
+}
+
+////////////////////
+// COLLISION
+////////////////////
 
 // aabb-aabb collision
 bool Char::collision(vec2 pos, vec2 box)
@@ -199,30 +230,25 @@ bool Char::collision(vec2 pos, vec2 box)
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
 
-bool Char::collides_with(const Spotter &spotter)
+bool Char::is_colliding(const Spotter &spotter)
 {
 	vec2 pos = spotter.get_position();
 	vec2 box = spotter.get_bounding_box();
 	return collision(pos, box);
 }
 
-bool Char::collides_with(const Wanderer &wanderer)
+bool Char::is_colliding(const Wanderer &wanderer)
 {
 	vec2 pos = wanderer.get_position();
 	vec2 box = wanderer.get_bounding_box();
 	return collision(pos, box);
 }
 
-bool Char::collides_with(const Trophy &trophy)
+bool Char::is_colliding(const Trophy &trophy)
 {
 	vec2 pos = trophy.get_position();
 	vec2 box = trophy.get_bounding_box();
 	return collision(pos, box);
-}
-
-vec2 Char::get_position() const
-{
-	return motion.position;
 }
 
 vec2 Char::get_bounding_box() const
@@ -232,129 +258,87 @@ vec2 Char::get_bounding_box() const
 
 void Char::set_wall_collision(char direction, bool value)
 {
-	if (direction == 'R')
-		m_wall_right = value;
-	else if (direction == 'L')
-		m_wall_left = value;
-	else if (direction == 'U')
-		m_wall_up = value;
-	else if (direction == 'D')
-		m_wall_down = value;
+	if (direction == 'R') m_wall_right = value;
+	else if (direction == 'L') m_wall_left = value;
+	else if (direction == 'U') m_wall_up = value;
+	else if (direction == 'D') m_wall_down = value;
 }
 
-bool Char::get_wall_collision()
+bool Char::is_wall_collision() const
 {
-	if (m_wall_down || m_wall_left || m_wall_right || m_wall_up)
-		return true;
-	return false;
+	return m_wall_down || m_wall_left || m_wall_right || m_wall_up;
 }
 
-void Char::move(vec2 offset)
+////////////////////
+// MOVEMENT
+////////////////////
+
+void Char::set_direction(char direction, bool value)
+{
+	// prevent direction change upon dash consequence
+	if (m_dash) {
+		if (value) return;
+	}
+
+	else if (direction == 'U') m_moving_up = value;
+	else if (direction == 'D') m_moving_down = value;
+	else if (direction == 'R') m_moving_right = value;
+	else if (direction == 'L') m_moving_left = value;
+}
+
+void Char::change_position(vec2 offset)
 {
 	motion.position.x += offset.x;
 	motion.position.y += offset.y;
 }
 
-void Char::set_rotation(float radians)
+vec2 Char::get_position() const
 {
-	motion.radians = radians;
+	return motion.position;
 }
 
-void Char::set_direction(char direction, bool value)
+bool Char::is_moving() const
 {
-	if (direction == 'R')
-		m_moving_right = value;
-	else if (direction == 'L')
-		m_moving_left = value;
-	else if (direction == 'U')
-		m_moving_up = value;
-	else if (direction == 'D')
-		m_moving_down = value;
+	return m_moving_up || m_moving_down || m_moving_left || m_moving_right;
 }
 
-void Char::change_color(float color)
+////////////////////
+// COLOR CHANGE
+////////////////////
+
+// 1: red, 2: green; 3: blue; 4: yellow;
+void Char::set_color(int color)
 {
-	// 1.0 = r; 2.0 = g; 3.0 = b; 4.0 = y;
-	m_color_change = color;
+	m_color = color;
 }
 
-float Char::get_color_change() const
+int Char::get_color() const
 {
-	return m_color_change;
+	return m_color;
 }
 
-void Char::change_direction(float direction)
-{
-	m_direction_change = direction;
-}
+////////////////////
+// CONSEQUENCE
+////////////////////
 
-float Char::get_direction_change() const
-{
-	return m_direction_change;
-}
-
-bool Char::is_alive() const
-{
-	return m_is_alive;
-}
-
-void Char::kill()
-{
-	m_is_alive = false;
-}
-
-bool Char::is_win() const
-{
-	return m_is_win;
-}
-
-void Char::win()
-{
-	m_is_win = true;
-}
-
-void Char::dash()
-{
-	// fprintf(stderr, "moving - %f", m_direction_change);
-
-	vec2 offset = {7.f, 0.f};
-	if (m_is_alive)
-	{
-		if (m_direction_change == 2.0)
-		{
-			// fprintf(stderr, "moving up");
-			offset = {0.f, 7.f};
-			motion.position.x += offset.x;
-			motion.position.y -= offset.y;
-		}
-		else if (m_direction_change == 3.0)
-		{
-			offset = {0.f, 7.f};
-			motion.position.x += offset.x;
-			motion.position.y += offset.y;
-		}
-		else if (m_direction_change == 1.0)
-		{
-			// fprintf(stderr, "moving left");
-			offset = {7.f, 0.f};
-			motion.position.x -= offset.x;
-			motion.position.y += offset.y;
-		}
-		else if (m_direction_change == 0.0)
-		{
-			offset = {7.f, 0.f};
-			motion.position.x += offset.x;
-			motion.position.y += offset.y;
-		}
-	}
-}
-
+// up: 0, down: 1, left: 2, right: 3
 void Char::set_dash(bool value)
 {
 	m_dash = value;
+	
+	if (!value)	m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
-bool Char::get_dash()
+bool Char::is_dashing()
 {
 	return m_dash;
+}
+
+////////////////////
+// MISC
+////////////////////
+
+void Char::set_rotation(float radians)
+{
+	motion.radians = radians;
 }
