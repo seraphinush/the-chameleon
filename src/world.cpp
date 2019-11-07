@@ -549,6 +549,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 	if (action == GLFW_PRESS && m_game_state == 3)
 	{
+
 		// opposite movements - when blue
 		if (m_char.get_color_change() == 3.0)
 		{
@@ -637,7 +638,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 				m_char.set_direction('R', false);
 			else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-				m_char.set_direction('D', false);
+				m_char.set_direction('D', false); 
 			else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
 				m_char.set_direction('U', false);
 		}
