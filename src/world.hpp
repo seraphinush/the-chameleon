@@ -7,10 +7,10 @@
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
-#include "story_screen.hpp"
 #include "complete_screen.hpp"
 #include "map.hpp"
 #include "trophy.hpp"
+#include "cutscene.hpp"
 
 // stlib
 #include <vector>
@@ -46,8 +46,8 @@ private:
 	// screens
 	StartScreen m_start_screen;
 	ControlScreen m_control_screen;
-	StoryScreen m_story_screen;
 	CompleteScreen m_complete_screen;
+	Cutscene m_cutscene;
 
 	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 	// story screen handle

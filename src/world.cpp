@@ -136,7 +136,7 @@ bool World::init(vec2 screen)
 
 	return m_start_screen.init() &&
 		   m_control_screen.init() &&
-		   m_story_screen.init() &&
+		   m_cutscene.init() &&
 		   m_map.init() &&
 		   m_char.init() &&
 		   m_trophy.init() &&
@@ -181,7 +181,7 @@ bool World::update(float elapsed_ms)
 
 	m_start_screen.update(m_current_game_state);
 	m_control_screen.update(m_current_game_state);
-	m_story_screen.update(m_current_game_state);
+	m_cutscene.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
 	if (m_game_state == LEVEL_1)
@@ -353,7 +353,7 @@ void World::draw()
 		m_control_screen.draw(projection_2D);
 		break;
 	case STORY_SCREEN:
-		m_story_screen.draw(projection_2D);
+		m_cutscene.draw(projection_2D);
 		break;
 	case LEVEL_1:
 		// draw map
@@ -451,7 +451,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
-			if (m_game_state == STORY_SCREEN) m_game_state= LEVEL_1;
+			if (m_game_state == STORY_SCREEN)
+			{
+				if (m_cutscene.dialogue_done(m_game_state)) m_game_state = LEVEL_1;
+				else m_cutscene.increment_dialogue_counter();
+			}
 			else if (m_game_state == WIN_SCREEN) m_game_state = START_SCREEN;
 			else if (m_current_game_state == 0)
 			{
