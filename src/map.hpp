@@ -14,6 +14,7 @@ class Map : public Entity
 	// shared texture
 	static Texture wall_texture;
 	static Texture corridor_texture;
+	static Texture wall_light_texture;
 
 	static Texture corridor_texture_red;
 	static Texture corridor_texture_blue;
