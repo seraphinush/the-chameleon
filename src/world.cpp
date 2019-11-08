@@ -310,6 +310,48 @@ bool World::update(float elapsed_ms)
 		}
 		return true;
 	}
+	else if (m_game_state == LEVEL_TUTORIAL)
+	{
+		//////////////////////
+		// COLLISION
+		//////////////////////
+
+		// collision, char-wall
+		m_map.is_wall_collision(m_char);
+
+		//////////////////////
+		// UPDATE
+		//////////////////////
+
+		// update char
+		m_char.update(elapsed_ms);
+
+		//////////////////////
+		// CONSEQUENCES
+		//////////////////////
+
+		// yellow
+		if (m_map.get_flash_time() > 2)
+		{
+			m_map.reset_flash_time();
+			m_map.set_flash(0);
+		}
+
+		// red
+		if (m_char.is_dashing())
+			if (m_char.is_wall_collision())
+				m_char.set_dash(false);
+
+		//////////////////////
+		// RESET LEVEL
+		//////////////////////
+
+		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
+		{
+			reset_game();
+		}
+		return true;
+	}
 
 	return true;
 }
@@ -354,6 +396,16 @@ void World::draw()
 		break;
 	case STORY_SCREEN:
 		m_cutscene.draw(projection_2D);
+		break;
+	case LEVEL_TUTORIAL:
+		// draw map
+		m_map.draw(projection_2D);
+		m_cutscene.draw(projection_2D);
+		m_char.draw(projection_2D);
+
+		// bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_1:
 		// draw map
@@ -453,8 +505,22 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			if (m_game_state == STORY_SCREEN)
 			{
-				if (m_cutscene.dialogue_done(m_game_state)) m_game_state = LEVEL_1;
-				else m_cutscene.increment_dialogue_counter();
+				if (m_cutscene.dialogue_done(m_game_state))
+				{
+					m_game_state = LEVEL_TUTORIAL;
+					m_map.set_current_map(LEVEL_TUTORIAL);
+					m_cutscene.increment_dialogue_counter(m_game_state);
+				}
+				else m_cutscene.increment_dialogue_counter(m_game_state);
+			}
+			else if (m_game_state == LEVEL_TUTORIAL)
+			{
+				if (m_cutscene.dialogue_done(m_game_state))
+				{
+					m_game_state = LEVEL_1;
+					m_map.set_current_map(LEVEL_1);
+				}
+				else m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == WIN_SCREEN) m_game_state = START_SCREEN;
 			else if (m_current_game_state == 0)
@@ -476,7 +542,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// movement, set movement
-	if (action == GLFW_PRESS && m_game_state == LEVEL_1)
+	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_TUTORIAL))
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', true);
@@ -489,7 +555,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// color, set color, consequences
-	if (action == GLFW_PRESS && m_game_state == LEVEL_1)
+	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_TUTORIAL))
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
@@ -521,7 +587,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// remove movement
-	if (action == GLFW_RELEASE && m_game_state == LEVEL_1)
+	if (action == GLFW_RELEASE && (m_game_state == LEVEL_1 || m_game_state == LEVEL_TUTORIAL))
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);

@@ -31,6 +31,7 @@
 #define LEVEL_3 3000
 #define LEVEL_4 4000
 #define LEVEL_5 5000
+#define LEVEL_TUTORIAL 6000
 
 class World
 {

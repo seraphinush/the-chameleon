@@ -22,12 +22,14 @@ class Cutscene : public Entity
 	int right_dialogues[20] = {2, 4, 5, 8, 9, 11, 12, 13, 16, 18, 21, 22, 23, 24, 25};
 	int left_dialogues[20] = {1, 3, 6, 7, 10, 14, 15, 17, 19, 20, 26, 27};
 
+	unsigned int current_cutscene_state;
+
 public:
 	bool init();
 	void destroy();
 	void update(unsigned int game_state);
 	void draw(const mat3& projection) override;
     bool dialogue_done(unsigned int cutscene_state);
-    void increment_dialogue_counter();
+    void increment_dialogue_counter(unsigned int cutscene_state);
 	bool is_left_dialogue();
 };

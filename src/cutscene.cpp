@@ -13,6 +13,7 @@ using namespace std;
 bool Cutscene::init()
 {
 	dialogue_counter = 1;
+	current_cutscene_state = 4;
 
 	// load shared texture
 	if (!dialogue_texture.is_valid())
@@ -126,10 +127,17 @@ void Cutscene::draw(const mat3 &projection)
 	// transformation
 	transform.begin();
 
-	if (is_left_dialogue())
-		transform.translate(left_dialogue_position);
-	else
-		transform.translate(right_dialogue_position);
+	if (current_cutscene_state == 4)
+	{
+		if (is_left_dialogue())
+			transform.translate(left_dialogue_position);
+		else
+			transform.translate(right_dialogue_position);
+	}
+	else if (current_cutscene_state == 6000)
+	{
+		transform.translate(motion.position);
+	}
 
 	transform.rotate(motion.radians);
 	transform.scale(physics.scale);
@@ -221,7 +229,7 @@ void Cutscene::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// draw
-	if (dialogue_counter != 4 && dialogue_counter != 5)
+	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == 4)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
@@ -271,7 +279,7 @@ void Cutscene::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// draw
-	if (dialogue_counter <= 13 || dialogue_counter >= 16)
+	if ((dialogue_counter <= 13 || dialogue_counter >= 16) && current_cutscene_state == 4)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
@@ -281,35 +289,52 @@ bool Cutscene::dialogue_done(unsigned int cutscene_state)
 {
 	if (cutscene_state == 4 && dialogue_counter == 27)
 		return true;
+	else if (cutscene_state == 6000 && dialogue_counter == 29)
+		return true;
 
 	return false;
 }
 
-void Cutscene::increment_dialogue_counter()
+void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 {
 	dialogue_counter++;
+	current_cutscene_state = cutscene_state;
 
-	string temp_str = "data/textures/cutscenes/story/" + to_string(dialogue_counter) + ".png";
-	string s(PROJECT_SOURCE_DIR);
-	s += temp_str;
-	const char *path = s.c_str();
-
-	dialogue_texture.load_from_file(path);
-
-	if (dialogue_counter > 3)
+	if (cutscene_state == 4)
 	{
-		left_dialogue_texture.load_from_file(textures_path("char.png"));
-		left_scale = {0.08f, 0.6f};
+		string temp_str = "data/textures/cutscenes/story/" + to_string(dialogue_counter) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
+
+		dialogue_texture.load_from_file(path);
+
+		if (dialogue_counter > 3)
+		{
+			left_dialogue_texture.load_from_file(textures_path("char.png"));
+			left_scale = {0.08f, 0.6f};
+		}
+
+		if (dialogue_counter > 3 && dialogue_counter < 14)
+		{
+			right_dialogue_texture.load_from_file(textures_path("char.png"));
+			right_scale = {0.08f, 0.6f};
+		}
+		else if (dialogue_counter > 13)
+		{
+			right_dialogue_texture.load_from_file(textures_path("intel.png"));
+			right_scale = {0.1f, 0.8f};
+		}
 	}
+	else if (cutscene_state == 6000)
+	{
+		string temp_str = "data/textures/cutscenes/tutorial/" + to_string(dialogue_counter) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
 
-	if (dialogue_counter > 3 && dialogue_counter < 14)
-	{
-		right_dialogue_texture.load_from_file(textures_path("char.png"));
-		right_scale = {0.08f, 0.6f};
-	}
-	else if (dialogue_counter > 13)
-	{
-		right_dialogue_texture.load_from_file(textures_path("intel.png"));
-		right_scale = {0.1f, 0.8f};
+		dialogue_texture.load_from_file(path);
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {400.f, 700.f};
 	}
 }

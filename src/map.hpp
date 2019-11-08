@@ -26,6 +26,7 @@ private:
 	float m_dead_time;
 	float m_flash_time;
 	int flash_map;
+	char current_level[40][61];
 
 public:
 	bool init();
@@ -58,4 +59,6 @@ public:
 	void reset_flash_time();
 
 	float get_flash_time() const;
+
+	void set_current_map(int level);
 };
