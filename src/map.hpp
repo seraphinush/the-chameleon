@@ -48,6 +48,7 @@ public:
 	float get_char_dead_time() const;
 
 	void set_flash(int value);
+	int get_flash();
 
 	void reset_flash_time();
 

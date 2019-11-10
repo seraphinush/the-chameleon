@@ -12,6 +12,8 @@ namespace
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 2000;
+const int MAX_COOLDOWN = 50;
+int cooldown = MAX_COOLDOWN;
 
 // TODO
 vec2 spotter_loc[5];
@@ -183,6 +185,11 @@ bool World::update(float elapsed_ms)
 	m_story_screen.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
+	// cooldown update
+	if (!(cooldown >= MAX_COOLDOWN))
+	{
+		cooldown++;
+	}
 	if (m_game_state == 3)
 	{
 		// wall collisions
@@ -291,7 +298,7 @@ bool World::update(float elapsed_ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
-		if (m_map.get_flash_time() > 2)
+		if (m_map.get_flash_time() > 1)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -312,7 +319,7 @@ bool World::update(float elapsed_ms)
 		if (recent_dash)
 		{
 			recent_dash = false;
-
+			cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %f", m_char.get_direction_change());
 			switch ((int)m_char.get_direction_change())
 			{
@@ -414,18 +421,18 @@ void World::draw()
 		glfwDestroyWindow(m_window);
 		break;
 	case 3:
-
 		// draw map
 		m_map.draw(projection_2D);
-
-		// draw entities
-		for (auto &spotter : m_spotters)
-			spotter.draw(projection_2D);
-		for (auto &wanderer : m_wanderers)
-			wanderer.draw(projection_2D);
-		m_trophy.draw(projection_2D);
-		m_char.draw(projection_2D);
-
+		if (m_map.get_flash() == 0)
+		{
+			// draw entities
+			for (auto &spotter : m_spotters)
+				spotter.draw(projection_2D);
+			for (auto &wanderer : m_wanderers)
+				wanderer.draw(projection_2D);
+			m_trophy.draw(projection_2D);
+			m_char.draw(projection_2D);
+		}
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -547,7 +554,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		m_game_state = 0;
 	}
 
-	if (action == GLFW_PRESS && m_game_state == 3)
+	if (action == GLFW_PRESS && m_game_state == 3 && !m_char.get_dash())
 	{
 		// opposite movements - when blue
 		if (m_char.get_color_change() == 3.0)
@@ -599,7 +606,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		}
 	}
 
-	if (action == GLFW_PRESS && m_game_state == 3)
+	if (action == GLFW_PRESS && m_game_state == 3 && cooldown >= MAX_COOLDOWN)
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color_change() != 1.0)
@@ -613,17 +620,20 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.change_color(2.0);
+			cooldown = 0;
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color_change() != 3.0)
 		{
 			m_char.change_color(3.0);
+			cooldown = 0;
 		}
 		// yellow
 		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color_change() != 4.0)
 		{
 			m_map.set_flash(1);
 			m_char.change_color(4.0);
+			cooldown = 0;
 		}
 	}
 

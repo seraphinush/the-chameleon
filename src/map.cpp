@@ -269,7 +269,7 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 20.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -406,6 +406,11 @@ void Map::set_flash(int value)
 {
 	flash_map = value;
 	m_flash_time = glfwGetTime();
+}
+
+int Map::get_flash()
+{
+	return flash_map;
 }
 
 void Map::reset_flash_time()
