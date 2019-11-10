@@ -11,6 +11,7 @@
 #include "complete_screen.hpp"
 #include "map.hpp"
 #include "trophy.hpp"
+#include "particles.hpp"
 
 // stlib
 #include <vector>
@@ -37,7 +38,6 @@ public:
 	bool is_over() const;
 
 private:
-
 	bool spawn_spotter();
 
 	bool spawn_wanderer();
@@ -91,6 +91,7 @@ private:
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
 	Trophy m_trophy;
+	Particles m_particles_emitter;
 
 	// variables
 	float m_current_speed;

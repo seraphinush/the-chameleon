@@ -55,6 +55,8 @@ set(SOURCE_FILES
 	src/map.hpp
 	src/trophy.hpp
 	src/trophy.cpp
+  src/particles.hpp
+	src/particles.cpp
 	)
 
 if (IS_OS_MAC)

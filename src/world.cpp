@@ -12,8 +12,12 @@ namespace
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 2000;
+// Cooldown
 const int MAX_COOLDOWN = 50;
 int cooldown = MAX_COOLDOWN;
+// Particles
+const size_t MAX_PARTICLES = 5;
+bool spawn_particles = false;
 
 // TODO
 vec2 spotter_loc[5];
@@ -141,6 +145,7 @@ bool World::init(vec2 screen)
 		   m_map.init() &&
 		   m_char.init() &&
 		   m_trophy.init() &&
+		   m_particles_emitter.init() &&
 		   m_complete_screen.init();
 }
 
@@ -168,6 +173,7 @@ void World::destroy()
 	m_spotters.clear();
 	m_trophy.destroy();
 	m_char.destroy();
+	m_particles_emitter.destroy();
 	m_map.destroy();
 
 	glfwDestroyWindow(m_window);
@@ -310,6 +316,7 @@ bool World::update(float elapsed_ms)
 			{
 				m_char.set_dash(false);
 				recent_dash = true;
+				spawn_particles = true;
 			}
 			else
 			{
@@ -344,6 +351,17 @@ bool World::update(float elapsed_ms)
 				m_char.set_direction('U', false);
 				break;
 			}
+		}
+
+		//particles update
+		m_particles_emitter.update(elapsed_ms);
+
+		// Spawning new Particles
+		if (spawn_particles)
+		{
+			//fprintf(stderr, "spawn pebble called");
+			m_particles_emitter.spawn_particle(m_char.get_position());
+			spawn_particles = false;
 		}
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
