@@ -13,7 +13,7 @@ Texture Map::corridor_texture_blue;
 Texture Map::corridor_texture_green;
 Texture Map::corridor_texture_yellow;
 
-// 800 * 1200 Map of Level 1
+// 800 * 1200 Map of Level 1gi
 // 31 for the \n of all chars
 char level_1[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",

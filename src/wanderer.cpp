@@ -29,7 +29,7 @@ bool Wanderer::init()
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.00f };
-	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[0].texcoord = { 0.f, 1.f};
 	vertices[1].position = { +wr, +hr, -0.00f };
 	vertices[1].texcoord = { 1.f, 1.f };
 	vertices[2].position = { +wr, -hr, -0.00f };
@@ -46,12 +46,12 @@ bool Wanderer::init()
 	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_DYNAMIC_DRAW);
 
 	// index buffer creation
 	glGenBuffers(1, &mesh.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_DYNAMIC_DRAW);
 
 	// vertex array (container for vertex + index buffer)
 	glGenVertexArrays(1, &mesh.vao);
@@ -72,6 +72,8 @@ bool Wanderer::init()
 	m_wall_left = false;
 	m_wall_right = false;
 
+
+
 	return true;
 }
 
@@ -89,32 +91,38 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	// TO REMOVE - placeholder for randomize path wall collision
-	// movement
-	int r = rand() % 3;
-	if (direction.x < 0 && m_wall_left)
-	{
-		direction.x = 1;
-		if (!m_wall_up && !m_wall_down)
-			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+	if (cool_down > 0.f) {
+		// INVOKE CHASE AI
+		cool_down -= ms;
 	}
-	if (direction.x > 0 && m_wall_right)
-	{
-		direction.x = -1;
-		if (!m_wall_up && !m_wall_down)
-			direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
-	}
-	if (direction.y < 0 && m_wall_up)
-	{
-		if (!m_wall_left && !m_wall_right)
-			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-		direction.y = 1;
-	}
-	if (direction.y > 0 && m_wall_down)
-	{
-		if (!m_wall_left && !m_wall_right)
-			direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-		direction.y = -1;
+	else {
+		// TO REMOVE - placeholder for randomize path wall collision
+		// movement
+		int r = rand() % 3;
+		if (direction.x < 0 && m_wall_left)
+		{
+			direction.x = 1;
+			if (!m_wall_up && !m_wall_down)
+				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+		}
+		if (direction.x > 0 && m_wall_right)
+		{
+			direction.x = -1;
+			if (!m_wall_up && !m_wall_down)
+				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+		}
+		if (direction.y < 0 && m_wall_up)
+		{
+			if (!m_wall_left && !m_wall_right)
+				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			direction.y = 1;
+		}
+		if (direction.y > 0 && m_wall_down)
+		{
+			if (!m_wall_left && !m_wall_right)
+				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			direction.y = -1;
+		}
 	}
 	
 	motion.position.x += direction.x * motion.speed * (ms / 1000);
@@ -210,4 +218,9 @@ void Wanderer::set_wall_collision(char direction, bool value)
 vec2 Wanderer::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
+}
+
+void Wanderer::alert_wanderer() 
+{
+	cool_down = 5000.f;
 }

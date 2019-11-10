@@ -21,7 +21,7 @@ class Char : public Entity
 
 private:
 	// config
-	const float config_scale = 0.2f;
+	const float config_scale = 0.06f;
 
 	bool m_is_alive;
 
@@ -42,6 +42,11 @@ private:
 
 	// dash
 	bool m_dash;
+
+	// ANIMATION
+	int sprite_switch = 1;
+	float sprite_countdown = 200.f;
+	int flip_in_x = 1;
 
 public:
 	bool init();
@@ -79,4 +84,5 @@ public:
 	bool is_dashing();
 
 	void set_rotation(float radians);
+	void flip_char();
 };
