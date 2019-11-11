@@ -11,7 +11,7 @@ class Wanderer : public Entity
 
 private:
 	// config
-	const float config_scale = 0.5f;
+	const float config_scale = 0.25f;
 	const float config_speed = 150.f;
 
 	// ALERT MODE COOL-DOWN

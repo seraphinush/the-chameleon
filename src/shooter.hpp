@@ -13,7 +13,7 @@ class Shooter : public Entity
 
 private:
 	// config
-	const float config_scale = 0.15;
+	const float config_scale = 0.075;
 
 	// animation
 	int shooter_sprite_switch = 1;

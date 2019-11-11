@@ -11,7 +11,7 @@ class Spotter : public Entity
 
 private:
 	// config
-	const float config_scale = 0.5;
+	const float config_scale = 0.25;
 
 	// animation
 	int spotter_sprite_switch = 1;
