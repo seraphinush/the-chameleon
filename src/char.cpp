@@ -236,31 +236,30 @@ void Char::kill()
 // aabb-aabb collision
 bool Char::collision(vec2 pos, vec2 box)
 {
-	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
-	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
+	vec2 char_pos = motion.position;
+	vec2 char_box = get_bounding_box();
+	bool collision_x_right = (char_pos.x + char_box.x) >= (pos.x - box.x) && (char_pos.x + char_box.x) <= (pos.x + box.x);
+	bool collision_x_left = (char_pos.x - char_box.x) >= (pos.x - box.x) && (char_pos.x - char_box.x) <= (pos.x + box.x);
+	bool collision_y_top = (char_pos.y + char_box.y) >= (pos.y - box.y) && (char_pos.y + char_box.y) <= (pos.y + box.y);
+	bool collision_y_down = (char_pos.y - char_box.y) >= (pos.y - box.y) && (char_pos.y - char_box.y) <= (pos.y + box.y);
 
-	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) && (motion.position.x + half_width) <= (pos.x + box.x);
-	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width) <= (pos.x + box.x);
-	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
-	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
-
+	// bullet collision
 	bool inside = false;
-
-	if (half_height > box.y)
+	if (char_box.y > box.y)
 	{
-		if (half_width > box.x)
+		if (char_box.x > box.x)
 		{
-			inside = motion.position.y - half_height < pos.y &&
-				motion.position.y + half_height > pos.y &&
-				motion.position.x - half_width < pos.x &&
-				motion.position.x + half_width > pos.x;
+			inside = char_pos.y - char_box.y < pos.y &&
+				char_pos.y + char_box.y > pos.y &&
+				char_pos.x - char_box.x < pos.x &&
+				char_pos.x + char_box.x > pos.x;
 		}
 	}
 
-	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
+	if ((char_pos.x + char_box.x) >= (pos.x + box.x) && (char_pos.x - char_box.x) <= (pos.x - box.x))
 		return collision_y_top || collision_y_down || inside;
 
-	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
+	if ((char_pos.y + char_box.y) >= (pos.y + box.y) && (char_pos.y - char_box.y) <= (pos.y - box.y))
 		return collision_x_right || collision_x_left || inside;
 
 
@@ -275,15 +274,15 @@ bool Char::is_colliding(const Spotter &spotter)
 }
 
 
-bool Char::is_colliding(Bullets& bullets)
+bool Char::is_colliding(const Bullets& bullets)
 {
-	bool accumulator = false;
 	for (auto& bullet : bullets.m_bullets) {
 		vec2 pos = bullet.position;
-		vec2 box = {bullet.radius, bullet.radius};
-		accumulator || collision(pos, box);
+		vec2 box = { bullet.radius, bullet.radius };
+		if (collision(pos, box))
+			return true;
 	}
-	return accumulator;
+	return false;
 }
 
 bool Char::is_colliding(const Wanderer &wanderer)
