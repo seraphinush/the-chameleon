@@ -304,7 +304,7 @@ bool World::update(float elapsed_ms)
 			if (shooter.is_shooting) {
 				shooter.bullets.update(elapsed_ms * m_current_speed);
 				if (m_char.is_colliding(shooter.bullets)) {
-					m_char.set_color(1);
+					m_char.set_color(0);
 				}
 			}
 		}
