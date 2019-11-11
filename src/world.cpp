@@ -257,6 +257,7 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
+					alert_mode = true;
 					// ROTATE SHOOTER TO POINT AT M_CHAR
 					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
 					if (angle_to_char < 0) {
@@ -314,6 +315,7 @@ bool World::update(float elapsed_ms)
 		// update wanderers
 		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms* m_current_speed);
+			// setting it to false : SET TRUE WHEN JOSE IS READY WITH CHASE AI
 			wanderer.alert_mode = false;
 		}
 
