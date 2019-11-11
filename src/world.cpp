@@ -310,6 +310,14 @@ bool World::update(float elapsed_ms)
 			m_map.set_flash(0);
 		}
 
+		if (m_particles_emitter.get_fade_time() > 1)
+		{
+			m_particles_emitter.reset_fade_time();
+			m_particles_emitter.set_fade(0);
+			m_particles_emitter.destroy();
+			m_particles_emitter.init();
+		}
+
 		if (m_char.get_dash())
 		{
 			if (m_char.get_wall_collision())
@@ -317,6 +325,7 @@ bool World::update(float elapsed_ms)
 				m_char.set_dash(false);
 				recent_dash = true;
 				spawn_particles = true;
+				m_particles_emitter.spawn_particle(m_char.get_position(), (int)m_char.get_direction_change());
 			}
 			else
 			{
@@ -360,7 +369,6 @@ bool World::update(float elapsed_ms)
 		if (spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			m_particles_emitter.spawn_particle(m_char.get_position(), (int)m_char.get_direction_change());
 			spawn_particles = false;
 		}
 		// spawn wanderer

@@ -56,7 +56,7 @@ bool Particles::init()
 void Particles::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
-	glDeleteBuffers(1, &m_instance_vbo);
+	//glDeleteBuffers(1, &m_instance_vbo);
 
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
@@ -91,6 +91,8 @@ void Particles::spawn_particle(vec2 position, int direction)
 	int off_x_2 = 1;
 	int off_y_1 = 1;
 	int off_y_2 = 1;
+
+	float PARTICLE_SPEED = 50;
 	switch (direction)
 	{
 	case 0:
@@ -130,17 +132,35 @@ void Particles::spawn_particle(vec2 position, int direction)
 	particle_1.position.x = position.x;
 	particle_1.position.y = position.y;
 	particle_1.radius = 5;
-	particle_1.velocity.x = off_x_1 * 100;
-	particle_1.velocity.y = off_y_1 * 100;
+	particle_1.velocity.x = off_x_1 * PARTICLE_SPEED;
+	particle_1.velocity.y = off_y_1 * PARTICLE_SPEED;
 	m_particles.emplace_back(particle_1);
 
 	Particle particle_2;
 	particle_2.position.x = position.x;
 	particle_2.position.y = position.y;
 	particle_2.radius = 5;
-	particle_2.velocity.x = off_x_2 * 100;
-	particle_2.velocity.y = off_y_2 * 100;
+	particle_2.velocity.x = off_x_2 * PARTICLE_SPEED;
+	particle_2.velocity.y = off_y_2 * PARTICLE_SPEED;
 	m_particles.emplace_back(particle_2);
+
+	Particle particle_3;
+	particle_3.position.x = position.x + 8;
+	particle_3.position.y = position.y + 8;
+	particle_3.radius = 5;
+	particle_3.velocity.x = off_x_1 * PARTICLE_SPEED;
+	particle_3.velocity.y = off_y_1 * PARTICLE_SPEED;
+	m_particles.emplace_back(particle_3);
+
+	Particle particle_4;
+	particle_4.position.x = position.x + 8;
+	particle_4.position.y = position.y + 8;
+	particle_4.radius = 5;
+	particle_4.velocity.x = off_x_2 * PARTICLE_SPEED;
+	particle_4.velocity.y = off_y_2 * PARTICLE_SPEED;
+	m_particles.emplace_back(particle_4);
+
+	set_fade(1);
 }
 
 void Particles::collides_with()
@@ -166,7 +186,7 @@ void Particles::draw(const mat3 &projection)
 
 	// Getting uniform locations
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-	GLint color_uloc = glGetUniformLocation(effect.program, "color");
+	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint fade_particle_uloc = glGetUniformLocation(effect.program, "fade_particle");
 	GLuint fade_timer_uloc = glGetUniformLocation(effect.program, "fade_timer");
 
