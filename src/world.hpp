@@ -11,6 +11,7 @@
 #include "complete_screen.hpp"
 #include "map.hpp"
 #include "trophy.hpp"
+#include "shooter.hpp"
 
 // stlib
 #include <vector>
@@ -68,6 +69,7 @@ private:
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
+	std::vector<Shooter> m_shooters;
 	Trophy m_trophy;
 
 	// variables
@@ -101,6 +103,8 @@ private:
 
 	bool spawn_spotter();
 	bool spawn_wanderer();
+
+	bool spawn_shooter();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);

@@ -14,7 +14,7 @@ bool Char::init()
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
-		if (!char_texture.load_from_file(textures_path("char.png")))
+		if (!char_texture.load_from_file(textures_path("piere_background_less.png")))
 		{
 			fprintf(stderr, "Failed to load char texture!\n");
 			return false;
@@ -82,6 +82,8 @@ bool Char::init()
 
 	m_dash = false;
 
+	flip_in_x = 0;
+
 	return true;
 }
 
@@ -129,6 +131,18 @@ void Char::update(float ms)
 			change_position({0.f, -step});
 		if (m_moving_down && !m_wall_down)
 			change_position({0.f, step});
+
+		// sprite change
+		//if (sprite_countdown > 0.f)
+		//	sprite_countdown -= ms;
+
+		//sprite_switch < 17 ? sprite_switch++ : sprite_switch = 1;
+
+		//if (flip_in_x) {
+		//	physics.scale.x = -physics.scale.x;
+		//	flip_in_x = 0;
+		//}
+
 	}
 }
 
@@ -178,6 +192,15 @@ void Char::draw(const mat3 &projection)
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
+	if ((sprite_countdown < 0) && (m_moving_right || m_moving_left || m_moving_up || m_moving_down))  {
+		string temp_str = "data/textures/person_png/" + to_string(sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char* path = s.c_str();
+
+		char_texture.load_from_file(path);
+		sprite_countdown = 200.f;
+	}
 	// color
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
@@ -221,11 +244,25 @@ bool Char::collision(vec2 pos, vec2 box)
 	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
 	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
 
+	bool inside = false;
+
+	if (half_height > box.y)
+	{
+		if (half_width > box.x)
+		{
+			inside = motion.position.y - half_height < pos.y &&
+				motion.position.y + half_height > pos.y &&
+				motion.position.x - half_width < pos.x &&
+				motion.position.x + half_width > pos.x;
+		}
+	}
+
 	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
-		return collision_y_top || collision_y_down;
+		return collision_y_top || collision_y_down || inside;
 
 	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
-		return collision_x_right || collision_x_left;
+		return collision_x_right || collision_x_left || inside;
+
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
@@ -235,6 +272,18 @@ bool Char::is_colliding(const Spotter &spotter)
 	vec2 pos = spotter.get_position();
 	vec2 box = spotter.get_bounding_box();
 	return collision(pos, box);
+}
+
+
+bool Char::is_colliding(Bullets& bullets)
+{
+	bool accumulator = false;
+	for (auto& bullet : bullets.m_bullets) {
+		vec2 pos = bullet.position;
+		vec2 box = {bullet.radius, bullet.radius};
+		accumulator || collision(pos, box);
+	}
+	return accumulator;
 }
 
 bool Char::is_colliding(const Wanderer &wanderer)
@@ -341,4 +390,9 @@ bool Char::is_dashing()
 void Char::set_rotation(float radians)
 {
 	motion.radians = radians;
+}
+
+void Char::flip_char() 
+{
+	flip_in_x = 1;
 }

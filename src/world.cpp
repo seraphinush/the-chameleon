@@ -10,11 +10,14 @@
 namespace
 {
 const size_t MAX_SPOTTERS = 5;
+const size_t MAX_SHOOTERS = 5;
 const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 800;
 
 // TODO
 vec2 spotter_loc[5];
+
+vec2 shooter_loc[5];
 
 namespace
 {
@@ -49,6 +52,14 @@ bool World::init(vec2 screen)
 	spotter_loc[2] = {100, screen.y - 100};
 	spotter_loc[3] = {screen.x - 100, screen.y - 100};
 	spotter_loc[4] = {800, 500};
+
+	// TODO
+	shooter_loc[0] = { 100 + 50, 100 + 50 };
+	shooter_loc[1] = { screen.x - 50, 100 + 50 };
+	shooter_loc[2] = { 150, screen.y - 150 };
+	shooter_loc[3] = { screen.x - 50, screen.y - 50 };
+	shooter_loc[4] = { 850, 550 };
+
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -226,6 +237,40 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
+		// proximity, char-shooter
+		for (auto& shooter : m_shooters)
+		{
+			if ((shooter.collision_with(m_char)) && is_char_detectable(m_map))
+			{
+				if (m_char.is_alive())
+				{
+					// ROTATE SHOOTER TO POINT AT M_CHAR
+					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
+					if (angle_to_char < 0) {
+						if (m_char.get_position().y > shooter.get_position().y) {
+							angle_to_char += 3.14;
+						}
+					}
+				
+					else if (m_char.get_position().x < shooter.get_position().x) {
+						angle_to_char += 3.14;
+					}
+					shooter.set_rotation(angle_to_char);
+
+					// SHOOTING AND COOLDOWN
+					shooter.is_shooting = true;
+					shooter.bullets.cooldown -= 15.f;
+					if (shooter.bullets.cooldown < 0.f) {
+						shooter.bullets.spawn_bullet(shooter.get_position(), angle_to_char);
+						shooter.bullets.cooldown = 1500.f;
+					}
+				}
+				break;
+			}
+		}
+
+
+
 		// collision, char-trophy
 		if (m_char.is_colliding(m_trophy))
 		{
@@ -253,6 +298,19 @@ bool World::update(float elapsed_ms)
 		for (auto &wanderer : m_wanderers)
 			wanderer.update(elapsed_ms * m_current_speed);
 
+		// update shooter
+		for (auto& shooter : m_shooters) {
+			shooter.update(elapsed_ms * m_current_speed);
+			if (shooter.is_shooting) {
+				shooter.bullets.update(elapsed_ms * m_current_speed);
+				if (m_char.is_colliding(shooter.bullets)) {
+					m_char.set_color(1);
+				}
+			}
+		}
+
+	
+
 		//////////////////////
 		// DYNAMIC SPAWN
 		//////////////////////
@@ -266,6 +324,17 @@ bool World::update(float elapsed_ms)
 			Spotter &new_spotter = m_spotters.back();
 
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
+		}
+
+		// spawn shooter
+		if (m_shooters.size() < MAX_SHOOTERS)
+		{
+			if (!spawn_shooter())
+				return false;
+
+			Shooter& new_shooter = m_shooters.back();
+
+			new_shooter.set_position(shooter_loc[m_shooters.size() - 1]);
 		}
 
 		// spawn wanderer
@@ -364,6 +433,12 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
+		for (auto& shooter : m_shooters) {
+			shooter.draw(projection_2D);
+			if (shooter.is_shooting) {
+				shooter.bullets.draw(projection_2D);
+			}
+		}
 		m_trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
@@ -424,6 +499,20 @@ bool World::spawn_spotter()
 	return false;
 }
 
+// spawn spotter
+bool World::spawn_shooter()
+{
+	Shooter shooter;
+	if (shooter.init())
+	{
+		shooter.bullets.init();
+		m_shooters.emplace_back(shooter);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn spotter");
+	return false;
+}
+
 // spawn wanderer
 bool World::spawn_wanderer()
 {
@@ -474,10 +563,14 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// movement, set movement
 	if (action == GLFW_PRESS && m_game_state == LEVEL_1)
 	{
-		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1)) {
 			m_char.set_direction('R', true);
-		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
+			m_char.flip_char();
+		}
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1)) {
 			m_char.set_direction('L', true);
+			m_char.flip_char();
+		}
 		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 			m_char.set_direction('U', true);
 		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))

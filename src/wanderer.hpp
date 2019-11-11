@@ -14,6 +14,9 @@ private:
 	const float config_scale = 0.5f;
 	const float config_speed = 150.f;
 
+	// ALERT MODE COOL-DOWN
+	float cool_down;
+
 	// TO REMOVE - placeholder for randomize path wall collision
 	bool m_wall_up;
 	bool m_wall_down;
@@ -40,4 +43,7 @@ public:
 	// collision
 	void set_wall_collision(char direction, bool value);
 	vec2 get_bounding_box() const;
+
+	// ALERT WANDERER METHOD
+	void alert_wanderer();
 };
