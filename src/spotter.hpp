@@ -2,6 +2,9 @@
 
 // internal
 #include "common.hpp"
+#include "char.hpp"
+
+class Char;
 
 // guard type 2 : spotter
 class Spotter : public Entity
@@ -22,6 +25,7 @@ public:
 	void destroy();
 	void update(float ms);
 	void draw(const mat3& projection) override;
+	bool collision_with(Char m_char);
 
 	// movement
 	void set_position(vec2 position);
@@ -30,4 +34,6 @@ public:
 
 	// collision
 	vec2 get_bounding_box() const;
+
+	bool alert_mode;
 };

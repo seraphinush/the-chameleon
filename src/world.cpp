@@ -222,6 +222,19 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 
+		// proximity, spotter
+		for (auto& spotter : m_spotters)
+			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			{
+				if (m_char.is_alive())
+				{
+					spotter.alert_mode = true;
+					alert_mode = true;
+				}
+				break;
+			}
+
+
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
@@ -291,15 +304,24 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		// update spotters
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters) {
+			if (alert_mode) {
+				spotter.alert_mode = true;
+			}
 			spotter.update(elapsed_ms * m_current_speed);
+		}
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
-			wanderer.update(elapsed_ms * m_current_speed);
+		for (auto& wanderer : m_wanderers) {
+			wanderer.update(elapsed_ms* m_current_speed);
+			wanderer.alert_mode = false;
+		}
 
 		// update shooter
 		for (auto& shooter : m_shooters) {
+			if (alert_mode) {
+				shooter.alert_mode = true;
+			}
 			shooter.update(elapsed_ms * m_current_speed);
 			if (shooter.is_shooting) {
 				shooter.bullets.update(elapsed_ms * m_current_speed);
@@ -664,6 +686,8 @@ void World::reset_game()
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();
+	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
+	alert_mode = false;
 }

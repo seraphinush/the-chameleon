@@ -41,5 +41,8 @@ public:
 
 	bool is_shooting;
 
+	bool alert_mode;
+
 	Bullets bullets;
+
 };

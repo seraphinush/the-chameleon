@@ -98,6 +98,8 @@ public:
 	void draw();
 	bool is_over() const;
 
+	bool alert_mode;
+
 private:
 	mat3 calculateProjectionMatrix(int width, int height);
 

@@ -172,3 +172,17 @@ vec2 Spotter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
 }
+
+bool Spotter::collision_with(Char m_char)
+{
+	// using euclidean distance rn - FIX LATER
+	float difference_in_x = m_char.get_position().x - motion.position.x;
+	float difference_in_y = m_char.get_position().y - motion.position.y;
+
+	if ((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
