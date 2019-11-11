@@ -91,7 +91,8 @@ void Particles::spawn_particle(vec2 position, int direction)
 	int off_x_2 = 1;
 	int off_y_1 = 1;
 	int off_y_2 = 1;
-
+	// randomize speed
+	// float velocity = (float(rand()) / (float(RAND_MAX) / (800.f - 500.f))) + 500.f;
 	float PARTICLE_SPEED = 50;
 	switch (direction)
 	{
