@@ -110,7 +110,7 @@ void Bullets::spawn_bullet(vec2 position, float radians)
 	b.position = position;
 	b.life = 5.0f;
 
-	b.velocity = { 5*cos(radians) , 5*sin(radians)};
+	b.velocity = { 20*cos(radians) , 20*sin(radians)};
 	b.radius = 2;
 	m_bullets.emplace_back(b);
 }
@@ -132,7 +132,7 @@ void Bullets::draw(const mat3& projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "color");
 
 	// Pebble color
-	float color[] = { 0.4f, 0.4f, 0.4f };
+	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 

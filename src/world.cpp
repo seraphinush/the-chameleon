@@ -257,14 +257,13 @@ bool World::update(float elapsed_ms)
 					}
 					shooter.set_rotation(angle_to_char);
 
+					// SHOOTING AND COOLDOWN
 					shooter.is_shooting = true;
-					shooter.bullets.cooldown -= 5.f;
+					shooter.bullets.cooldown -= 15.f;
 					if (shooter.bullets.cooldown < 0.f) {
 						shooter.bullets.spawn_bullet(shooter.get_position(), angle_to_char);
 						shooter.bullets.cooldown = 1500.f;
 					}
-
-		
 				}
 				break;
 			}

@@ -244,11 +244,25 @@ bool Char::collision(vec2 pos, vec2 box)
 	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
 	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
 
+	bool inside = false;
+
+	if (half_height > box.y)
+	{
+		if (half_width > box.x)
+		{
+			inside = motion.position.y - half_height < pos.y &&
+				motion.position.y + half_height > pos.y &&
+				motion.position.x - half_width < pos.x &&
+				motion.position.x + half_width > pos.x;
+		}
+	}
+
 	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
-		return collision_y_top || collision_y_down;
+		return collision_y_top || collision_y_down || inside;
 
 	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
-		return collision_x_right || collision_x_left;
+		return collision_x_right || collision_x_left || inside;
+
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
