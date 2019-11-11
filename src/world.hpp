@@ -11,6 +11,7 @@
 #include "map.hpp"
 #include "trophy.hpp"
 #include "cutscene.hpp"
+#include "hud.hpp"
 
 // stlib
 #include <vector>
@@ -49,6 +50,7 @@ private:
 	ControlScreen m_control_screen;
 	CompleteScreen m_complete_screen;
 	Cutscene m_cutscene;
+	Hud m_hud;
 
 	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 	// story screen handle

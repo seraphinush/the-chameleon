@@ -42,7 +42,8 @@ set(SOURCE_FILES
   src/control_screen.cpp  
   src/complete_screen.cpp
   src/trophy.cpp
-  src/cutscene.cpp    
+  src/cutscene.cpp 
+  src/hud.cpp       
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -54,7 +55,8 @@ set(SOURCE_FILES
   src/char.hpp
 	src/map.hpp
 	src/trophy.hpp
-  src/cutscene.hpp  
+  src/cutscene.hpp
+  src/hud.hpp      
 	)
 
 if (IS_OS_MAC)

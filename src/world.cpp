@@ -137,6 +137,7 @@ bool World::init(vec2 screen)
 	return m_start_screen.init() &&
 		   m_control_screen.init() &&
 		   m_cutscene.init() &&
+		   m_hud.init() &&
 		   m_map.init() &&
 		   m_char.init() &&
 		   m_trophy.init() &&
@@ -186,6 +187,7 @@ bool World::update(float elapsed_ms)
 
 	if (m_game_state == LEVEL_1)
 	{
+		m_hud.update(m_current_game_state);
 		//////////////////////
 		// COLLISION
 		//////////////////////
@@ -312,6 +314,7 @@ bool World::update(float elapsed_ms)
 	}
 	else if (m_game_state == LEVEL_TUTORIAL)
 	{
+		m_hud.update(m_current_game_state);
 		//////////////////////
 		// COLLISION
 		//////////////////////
@@ -400,6 +403,7 @@ void World::draw()
 	case LEVEL_TUTORIAL:
 		// draw map
 		m_map.draw(projection_2D);
+		m_hud.draw(projection_2D);
 		m_cutscene.draw(projection_2D);
 		m_char.draw(projection_2D);
 
@@ -409,8 +413,9 @@ void World::draw()
 		break;
 	case LEVEL_1:
 		// draw map
+		m_hud.draw(projection_2D);
 		m_map.draw(projection_2D);
-
+		
 		// draw entities
 		for (auto &spotter : m_spotters)
 			spotter.draw(projection_2D);
@@ -625,7 +630,46 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
-	//
+	// red tooltip
+	if (xpos >= 1086 && xpos <= 1114 && ypos >= 655 && ypos <= 680)
+	{
+		m_hud.set_tooltip('R', true);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	// green tooltip
+	else if (xpos >= 1086 && xpos <= 1114 && ypos >= 719 && ypos <= 751)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', true);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	// blue tooltip
+	else if (xpos >= 1052 && xpos <= 1076 && ypos >= 690 && ypos <= 712)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', true);
+		m_hud.set_tooltip('Y', false);
+	}
+	// yellow tooltip
+	else if (xpos >= 1121 && xpos <= 1145 && ypos >= 690 && ypos <= 712)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', true);
+	}
+	else
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	
 }
 
 bool World::is_char_detectable(Map m_map)
