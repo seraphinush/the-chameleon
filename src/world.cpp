@@ -151,7 +151,8 @@ bool World::init(vec2 screen)
 		   m_map.init() &&
 		   m_char.init() &&
 		   m_trophy.init() &&
-		   m_complete_screen.init();
+		   m_complete_screen.init() &&
+		   m_overlay.init();
 }
 
 // release all the associated resources
@@ -179,6 +180,7 @@ void World::destroy()
 	m_trophy.destroy();
 	m_char.destroy();
 	m_map.destroy();
+	m_overlay.destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -194,6 +196,9 @@ bool World::update(float elapsed_ms)
 	m_control_screen.update(m_current_game_state);
 	m_story_screen.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
+
+	// IF ALERT MODE
+	m_overlay.oscillation();
 
 	if (m_game_state == LEVEL_1)
 	{
@@ -428,6 +433,7 @@ void World::draw()
 		// draw map
 		m_map.draw(projection_2D);
 
+
 		// draw entities
 		for (auto &spotter : m_spotters)
 			spotter.draw(projection_2D);
@@ -441,6 +447,8 @@ void World::draw()
 		}
 		m_trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
+
+		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -666,4 +674,6 @@ void World::reset_game()
 	m_wanderers.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
+	m_overlay.destroy();
+	m_overlay.init();
 }

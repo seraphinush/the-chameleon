@@ -44,6 +44,8 @@ set(SOURCE_FILES
   src/complete_screen.cpp  
   src/shooter.cpp
   src/bullets.cpp
+  src/overlay.cpp
+  src/overlay.hpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp

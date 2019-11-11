@@ -12,6 +12,7 @@
 #include "map.hpp"
 #include "trophy.hpp"
 #include "shooter.hpp"
+#include "overlay.hpp"
 
 // stlib
 #include <vector>
@@ -55,6 +56,7 @@ private:
 	bool m_show_story_screen;
 
 	Map m_map;
+	Overlay m_overlay;
 
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
