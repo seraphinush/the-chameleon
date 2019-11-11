@@ -91,9 +91,8 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	if (cool_down > 0.f) {
+	if (alert_mode) {
 		// INVOKE CHASE AI
-		cool_down -= ms;
 	}
 	else {
 		// TO REMOVE - placeholder for randomize path wall collision
@@ -218,9 +217,4 @@ void Wanderer::set_wall_collision(char direction, bool value)
 vec2 Wanderer::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
-}
-
-void Wanderer::alert_wanderer() 
-{
-	cool_down = 5000.f;
 }

@@ -227,6 +227,19 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 
+		// proximity, spotter
+		for (auto& spotter : m_spotters)
+			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			{
+				if (m_char.is_alive())
+				{
+					spotter.alert_mode = true;
+					alert_mode = true;
+				}
+				break;
+			}
+
+
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
@@ -249,6 +262,7 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
+					alert_mode = true;
 					// ROTATE SHOOTER TO POINT AT M_CHAR
 					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
 					if (angle_to_char < 0) {
@@ -296,15 +310,25 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		// update spotters
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters) {
+			if (alert_mode) {
+				spotter.alert_mode = true;
+			}
 			spotter.update(elapsed_ms * m_current_speed);
+		}
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
-			wanderer.update(elapsed_ms * m_current_speed);
+		for (auto& wanderer : m_wanderers) {
+			wanderer.update(elapsed_ms* m_current_speed);
+			// setting it to false : SET TRUE WHEN JOSE IS READY WITH CHASE AI
+			wanderer.alert_mode = false;
+		}
 
 		// update shooter
 		for (auto& shooter : m_shooters) {
+			if (alert_mode) {
+				shooter.alert_mode = true;
+			}
 			shooter.update(elapsed_ms * m_current_speed);
 			if (shooter.is_shooting) {
 				shooter.bullets.update(elapsed_ms * m_current_speed);
@@ -672,8 +696,13 @@ void World::reset_game()
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();
+	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
+<<<<<<< HEAD
 	m_overlay.destroy();
 	m_overlay.init();
+=======
+	alert_mode = false;
+>>>>>>> b139db4c2bf6e360558d54a863630e43e3921a46
 }

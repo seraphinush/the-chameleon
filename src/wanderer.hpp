@@ -45,5 +45,5 @@ public:
 	vec2 get_bounding_box() const;
 
 	// ALERT WANDERER METHOD
-	void alert_wanderer();
+	bool alert_mode;
 };
