@@ -7,7 +7,7 @@ class Overlay : public Entity
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(bool in_alert_mode);
 
 	// Releases all associated resources
 	void destroy();
@@ -16,6 +16,8 @@ public:
 	void draw(const mat3& projection)override;
 
 	void oscillation();
+
+	void update_alert_mode(bool in_alert_mode);
 
 
 private:

@@ -186,7 +186,6 @@ bool Spotter::collision_with(Char m_char)
 	bool in_direction = ((difference_in_x/direction.x >= 0) && (difference_in_y/direction.y >= 0));
 	
 	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) && (in_direction)) {
-		printf("I got here");
 		return true;
 	}
 	else {

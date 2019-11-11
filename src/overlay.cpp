@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-bool Overlay::init() {
+bool Overlay::init(bool in_alert_mode) {
 	m_dead_time = -1;
 
 	// Since we are not going to apply transformation to this screen geometry
@@ -32,7 +32,7 @@ bool Overlay::init() {
 	if (!effect.load_from_file(shader_path("overlay.vs.glsl"), shader_path("overlay.fs.glsl")))
 		return false;
 
-	alert_mode = false;
+	alert_mode = in_alert_mode;
 	oscillation_value = 0.f;
 
 	return true;
@@ -45,6 +45,10 @@ void Overlay::destroy() {
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
 	glDeleteShader(effect.program);
+}
+
+void Overlay::update_alert_mode(bool in_alert_mode) {
+	alert_mode = in_alert_mode;
 }
 
 void Overlay::draw(const mat3& projection) {

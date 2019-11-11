@@ -152,7 +152,7 @@ bool World::init(vec2 screen)
 		   m_char.init() &&
 		   m_trophy.init() &&
 		   m_complete_screen.init() &&
-		   m_overlay.init();
+		   m_overlay.init(alert_mode);
 }
 
 // release all the associated resources
@@ -197,8 +197,11 @@ bool World::update(float elapsed_ms)
 	m_story_screen.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
-	// IF ALERT MODE
-	m_overlay.oscillation();
+	// IF ALERT MODE OVERLAY
+	m_overlay.update_alert_mode(alert_mode);
+	if (alert_mode) {
+		m_overlay.oscillation();
+	}
 
 	if (m_game_state == LEVEL_1)
 	{
@@ -699,10 +702,7 @@ void World::reset_game()
 	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
-<<<<<<< HEAD
 	m_overlay.destroy();
-	m_overlay.init();
-=======
 	alert_mode = false;
->>>>>>> b139db4c2bf6e360558d54a863630e43e3921a46
+	m_overlay.init(alert_mode);
 }
