@@ -6,6 +6,7 @@
 #include "spotter.hpp"
 #include "trophy.hpp"
 #include "wanderer.hpp"
+#include "bullets.hpp"
 
 // stlib
 #include <vector>
@@ -13,6 +14,7 @@
 class Spotter;
 class Wanderer;
 class Trophy;
+class Bullets;
 
 class Char : public Entity
 {
@@ -63,6 +65,7 @@ public:
 	bool is_colliding(const Spotter &spotter);
 	bool is_colliding(const Wanderer &wanderer);
 	bool is_colliding(const Trophy &trophy);
+	bool is_colliding(Bullets& bullets);
 	vec2 get_bounding_box() const;
 
 	// wall collision

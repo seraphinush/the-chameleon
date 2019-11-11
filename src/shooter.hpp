@@ -3,6 +3,7 @@
 // internal
 #include "common.hpp"
 #include "char.hpp"
+#include "bullets.hpp"
 
 // guard type 2 : spotter
 class Shooter : public Entity
@@ -37,4 +38,8 @@ public:
 	vec2 get_bounding_box() const;
 
 	bool collision_with(Char m_char);
+
+	bool is_shooting;
+
+	Bullets bullets;
 };

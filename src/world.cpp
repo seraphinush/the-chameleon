@@ -256,6 +256,14 @@ bool World::update(float elapsed_ms)
 						angle_to_char += 3.14;
 					}
 					shooter.set_rotation(angle_to_char);
+
+					shooter.is_shooting = true;
+					shooter.bullets.cooldown -= 5.f;
+					if (shooter.bullets.cooldown < 0.f) {
+						shooter.bullets.spawn_bullet(shooter.get_position(), angle_to_char);
+						shooter.bullets.cooldown = 1500.f;
+					}
+
 		
 				}
 				break;
@@ -292,8 +300,17 @@ bool World::update(float elapsed_ms)
 			wanderer.update(elapsed_ms * m_current_speed);
 
 		// update shooter
-		for (auto& shooter : m_shooters)
+		for (auto& shooter : m_shooters) {
 			shooter.update(elapsed_ms * m_current_speed);
+			if (shooter.is_shooting) {
+				shooter.bullets.update(elapsed_ms * m_current_speed);
+				if (m_char.is_colliding(shooter.bullets)) {
+					m_char.set_color(1);
+				}
+			}
+		}
+
+	
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -417,8 +434,12 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
-		for (auto& shooter : m_shooters)
+		for (auto& shooter : m_shooters) {
 			shooter.draw(projection_2D);
+			if (shooter.is_shooting) {
+				shooter.bullets.draw(projection_2D);
+			}
+		}
 		m_trophy.draw(projection_2D);
 		m_char.draw(projection_2D);
 
@@ -485,6 +506,7 @@ bool World::spawn_shooter()
 	Shooter shooter;
 	if (shooter.init())
 	{
+		shooter.bullets.init();
 		m_shooters.emplace_back(shooter);
 		return true;
 	}

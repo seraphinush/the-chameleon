@@ -260,6 +260,18 @@ bool Char::is_colliding(const Spotter &spotter)
 	return collision(pos, box);
 }
 
+
+bool Char::is_colliding(Bullets& bullets)
+{
+	bool accumulator = false;
+	for (auto& bullet : bullets.m_bullets) {
+		vec2 pos = bullet.position;
+		vec2 box = {bullet.radius, bullet.radius};
+		accumulator || collision(pos, box);
+	}
+	return accumulator;
+}
+
 bool Char::is_colliding(const Wanderer &wanderer)
 {
 	vec2 pos = wanderer.get_position();
