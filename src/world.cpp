@@ -134,7 +134,7 @@ bool World::init(vec2 screen)
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	//Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
@@ -208,7 +208,7 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
+					// Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -223,7 +223,7 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
+					// Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -236,7 +236,7 @@ bool World::update(float elapsed_ms)
 		{
 			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				// Mix_PlayChannel(-1, m_char_win_sound, 0);
 				m_map.set_char_dead();
 				m_game_state = 5;
 			}
@@ -360,7 +360,7 @@ bool World::update(float elapsed_ms)
 		if (spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			m_particles_emitter.spawn_particle(m_char.get_position());
+			m_particles_emitter.spawn_particle(m_char.get_position(), (int)m_char.get_direction_change());
 			spawn_particles = false;
 		}
 		// spawn wanderer
@@ -450,6 +450,7 @@ void World::draw()
 				wanderer.draw(projection_2D);
 			m_trophy.draw(projection_2D);
 			m_char.draw(projection_2D);
+			m_particles_emitter.draw(projection_2D);
 		}
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -636,7 +637,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// green
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color_change() != 2.0)
 		{
-			Mix_PlayChannel(-1, m_char_green_sound, 0);
+			// Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.change_color(2.0);
 			cooldown = 0;
 		}

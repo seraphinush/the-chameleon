@@ -38,12 +38,20 @@ public:
 	void draw(const mat3 &projection) override;
 
 	// Spawn new particle
-	void spawn_particle(vec2 position);
+	void spawn_particle(vec2 position, int direction);
 
 	// Trigger collision checks
 	void collides_with();
 
+	// fade particles
+	void set_fade(int value);
+	int get_fade();
+	void reset_fade_time();
+	float get_fade_time() const;
+
 private:
 	GLuint m_instance_vbo;			   // vbo for instancing particles
 	std::vector<Particle> m_particles; // vector of particles
+	float m_fade_time;
+	int fade_particle;
 };

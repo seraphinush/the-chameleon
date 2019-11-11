@@ -18,8 +18,8 @@ bool Particles::init()
 
 	for (int i = 0; i < NUM_SEGMENTS; i++)
 	{
-		screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-		screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+		screen_vertex_buffer_data.push_back(std::cos(float(i) / (float)NUM_SEGMENTS));
+		screen_vertex_buffer_data.push_back(std::sin(M_PI * float(i) / (float)NUM_SEGMENTS));
 		screen_vertex_buffer_data.push_back(z);
 
 		screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
@@ -72,13 +72,75 @@ void Particles::update(float ms)
 	// You will need to handle both the motion of particles
 	// and the removal of dead particles.
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	for (auto &particle : m_particles)
+	{
+		float dt = ms / 1000;
+		float step_x = 1.0 * particle.velocity.x * dt;
+		float step_y = 1.0 * particle.velocity.y * dt;
+		particle.position.x += step_x;
+		particle.position.y += step_y;
+	}
 }
 
-void Particles::spawn_particle(vec2 position)
+void Particles::spawn_particle(vec2 position, int direction)
 {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE PARTICLE SPAWNING HERE
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	int off_x_1 = 1;
+	int off_x_2 = 1;
+	int off_y_1 = 1;
+	int off_y_2 = 1;
+	switch (direction)
+	{
+	case 0:
+		off_y_1 = 1;
+		off_y_2 = -1;
+		off_x_1 = -1;
+		off_x_2 = -1;
+		break;
+	case 1:
+		// fprintf(stderr, "hit left or right wall");
+		off_y_1 = 1;
+		off_y_2 = -1;
+		off_x_1 = 1;
+		off_x_2 = 1;
+		break;
+	case 2:
+		off_x_1 = 1;
+		off_x_2 = -1;
+		off_y_1 = 1;
+		off_y_2 = 1;
+		break;
+	case 3:
+		// fprintf(stderr, "hit top or bottom wall");
+		off_x_1 = 1;
+		off_x_2 = -1;
+		off_y_1 = -1;
+		off_y_2 = -1;
+		break;
+	default:
+		off_x_1 = 1;
+		off_x_2 = 1;
+		off_y_1 = 1;
+		off_y_2 = 1;
+		break;
+	}
+	Particle particle_1;
+	particle_1.position.x = position.x;
+	particle_1.position.y = position.y;
+	particle_1.radius = 5;
+	particle_1.velocity.x = off_x_1 * 100;
+	particle_1.velocity.y = off_y_1 * 100;
+	m_particles.emplace_back(particle_1);
+
+	Particle particle_2;
+	particle_2.position.x = position.x;
+	particle_2.position.y = position.y;
+	particle_2.radius = 5;
+	particle_2.velocity.x = off_x_2 * 100;
+	particle_2.velocity.y = off_y_2 * 100;
+	m_particles.emplace_back(particle_2);
 }
 
 void Particles::collides_with()
@@ -105,11 +167,15 @@ void Particles::draw(const mat3 &projection)
 	// Getting uniform locations
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint color_uloc = glGetUniformLocation(effect.program, "color");
+	GLint fade_particle_uloc = glGetUniformLocation(effect.program, "fade_particle");
+	GLuint fade_timer_uloc = glGetUniformLocation(effect.program, "fade_timer");
 
 	// Particle color
 	float color[] = {0.4f, 0.4f, 0.4f};
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniform1iv(fade_particle_uloc, 1, &fade_particle);
+	glUniform1f(fade_timer_uloc, (m_fade_time > 0) ? (float)((glfwGetTime() - m_fade_time) * 20.0f) : -1);
 
 	// Draw the screen texture on the geometry
 	// Setting vertices
@@ -144,4 +210,27 @@ void Particles::draw(const mat3 &projection)
 	// Reset divisor
 	glVertexAttribDivisor(1, 0);
 	glVertexAttribDivisor(2, 0);
+}
+
+// fade Particle
+
+void Particles::set_fade(int value)
+{
+	fade_particle = value;
+	m_fade_time = glfwGetTime();
+}
+
+int Particles::get_fade()
+{
+	return fade_particle;
+}
+
+void Particles::reset_fade_time()
+{
+	m_fade_time = glfwGetTime();
+}
+
+float Particles::get_fade_time() const
+{
+	return glfwGetTime() - m_fade_time;
 }
