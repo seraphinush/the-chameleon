@@ -36,4 +36,6 @@ public:
 	vec2 get_bounding_box() const;
 
 	bool alert_mode;
+
+	vec2 direction;;
 };

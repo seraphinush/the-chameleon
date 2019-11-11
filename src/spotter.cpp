@@ -141,6 +141,7 @@ void Spotter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
+	vec2 directions[3] =  {{0, -1}, {1, 0}, {-1, 0} };
 	// sprite change
 	if (spotter_sprite_countdown < 0) {
 		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
@@ -150,6 +151,8 @@ void Spotter::draw(const mat3 &projection)
 
 		spotter_texture.load_from_file(path);
 		spotter_sprite_countdown = 1500.f;
+		
+		direction = directions[spotter_sprite_switch - 1];
 	}
 
 	// draw
@@ -176,10 +179,14 @@ vec2 Spotter::get_bounding_box() const
 bool Spotter::collision_with(Char m_char)
 {
 	// using euclidean distance rn - FIX LATER
+
 	float difference_in_x = m_char.get_position().x - motion.position.x;
 	float difference_in_y = m_char.get_position().y - motion.position.y;
-
-	if ((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) {
+	
+	bool in_direction = ((difference_in_x/direction.x >= 0) && (difference_in_y/direction.y >= 0));
+	
+	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) && (in_direction)) {
+		printf("I got here");
 		return true;
 	}
 	else {
