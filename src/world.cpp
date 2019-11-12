@@ -11,7 +11,7 @@ namespace
 {
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_SHOOTERS = 5;
-const size_t MAX_WANDERERS = 10;
+const size_t MAX_WANDERERS = 1;
 const size_t SPOTTER_DELAY_MS = 800;
 // Cooldown
 const int MAX_COOLDOWN = 50;
@@ -25,6 +25,8 @@ vec2 spotter_loc[5];
 
 vec2 shooter_loc[5];
 
+vec2 wanderer_loc[5];
+
 namespace
 {
 void glfw_err_cb(int error, const char *desc)
@@ -37,7 +39,6 @@ void glfw_err_cb(int error, const char *desc)
 World::World() : m_control(0),
 				 m_current_game_state(0),
 				 m_game_state(START_SCREEN),
-				 m_next_wanderer_spawn(0.f),
 				 m_show_story_screen(true)
 {
 	// send rng with random device
@@ -52,6 +53,7 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
+	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
 	spotter_loc[0] = {100, 100};
 	spotter_loc[1] = {screen.x - 100, 100};
 	spotter_loc[2] = {100, screen.y - 100};
@@ -64,6 +66,8 @@ bool World::init(vec2 screen)
 	shooter_loc[2] = {150, screen.y - 150};
 	shooter_loc[3] = {screen.x - 50, screen.y - 50};
 	shooter_loc[4] = {850, 550};
+
+	wanderer_loc[0] = m_map.get_tile_center_coords(vec2{ 6,6 });
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -413,8 +417,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		if (m_wanderers.size() < MAX_WANDERERS)
 		{
 			if (!spawn_wanderer())
 				return false;
@@ -422,10 +425,7 @@ bool World::update(float elapsed_ms)
 			Wanderer &new_wanderer = m_wanderers.back();
 
 			// set initial position
-			new_wanderer.set_position({screen.x - 50, 100 + m_dist(m_rng) * (screen.y - 100)});
-
-			// next spawn
-			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
+			new_wanderer.set_position(wanderer_loc[m_wanderers.size() - 1]);
 		}
 
 		//////////////////////

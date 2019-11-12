@@ -125,8 +125,8 @@ void Wanderer::update(float ms)
 		}
 	}
 	
-	motion.position.x += direction.x * motion.speed * (ms / 1000);
-	motion.position.y += direction.y * motion.speed * (ms / 1000);
+	//motion.position.x += direction.x * motion.speed * (ms / 1000);
+	//motion.position.y += direction.y * motion.speed * (ms / 1000);
 
 	// sprite change
 	if (sprite_countdown > 0.f)

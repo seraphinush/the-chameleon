@@ -59,4 +59,7 @@ public:
 	void reset_flash_time();
 
 	float get_flash_time() const;
+
+	// Pathing helper functions
+	vec2 get_tile_center_coords(vec2 tile_indices);
 };

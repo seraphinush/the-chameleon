@@ -649,3 +649,9 @@ float Map::get_flash_time() const
 {
 	return glfwGetTime() - m_flash_time;
 }
+
+vec2 Map::get_tile_center_coords(vec2 tile_indices)
+{
+	return vec2{ (tile_indices.x * 20) + 10, (tile_indices.y * 20) + 10 };
+}
+

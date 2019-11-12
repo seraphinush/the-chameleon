@@ -76,7 +76,6 @@ private:
 
 	// variables
 	float m_current_speed;
-	float m_next_wanderer_spawn;
 
 	// sound
 	Mix_Music *m_background_music;
