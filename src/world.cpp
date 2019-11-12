@@ -11,7 +11,6 @@ namespace
 {
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_SHOOTERS = 5;
-const size_t MAX_WANDERERS = 1;
 const size_t SPOTTER_DELAY_MS = 800;
 // Cooldown
 const int MAX_COOLDOWN = 50;
@@ -24,8 +23,6 @@ bool spawn_particles = false;
 vec2 spotter_loc[5];
 
 vec2 shooter_loc[5];
-
-vec2 wanderer_loc[5];
 
 namespace
 {
@@ -66,8 +63,6 @@ bool World::init(vec2 screen)
 	shooter_loc[2] = {150, screen.y - 150};
 	shooter_loc[3] = {screen.x - 50, screen.y - 50};
 	shooter_loc[4] = {850, 550};
-
-	wanderer_loc[0] = m_map.get_tile_center_coords(vec2{ 6,6 });
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -417,15 +412,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		if (m_wanderers.size() < MAX_WANDERERS)
+		if (m_wanderers.size() < wanderer_paths.size())
 		{
-			if (!spawn_wanderer())
+			if (!spawn_wanderer(translate_to_coords(wanderer_paths[0])))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
-
-			// set initial position
-			new_wanderer.set_position(wanderer_loc[m_wanderers.size() - 1]);
 		}
 
 		//////////////////////
@@ -594,10 +586,10 @@ bool World::spawn_shooter()
 }
 
 // spawn wanderer
-bool World::spawn_wanderer()
+bool World::spawn_wanderer(std::vector<vec2> path)
 {
 	Wanderer wanderer;
-	if (wanderer.init())
+	if (wanderer.init(path))
 	{
 		m_wanderers.emplace_back(wanderer);
 		return true;
@@ -758,4 +750,16 @@ void World::reset_game()
 	m_wanderers.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
+}
+
+vector<vec2> World::translate_to_coords(vector<vec2> path)
+{
+	vector<vec2> translation;
+	for (vec2 checkpoint : path)
+	{
+		vec2 translated_point = m_map.get_tile_center_coords(checkpoint);
+		translation.push_back(translated_point);
+	}
+
+	return translation;
 }

@@ -89,6 +89,7 @@ private:
 
 	bool recent_dash = false;
 
+	vector<vector<vec2>> wanderer_paths = { {{6,6}, {6,2}, {1,2}, {1,6}} };
 public:
 	World();
 	~World();
@@ -103,7 +104,7 @@ private:
 	bool spawn_spotter();
 	bool spawn_shooter();
 
-	bool spawn_wanderer();
+	bool spawn_wanderer(std::vector<vec2> path);
 
 	bool spawn_trophy();
 
@@ -116,4 +117,7 @@ private:
 
 	// reset
 	void reset_game();
+
+	//Pathing Utility
+	vector<vec2> translate_to_coords(vector<vec2> path);
 };

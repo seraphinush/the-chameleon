@@ -10,8 +10,15 @@
 Texture Wanderer::wanderer_texture;
 using namespace std;
 
-bool Wanderer::init()
+bool Wanderer::init(vector<vec2> path)
 {
+	// Pathing AI init
+	m_path = path;
+	set_position(m_path[0]);
+	current_goal_index = 1;
+	current_immediate_goal_index = 1;
+	calculate_immediate_path(m_path[current_goal_index]);
+
 	// load shared texture
 	if (!wanderer_texture.is_valid())
 	{
@@ -96,33 +103,17 @@ void Wanderer::update(float ms)
 		cool_down -= ms;
 	}
 	else {
-		// TO REMOVE - placeholder for randomize path wall collision
-		// movement
-		int r = rand() % 3;
-		if (direction.x < 0 && m_wall_left)
+		if (check_goal_arrival(m_path[current_goal_index]))
 		{
-			direction.x = 1;
-			if (!m_wall_up && !m_wall_down)
-				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			current_goal_index = (current_goal_index + 1) % m_path.size();
+			calculate_immediate_path(m_path[current_goal_index]);
+			current_immediate_goal_index = 1;
 		}
-		if (direction.x > 0 && m_wall_right)
+		else if (check_goal_arrival(immediate_path[current_immediate_goal_index]))
 		{
-			direction.x = -1;
-			if (!m_wall_up && !m_wall_down)
-				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			current_immediate_goal_index++;
 		}
-		if (direction.y < 0 && m_wall_up)
-		{
-			if (!m_wall_left && !m_wall_right)
-				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-			direction.y = 1;
-		}
-		if (direction.y > 0 && m_wall_down)
-		{
-			if (!m_wall_left && !m_wall_right)
-				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-			direction.y = -1;
-		}
+		move_towards_goal(immediate_path[current_immediate_goal_index], ms);;
 	}
 	
 	//motion.position.x += direction.x * motion.speed * (ms / 1000);
@@ -223,4 +214,27 @@ vec2 Wanderer::get_bounding_box() const
 void Wanderer::alert_wanderer() 
 {
 	cool_down = 5000.f;
+}
+
+
+void Wanderer::calculate_immediate_path(vec2 goal)
+{
+	immediate_path.clear();
+	immediate_path.push_back(motion.position);
+	// TODO middle steps
+	immediate_path.push_back(goal);
+}
+
+bool Wanderer::check_goal_arrival(vec2 goal)
+{
+	return fabs(goal.x - motion.position.x) < 5 && fabs(goal.y - motion.position.y) < 5;
+}
+
+void Wanderer::move_towards_goal(vec2 goal, float ms)
+{
+	float step = -1.0 * motion.speed * (ms / 1000);
+	vec2 motionVector = { motion.position.x - goal.x, motion.position.y - goal.y };
+	float magnitude = std::sqrt((motionVector.x * motionVector.x) + (motionVector.y * motionVector.y));
+	motion.position.y += step * (motionVector.y / magnitude);
+	motion.position.x += step * (motionVector.x / magnitude);
 }

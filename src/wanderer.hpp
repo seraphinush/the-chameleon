@@ -3,6 +3,8 @@
 // internal
 #include "common.hpp"
 
+#include <vector>
+
 // guard type 1 : wanderer
 class Wanderer : public Entity
 {
@@ -31,8 +33,21 @@ private:
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 
+	// Pathing AI
+	std::vector<vec2> m_path;
+	std::vector<vec2> immediate_path;
+	int current_goal_index;
+	int current_immediate_goal_index;
+
+private:
+
+	// Pathing AI
+	void calculate_immediate_path(vec2 goal);
+	bool check_goal_arrival(vec2 goal);
+	void move_towards_goal(vec2 goal, float ms);
+
 public:
-	bool init();
+	bool init(std::vector<vec2> path);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3& projection) override;
