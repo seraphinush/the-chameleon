@@ -156,6 +156,7 @@ void Spotter::draw(const mat3 &projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+// movement
 void Spotter::set_position(vec2 position)
 {
 	motion.position = position;
@@ -166,6 +167,7 @@ vec2 Spotter::get_position() const
 	return motion.position;
 }
 
+// collision
 vec2 Spotter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };

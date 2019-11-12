@@ -100,7 +100,7 @@ vec2 normalize(vec2 v)
 
 Texture::Texture()
 {
-
+	//
 }
 
 Texture::~Texture()

@@ -5,11 +5,16 @@
 #include "common.hpp"
 class Char;
 
+// TO REMOVE - placeholder for randomize path wall collision
+#include "wanderer.hpp"
+class Wanderer;
+
 class Map : public Entity
 {
 	// shared texture
 	static Texture wall_texture;
 	static Texture corridor_texture;
+	static Texture wall_light_texture;
 
 	static Texture corridor_texture_red;
 	static Texture corridor_texture_blue;
@@ -29,16 +34,17 @@ public:
 	// draw tiles
 	void draw(const mat3 &projection) override;
 	void draw_element(const mat3 &projection, const Texture &texture);
-
 	void set_position(vec2 position);
 	vec2 get_position() const;
-	vec2 get_bounding_box() const;
 
 	// color detection
-	float collides_with(Char m_char);
+	int get_tile(Char character);
 
 	// wall collision
-	void is_wall(Char &m_char);
+	void is_wall_collision(Char &character);
+	
+	// TO REMOVE - placeholder for randomize path wall collision
+	void is_wall_collision(Wanderer &wanderer);
 
 	// char dead time getters and setters .. ported over from water
 	void set_char_dead();
