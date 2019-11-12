@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 // Header
 #include "particles.hpp"
 
