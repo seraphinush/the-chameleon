@@ -678,5 +678,23 @@ void Map::set_current_map(int level)
 			}
 		}
 		break;
+	case 2000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_2[i][j];
+			}
+		}
+		break;
+	case 3000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_3[i][j];
+			}
+		}
+		break;
 	}
 }

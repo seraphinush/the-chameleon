@@ -291,6 +291,12 @@ bool Cutscene::dialogue_done(unsigned int cutscene_state)
 		return true;
 	else if (cutscene_state == 6000 && dialogue_counter == 29)
 		return true;
+	else if (cutscene_state == 1500 && dialogue_counter == 31)
+		return true;
+	else if (cutscene_state == 2500 && dialogue_counter == 33)
+		return true;
+	else if (cutscene_state == 3500 && dialogue_counter == 35)
+		return true;
 
 	return false;
 }
@@ -336,5 +342,38 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.9f, 0.8f};
 		motion.position = {400.f, 700.f};
+	}
+	else if (cutscene_state == 1500)
+	{
+		string temp_str = "data/textures/cutscenes/level1/" + to_string(dialogue_counter) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
+
+		dialogue_texture.load_from_file(path);
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
+	}
+	else if (cutscene_state == 2500)
+	{
+		string temp_str = "data/textures/cutscenes/level2/" + to_string(dialogue_counter) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
+
+		dialogue_texture.load_from_file(path);
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
+	}
+	else if (cutscene_state == 3500)
+	{
+		string temp_str = "data/textures/cutscenes/level3/" + to_string(dialogue_counter) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
+
+		dialogue_texture.load_from_file(path);
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
 	}
 }
