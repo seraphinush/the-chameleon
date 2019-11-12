@@ -66,7 +66,7 @@ public:
 	bool is_colliding(const Spotter &spotter);
 	bool is_colliding(const Wanderer &wanderer);
 	bool is_colliding(const Trophy &trophy);
-	bool is_colliding(const Bullets &bullets);
+	bool is_colliding(Bullets &bullets);
 	vec2 get_bounding_box() const;
 
 	// wall collision

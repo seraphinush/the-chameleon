@@ -291,14 +291,17 @@ bool Char::is_colliding(const Spotter &spotter)
 	return collision(pos, box);
 }
 
-bool Char::is_colliding(const Bullets &bullets)
+bool Char::is_colliding(Bullets &bullets)
 {
 	for (auto &bullet : bullets.m_bullets)
 	{
 		vec2 pos = bullet.position;
 		vec2 box = {bullet.radius, bullet.radius};
 		if (collision(pos, box))
+		{
+			bullet.life = 0.f;
 			return true;
+		}
 	}
 	return false;
 }
