@@ -21,8 +21,8 @@ private:
 	float spotter_sprite_countdown = 1500.f;
 
 	// AI stuff
-	int check_sgn(float value);
-	float radius = 68.f;
+	float check_sgn(float value);
+	float radius = 100.f;
 
 public:
 	bool init();
@@ -42,5 +42,7 @@ public:
 
 	bool alert_mode;
 
-	vec2 direction;;
+	vec2 direction = vec2({ 0, -1 });
+	
+	void reset_direction();
 };

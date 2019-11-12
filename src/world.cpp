@@ -270,9 +270,8 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					printf("I got here");
-					spotter.alert_mode = true;
 					alert_mode = true;
+					spotter.alert_mode = true;
 					alert_mode_cooldown = 0;
 				}
 				break;
@@ -743,7 +742,13 @@ void World::reset_game()
 	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
-	m_overlay.destroy();
+	m_overlay.destroy();	
 	alert_mode = false;
 	m_overlay.init(alert_mode);
+	
+	// reset direction for every spotter
+	for (auto& spotter : m_spotters) 
+	{
+		spotter.reset_direction();
+	}
 }
