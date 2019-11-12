@@ -14,6 +14,9 @@ const size_t MAX_SHOOTERS = 5;
 const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 800;
 
+const size_t MAX_ALERT_MODE_COOLDOWN = 100;
+int alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
+
 // TODO
 vec2 spotter_loc[5];
 
@@ -197,6 +200,37 @@ bool World::update(float elapsed_ms)
 	m_story_screen.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
+	//////////////////////
+	// COOLDOWN
+	//////////////////////
+	if (!(alert_mode_cooldown >= MAX_ALERT_MODE_COOLDOWN))
+	{
+		alert_mode_cooldown++;
+	}
+	else
+	{
+		alert_mode = false;
+		// update spotters
+		for (auto& spotter : m_spotters) {
+			if (alert_mode) {
+				spotter.alert_mode = false;
+			}
+		}
+
+		// update wanderers
+		for (auto& wanderer : m_wanderers) {
+			wanderer.update(elapsed_ms* m_current_speed);
+			wanderer.alert_mode = false;
+		}
+
+		// update shooters
+		for (auto& shooter : m_shooters) {
+			if (alert_mode) {
+				shooter.alert_mode = false;
+			}
+		}
+	}
+
 	// IF ALERT MODE OVERLAY
 	m_overlay.update_alert_mode(alert_mode);
 	if (alert_mode) {
@@ -239,6 +273,7 @@ bool World::update(float elapsed_ms)
 					printf("I got here");
 					spotter.alert_mode = true;
 					alert_mode = true;
+					alert_mode_cooldown = 0;
 				}
 				break;
 			}
@@ -267,6 +302,7 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					alert_mode = true;
+					alert_mode_cooldown = 0;
 					// ROTATE SHOOTER TO POINT AT M_CHAR
 					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
 					if (angle_to_char < 0) {
