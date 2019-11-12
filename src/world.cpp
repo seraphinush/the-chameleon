@@ -789,7 +789,7 @@ void World::draw()
 		m_complete_screen.draw(projection_2D);
 		break;
 	case QUIT:
-		//m_complete_screen.draw(projection_2D);
+		glfwDestroyWindow(m_window);
 		break;
 	}
 
@@ -951,39 +951,55 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == WIN_SCREEN)
+			{
 				m_game_state = START_SCREEN;
+				m_cutscene.set_dialogue_counter(m_game_state, 1);
+			}
 			else if (m_current_game_state == 0)
 			{
 				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
-				m_show_story_screen ? m_game_state = STORY_SCREEN : m_game_state = LEVEL_1;
-				m_show_story_screen = false;
+				//m_game_state = STORY_SCREEN : m_game_state = LEVEL_1;
+				//m_show_story_screen = false;
+				m_game_state = STORY_SCREEN;
+				m_cutscene.set_dialogue_counter(m_game_state, 1);
 			}
 			else if (m_game_state == CONTROL_SCREEN)
+			{
 				m_game_state = START_SCREEN;
+				m_cutscene.set_dialogue_counter(m_game_state, 1);
+			}
 			else if (m_game_state == LEVEL_SCREEN)
 			{
 				switch (m_current_level_state)
 				{
 				case 0:
 					m_game_state = LEVEL_TUTORIAL;
+					m_map.set_current_map(LEVEL_TUTORIAL);
 					m_cutscene.set_dialogue_counter(m_game_state, 28);
+					m_current_level_state = 0;
 					break;
 				case 1:
 					m_game_state = LEVEL_1_CUTSCENE;
 					m_cutscene.set_dialogue_counter(m_game_state, 30);
+					m_current_level_state = 0;
 					break;
 				case 2:
 					m_game_state = LEVEL_2_CUTSCENE;
 					m_cutscene.set_dialogue_counter(m_game_state, 32);
+					m_current_level_state = 0;
 					break;
 				case 3:
 					m_game_state = LEVEL_3_CUTSCENE;
 					m_cutscene.set_dialogue_counter(m_game_state, 34);
+					m_current_level_state = 0;
 					break;
 				}
 			}
 			else
+			{
 				m_game_state = m_current_game_state;
+				m_cutscene.set_dialogue_counter(m_game_state, 1);
+			}
 		}
 	}
 

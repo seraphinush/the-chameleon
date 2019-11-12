@@ -236,7 +236,7 @@ void Cutscene::draw(const mat3 &projection)
 
 	// Right Dialogue Texture
 	transform.begin();
-	transform.translate(vec2({1000.f, 540.f}));
+	transform.translate(vec2({1000.f, 530.f}));
 	transform.rotate(motion.radians);
 	transform.scale(right_scale);
 	transform.end();
@@ -317,14 +317,14 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 
 		if (dialogue_counter > 3)
 		{
-			left_dialogue_texture.load_from_file(textures_path("char.png"));
-			left_scale = {0.08f, 0.6f};
+			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
+			left_scale = {0.1f, 1.f};
 		}
 
 		if (dialogue_counter > 3 && dialogue_counter < 14)
 		{
-			right_dialogue_texture.load_from_file(textures_path("char.png"));
-			right_scale = {0.08f, 0.6f};
+			right_dialogue_texture.load_from_file(textures_path("agent_roger.png"));
+			right_scale = {-0.2f, 1.25f};
 		}
 		else if (dialogue_counter > 13)
 		{
@@ -383,7 +383,13 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	dialogue_counter = counter_value;
 	current_cutscene_state = cutscene_state;
 
-	if (cutscene_state == 6000)
+	if (cutscene_state == 4)
+	{
+		dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png"));
+		left_dialogue_texture.load_from_file(textures_path("spotters/3.png"));
+		right_dialogue_texture.load_from_file(textures_path("wanderers/1.png"));
+	}
+	else if (cutscene_state == 6000)
 	{
 		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
 		physics.scale = {0.9f, 0.8f};
