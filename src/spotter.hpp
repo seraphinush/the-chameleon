@@ -19,7 +19,10 @@ private:
 	// animation
 	int spotter_sprite_switch = 1;
 	float spotter_sprite_countdown = 1500.f;
+
+	// AI stuff
 	int check_sgn(float value);
+	float radius = 68.f;
 
 public:
 	bool init();

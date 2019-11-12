@@ -185,7 +185,7 @@ bool Spotter::collision_with(Char m_char)
 
 	bool in_direction = ((check_sgn(difference_in_x) >= direction.x) && (check_sgn(difference_in_y) >= direction.y));
 	
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 68) && (in_direction)) {
+	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && (in_direction)) {
 		return true;
 	}
 	else {

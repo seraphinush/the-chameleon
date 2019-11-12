@@ -18,7 +18,9 @@ private:
 	// animation
 	int shooter_sprite_switch = 1;
 	float shooter_sprite_countdown = 1500.f;
-	
+
+	// AI stuff
+	float radius = 100.f;
 
 public:
 	bool init();
