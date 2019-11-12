@@ -19,6 +19,7 @@ private:
 	// animation
 	int spotter_sprite_switch = 1;
 	float spotter_sprite_countdown = 1500.f;
+	int check_sgn(float value);
 
 public:
 	bool init();
@@ -30,6 +31,7 @@ public:
 	// movement
 	void set_position(vec2 position);
 	vec2 get_position() const;
+
 
 
 	// collision

@@ -83,7 +83,7 @@ void Spotter::destroy()
 void Spotter::update(float ms)
 {
 	if (spotter_sprite_countdown > 0.f)
-		spotter_sprite_countdown -= ms;
+		spotter_sprite_countdown -= ms/2;
 
 	if (spotter_sprite_switch < 4) {
 		spotter_sprite_switch++;
@@ -141,7 +141,7 @@ void Spotter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
-	vec2 directions[3] =  {{0, -1}, {1, 0}, {-1, 0} };
+	vec2 directions[3] =  {{0, -1}, {-1, 0}, {1, 0} };
 	// sprite change
 	if (spotter_sprite_countdown < 0) {
 		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
@@ -180,15 +180,22 @@ bool Spotter::collision_with(Char m_char)
 {
 	// using euclidean distance rn - FIX LATER
 
-	float difference_in_x = m_char.get_position().x - motion.position.x;
-	float difference_in_y = m_char.get_position().y - motion.position.y;
+	float difference_in_x = motion.position.x - m_char.get_position().x;
+	float difference_in_y = motion.position.y - m_char.get_position().y;
+
+	bool in_direction = ((check_sgn(difference_in_x) >= direction.x) && (check_sgn(difference_in_y) >= direction.y));
 	
-	bool in_direction = ((difference_in_x/direction.x >= 0) && (difference_in_y/direction.y >= 0));
-	
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) && (in_direction)) {
+	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 68) && (in_direction)) {
 		return true;
 	}
 	else {
 		return false;
 	}
+}
+
+int Spotter::check_sgn(float value) {
+	
+	if (value > 0) return 1;
+	if (value < 0) return -1;
+	return 0;
 }

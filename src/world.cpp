@@ -54,7 +54,7 @@ bool World::init(vec2 screen)
 	spotter_loc[4] = {800, 500};
 
 	// TODO
-	shooter_loc[0] = { 100 + 50, 100 + 50 };
+	shooter_loc[0] = { 100 + 100, 100 + 50 };
 	shooter_loc[1] = { screen.x - 50, 100 + 50 };
 	shooter_loc[2] = { 150, screen.y - 150 };
 	shooter_loc[3] = { screen.x - 50, screen.y - 50 };
@@ -236,6 +236,7 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
+					printf("I got here");
 					spotter.alert_mode = true;
 					alert_mode = true;
 				}
