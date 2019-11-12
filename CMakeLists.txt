@@ -43,6 +43,8 @@ set(SOURCE_FILES
   src/complete_screen.cpp
   src/trophy.cpp
   src/cutscene.cpp    
+  src/shooter.cpp
+  src/bullets.cpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -55,6 +57,8 @@ set(SOURCE_FILES
 	src/map.hpp
 	src/trophy.hpp
   src/cutscene.hpp  
+	src/shooter.hpp
+	src/bullets.hpp
 	)
 
 if (IS_OS_MAC)

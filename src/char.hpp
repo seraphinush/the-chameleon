@@ -6,6 +6,7 @@
 #include "spotter.hpp"
 #include "trophy.hpp"
 #include "wanderer.hpp"
+#include "bullets.hpp"
 
 // stlib
 #include <vector>
@@ -13,6 +14,7 @@
 class Spotter;
 class Wanderer;
 class Trophy;
+class Bullets;
 
 class Char : public Entity
 {
@@ -21,7 +23,7 @@ class Char : public Entity
 
 private:
 	// config
-	const float config_scale = 0.2f;
+	const float config_scale = 0.03f;
 
 	bool m_is_alive;
 
@@ -43,6 +45,11 @@ private:
 	// dash
 	bool m_dash;
 
+	// ANIMATION
+	int sprite_switch = 1;
+	float sprite_countdown = 200.f;
+	int flip_in_x = 1;
+
 public:
 	bool init();
 	void destroy();
@@ -55,9 +62,10 @@ public:
 
 	// collision
 	bool collision(vec2 pos, vec2 box);
-	bool is_colliding(const Spotter &spotter);
-	bool is_colliding(const Wanderer &wanderer);
-	bool is_colliding(const Trophy &trophy);
+	bool is_colliding(const Spotter& spotter);
+	bool is_colliding(const Wanderer& wanderer);
+	bool is_colliding(const Trophy& trophy);
+	bool is_colliding(const Bullets& bullets);
 	vec2 get_bounding_box() const;
 
 	// wall collision
@@ -79,4 +87,5 @@ public:
 	bool is_dashing();
 
 	void set_rotation(float radians);
+	void flip_char();
 };
