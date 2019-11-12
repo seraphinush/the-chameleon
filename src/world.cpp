@@ -665,6 +665,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			if (m_char.is_dashing()) return;
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.set_color(2);
+			alert_mode = true;
+			alert_mode_cooldown = 0;
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
@@ -678,6 +680,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			if (m_char.is_dashing()) return;
 			m_char.set_color(4);
 			m_map.set_flash(1);
+			alert_mode = true;
+			alert_mode_cooldown = 0;
 		}
 	}
 
