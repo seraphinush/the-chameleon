@@ -31,5 +31,6 @@ public:
 	void draw(const mat3& projection) override;
     bool dialogue_done(unsigned int cutscene_state);
     void increment_dialogue_counter(unsigned int cutscene_state);
+	void set_dialogue_counter(unsigned int cutscene_state, unsigned int counter_value);
 	bool is_left_dialogue();
 };

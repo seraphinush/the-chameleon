@@ -1,22 +1,21 @@
 // header
-#include "start_screen.hpp"
+#include "level_screen.hpp"
 #include <cmath>
 
-Texture StartScreen::start_game;
-Texture StartScreen::controls;
-Texture StartScreen::levels;
-Texture StartScreen::quit;
-Texture StartScreen::game_title;
-Texture StartScreen::pointer;
+Texture LevelScreen::tutorial;
+Texture LevelScreen::level1;
+Texture LevelScreen::level2;
+Texture LevelScreen::level3;
+Texture LevelScreen::pointer;
 
-bool StartScreen::init()
+bool LevelScreen::init()
 {
 	// load shared texture
-	if (!start_game.is_valid())
+	if (!tutorial.is_valid())
 	{
-		if (!start_game.load_from_file(textures_path("start_game.png")))
+		if (!tutorial.load_from_file(textures_path("leveltutorial.png")))
 		{
-			fprintf(stderr, "Failed to load start texture!");
+			fprintf(stderr, "Failed to load level tutorial texture!");
 			return false;
 		}
 	}
@@ -30,66 +29,57 @@ bool StartScreen::init()
 		}
 	}
 
-	if (!controls.is_valid())
+	if (!level1.is_valid())
 	{
-		if (!controls.load_from_file(textures_path("controls.png")))
+		if (!level1.load_from_file(textures_path("level1.png")))
 		{
-			fprintf(stderr, "Failed to load controls texture!");
+			fprintf(stderr, "Failed to load level1 texture!");
 			return false;
 		}
 	}
 
-	if (!levels.is_valid())
+	if (!level2.is_valid())
 	{
-		if (!levels.load_from_file(textures_path("levels.png")))
+		if (!level2.load_from_file(textures_path("level2.png")))
 		{
-			fprintf(stderr, "Failed to load levels texture!");
+			fprintf(stderr, "Failed to load level2 texture!");
 			return false;
 		}
 	}
 
-	if (!quit.is_valid())
+	if (!level3.is_valid())
 	{
-		if (!quit.load_from_file(textures_path("quit.png")))
+		if (!level3.load_from_file(textures_path("level3.png")))
 		{
-			fprintf(stderr, "Failed to load quit texture!");
-			return false;
-		}
-	}
-
-	if (!game_title.is_valid())
-	{
-		if (!game_title.load_from_file(textures_path("game_title.png")))
-		{
-			fprintf(stderr, "Failed to load game_title texture!");
+			fprintf(stderr, "Failed to load level3 texture!");
 			return false;
 		}
 	}
 
 	// the position corresponds to the center of the texture
-	float start_wr = start_game.width;
-	float start_hr = start_game.height;
+	float tutorial_wr = tutorial.width;
+	float tutorial_hr = tutorial.height;
 
 	float pointer_wr = pointer.width * 0.5f;
 	float pointer_hr = pointer.height * 0.5f;
 
-	float controls_wr = controls.width * 0.5f;
-	float controls_hr = controls.height * 0.5f;
+	float level1_wr = level1.width * 0.5f;
+	float level1_hr = level1.height * 0.5f;
 
-	float quit_wr = quit.width * 0.5f;
-	float quit_hr = quit.height * 0.5f;
+	float level2_wr = level2.width * 0.5f;
+	float level2_hr = level2.height * 0.5f;
 
-	float game_title_wr = game_title.width * 0.5f;
-	float game_title_hr = game_title.height * 0.5f;
+	float level3_wr = level3.width * 0.5f;
+	float level3_hr = level3.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-start_wr, +start_hr, -0.0f};
+	vertices[0].position = {-tutorial_wr, +tutorial_wr, -0.0f};
 	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+start_wr, +start_hr, -0.02f};
+	vertices[1].position = {+tutorial_wr, +tutorial_wr, -0.02f};
 	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+start_wr, -start_hr, -0.02f};
+	vertices[2].position = {+tutorial_wr, -tutorial_wr, -0.02f};
 	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-start_wr, -start_hr, -0.02f};
+	vertices[3].position = {-tutorial_wr, -tutorial_wr, -0.02f};
 	vertices[3].texcoord = {0.f, 0.f};
 
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -119,8 +109,8 @@ bool StartScreen::init()
 	motion.radians = 0.f;
 	motion.speed = 200.f;
 
-	motion.position.x = 900.0f;
-	motion.position.y = 250.0f;
+	motion.position.x = 605.0f;
+	motion.position.y = 150.0f;
 
 	// set initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -130,7 +120,7 @@ bool StartScreen::init()
 }
 
 // release all graphics resources
-void StartScreen::destroy()
+void LevelScreen::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -141,33 +131,33 @@ void StartScreen::destroy()
 	glDeleteShader(effect.program);
 }
 
-void StartScreen::update(unsigned int game_state)
+void LevelScreen::update(unsigned int level_state)
 {
-	switch (game_state)
+	switch (level_state)
 	{
 	case 0:
-		pointer_position = vec2({685.0f, 250.0f});
+		pointer_position = vec2({270.0f, 150.0f});
 		break;
 	case 1:
-		pointer_position = vec2({585.0f, 400.0f});
+		pointer_position = vec2({315.0f, 325.0f});
 		break;
 	case 2:
-		pointer_position = vec2({640.0f, 530.0f});
+		pointer_position = vec2({315.0f, 485.0f});
 		break;
 	case 3:
-		pointer_position = vec2({715.0f, 650.0f});
+		pointer_position = vec2({315.0f, 645.0f});
 		break;
 	}
 }
 
-void StartScreen::draw(const mat3 &projection)
+void LevelScreen::draw(const mat3 &projection)
 {
 	// pointer
 	// transformation
 	transform.begin();
 	transform.translate(pointer_position);
 	transform.rotate(3.14f / 2.0f);
-	transform.scale({0.1f, 0.15f});
+	transform.scale({0.07f, 0.06f});
 	transform.end();
 
 	// set shaders
@@ -211,12 +201,12 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	// start
+	// tutroial
 	// transformation
 	transform.begin();
-	transform.translate(motion.position);
+	transform.translate({motion.position.x, 150.f});
 	transform.rotate(motion.radians);
-	transform.scale({0.5f, 0.5f});
+	transform.scale({0.5f, 0.1f});
 	transform.end();
 
 	// set shaders
@@ -249,7 +239,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, start_game.id);
+	glBindTexture(GL_TEXTURE_2D, tutorial.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -259,12 +249,12 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	//controls
+	//level1
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x, 400.f}));
+	transform.translate(vec2({motion.position.x, 325.f}));
 	transform.rotate(motion.radians);
-	transform.scale({0.75f, 0.75f});
+	transform.scale({0.4f, 0.09f});
 	transform.end();
 
 	// set shaders
@@ -297,7 +287,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, controls.id);
+	glBindTexture(GL_TEXTURE_2D, level1.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -307,60 +297,12 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	//levels
+	//level2
 	// transformation
 	transform.begin();
-	transform.translate(vec2({motion.position.x - 5.f, 530.f}));
+	transform.translate(vec2({motion.position.x, 485.0f}));
 	transform.rotate(motion.radians);
-	transform.scale({0.6f, 0.4f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glDisable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, levels.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	//quit
-	// transformation
-	transform.begin();
-	transform.translate(vec2({motion.position.x, 650.0f}));
-	transform.rotate(motion.radians);
-	transform.scale({0.45f, 0.45f});
+	transform.scale({0.4f, 0.09f});
 	transform.end();
 
 	// set shaders
@@ -393,7 +335,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, quit.id);
+	glBindTexture(GL_TEXTURE_2D, level2.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -403,12 +345,12 @@ void StartScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	// game title
+	// level3
 	// transformation
 	transform.begin();
-	transform.translate(vec2({295.0f, 400.0f}));
+	transform.translate(vec2({motion.position.x, 645.0f}));
 	transform.rotate(motion.radians);
-	transform.scale({1.0f, 2.5f});
+	transform.scale({0.4f, 0.09f});
 	transform.end();
 
 	// set shaders
@@ -441,7 +383,7 @@ void StartScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, game_title.id);
+	glBindTexture(GL_TEXTURE_2D, level3.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);

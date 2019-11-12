@@ -45,6 +45,7 @@ set(SOURCE_FILES
   src/cutscene.cpp    
   src/shooter.cpp
   src/bullets.cpp
+  src/level_screen.cpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -59,6 +60,7 @@ set(SOURCE_FILES
   src/cutscene.hpp  
 	src/shooter.hpp
 	src/bullets.hpp
+  src/level_screen.hpp
 	)
 
 if (IS_OS_MAC)

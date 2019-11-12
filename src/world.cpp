@@ -28,12 +28,12 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 } // namespace
 
-World::World() : 
-	m_control(0),
-	m_current_game_state(0),
-	m_game_state(START_SCREEN),
-	m_next_wanderer_spawn(0.f),
-	m_show_story_screen(true)
+World::World() : m_control(0),
+				 m_current_game_state(0),
+				 m_current_level_state(0),
+				 m_game_state(START_SCREEN),
+				 m_next_wanderer_spawn(0.f),
+				 m_show_story_screen(true)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -54,12 +54,11 @@ bool World::init(vec2 screen)
 	spotter_loc[4] = {800, 500};
 
 	// TODO
-	shooter_loc[0] = { 100 + 50, 100 + 50 };
-	shooter_loc[1] = { screen.x - 50, 100 + 50 };
-	shooter_loc[2] = { 150, screen.y - 150 };
-	shooter_loc[3] = { screen.x - 50, screen.y - 50 };
-	shooter_loc[4] = { 850, 550 };
-
+	shooter_loc[0] = {100 + 50, 100 + 50};
+	shooter_loc[1] = {screen.x - 50, 100 + 50};
+	shooter_loc[2] = {150, screen.y - 150};
+	shooter_loc[3] = {screen.x - 50, screen.y - 50};
+	shooter_loc[4] = {850, 550};
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -147,6 +146,7 @@ bool World::init(vec2 screen)
 
 	return m_start_screen.init() &&
 		   m_control_screen.init() &&
+		   m_level_screen.init() &&
 		   m_cutscene.init() &&
 		   m_map.init() &&
 		   m_char.init() &&
@@ -192,6 +192,7 @@ bool World::update(float elapsed_ms)
 
 	m_start_screen.update(m_current_game_state);
 	m_control_screen.update(m_current_game_state);
+	m_level_screen.update(m_current_level_state);
 	m_cutscene.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
@@ -203,7 +204,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-wall
 		m_map.is_wall_collision(m_char);
-		
+
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
 		for (auto &wanderer : m_wanderers)
@@ -300,7 +301,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-wall
 		m_map.is_wall_collision(m_char);
-		
+
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
 		for (auto &wanderer : m_wanderers)
@@ -425,7 +426,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-wall
 		m_map.is_wall_collision(m_char);
-		
+
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
 		for (auto &wanderer : m_wanderers)
@@ -460,7 +461,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// proximity, char-shooter
-		for (auto& shooter : m_shooters)
+		for (auto &shooter : m_shooters)
 		{
 			if ((shooter.collision_with(m_char)) && is_char_detectable(m_map))
 			{
@@ -468,13 +469,16 @@ bool World::update(float elapsed_ms)
 				{
 					// ROTATE SHOOTER TO POINT AT M_CHAR
 					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
-					if (angle_to_char < 0) {
-						if (m_char.get_position().y > shooter.get_position().y) {
+					if (angle_to_char < 0)
+					{
+						if (m_char.get_position().y > shooter.get_position().y)
+						{
 							angle_to_char += 3.14;
 						}
 					}
-				
-					else if (m_char.get_position().x < shooter.get_position().x) {
+
+					else if (m_char.get_position().x < shooter.get_position().x)
+					{
 						angle_to_char += 3.14;
 					}
 					shooter.set_rotation(angle_to_char);
@@ -482,7 +486,8 @@ bool World::update(float elapsed_ms)
 					// SHOOTING AND COOLDOWN
 					shooter.is_shooting = true;
 					shooter.bullets.cooldown -= 15.f;
-					if (shooter.bullets.cooldown < 0.f) {
+					if (shooter.bullets.cooldown < 0.f)
+					{
 						shooter.bullets.spawn_bullet(shooter.get_position(), angle_to_char);
 						shooter.bullets.cooldown = 1500.f;
 					}
@@ -490,8 +495,6 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 		}
-
-
 
 		// collision, char-trophy
 		if (m_char.is_colliding(m_trophy))
@@ -521,17 +524,18 @@ bool World::update(float elapsed_ms)
 			wanderer.update(elapsed_ms * m_current_speed);
 
 		// update shooter
-		for (auto& shooter : m_shooters) {
+		for (auto &shooter : m_shooters)
+		{
 			shooter.update(elapsed_ms * m_current_speed);
-			if (shooter.is_shooting) {
+			if (shooter.is_shooting)
+			{
 				shooter.bullets.update(elapsed_ms * m_current_speed);
-				if (m_char.is_colliding(shooter.bullets)) {
+				if (m_char.is_colliding(shooter.bullets))
+				{
 					m_char.set_color(0);
 				}
 			}
 		}
-
-	
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -554,7 +558,7 @@ bool World::update(float elapsed_ms)
 			if (!spawn_shooter())
 				return false;
 
-			Shooter& new_shooter = m_shooters.back();
+			Shooter &new_shooter = m_shooters.back();
 
 			new_shooter.set_position(shooter_loc[m_shooters.size() - 1]);
 		}
@@ -685,6 +689,9 @@ void World::draw()
 	case CONTROL_SCREEN:
 		m_control_screen.draw(projection_2D);
 		break;
+	case LEVEL_SCREEN:
+		m_level_screen.draw(projection_2D);
+		break;
 	case STORY_SCREEN:
 		m_cutscene.draw(projection_2D);
 		break;
@@ -763,9 +770,11 @@ void World::draw()
 			spotter.draw(projection_2D);
 		for (auto &wanderer : m_wanderers)
 			wanderer.draw(projection_2D);
-		for (auto& shooter : m_shooters) {
+		for (auto &shooter : m_shooters)
+		{
 			shooter.draw(projection_2D);
-			if (shooter.is_shooting) {
+			if (shooter.is_shooting)
+			{
 				shooter.bullets.draw(projection_2D);
 			}
 		}
@@ -778,6 +787,9 @@ void World::draw()
 		break;
 	case WIN_SCREEN:
 		m_complete_screen.draw(projection_2D);
+		break;
+	case QUIT:
+		//m_complete_screen.draw(projection_2D);
 		break;
 	}
 
@@ -862,11 +874,26 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// start screen, control screen, story screen
 	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3)
 	{
-		if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
-			if (m_current_game_state < 2)	m_current_game_state++;
+		if (m_game_state == START_SCREEN)
+		{
+			if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
+				if (m_current_game_state < 3)
+					m_current_game_state++;
 
-		if (action == GLFW_PRESS && key == GLFW_KEY_UP)
-			if (m_current_game_state > 0) m_current_game_state--;
+			if (action == GLFW_PRESS && key == GLFW_KEY_UP)
+				if (m_current_game_state > 0)
+					m_current_game_state--;
+		}
+		else if (m_game_state == LEVEL_SCREEN)
+		{
+			if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
+				if (m_current_level_state < 3)
+					m_current_level_state++;
+
+			if (action == GLFW_PRESS && key == GLFW_KEY_UP)
+				if (m_current_level_state > 0)
+					m_current_level_state--;
+		}
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
@@ -878,7 +905,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_TUTORIAL);
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
-				else m_cutscene.increment_dialogue_counter(m_game_state);
+				else
+					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == LEVEL_TUTORIAL)
 			{
@@ -887,7 +915,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_game_state = LEVEL_1_CUTSCENE;
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
-				else m_cutscene.increment_dialogue_counter(m_game_state);
+				else
+					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == LEVEL_1_CUTSCENE)
 			{
@@ -897,7 +926,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_1);
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
-				else m_cutscene.increment_dialogue_counter(m_game_state);
+				else
+					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == LEVEL_2_CUTSCENE)
 			{
@@ -907,7 +937,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_2);
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
-				else m_cutscene.increment_dialogue_counter(m_game_state);
+				else
+					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
 			else if (m_game_state == LEVEL_3_CUTSCENE)
 			{
@@ -916,17 +947,43 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_game_state = LEVEL_3;
 					m_map.set_current_map(LEVEL_3);
 				}
-				else m_cutscene.increment_dialogue_counter(m_game_state);
+				else
+					m_cutscene.increment_dialogue_counter(m_game_state);
 			}
-			else if (m_game_state == WIN_SCREEN) m_game_state = START_SCREEN;
+			else if (m_game_state == WIN_SCREEN)
+				m_game_state = START_SCREEN;
 			else if (m_current_game_state == 0)
 			{
 				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
-				m_show_story_screen ? m_game_state = STORY_SCREEN : m_game_state= LEVEL_1;
+				m_show_story_screen ? m_game_state = STORY_SCREEN : m_game_state = LEVEL_1;
 				m_show_story_screen = false;
 			}
-			else if (m_game_state == CONTROL_SCREEN) m_game_state = START_SCREEN;
-			else m_game_state = m_current_game_state;
+			else if (m_game_state == CONTROL_SCREEN)
+				m_game_state = START_SCREEN;
+			else if (m_game_state == LEVEL_SCREEN)
+			{
+				switch (m_current_level_state)
+				{
+				case 0:
+					m_game_state = LEVEL_TUTORIAL;
+					m_cutscene.set_dialogue_counter(m_game_state, 28);
+					break;
+				case 1:
+					m_game_state = LEVEL_1_CUTSCENE;
+					m_cutscene.set_dialogue_counter(m_game_state, 30);
+					break;
+				case 2:
+					m_game_state = LEVEL_2_CUTSCENE;
+					m_cutscene.set_dialogue_counter(m_game_state, 32);
+					break;
+				case 3:
+					m_game_state = LEVEL_3_CUTSCENE;
+					m_cutscene.set_dialogue_counter(m_game_state, 34);
+					break;
+				}
+			}
+			else
+				m_game_state = m_current_game_state;
 		}
 	}
 
@@ -940,11 +997,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// movement, set movement
 	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
 	{
-		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1)) {
+		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+		{
 			m_char.set_direction('R', true);
 			m_char.flip_char();
 		}
-		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1)) {
+		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
+		{
 			m_char.set_direction('L', true);
 			m_char.flip_char();
 		}
@@ -960,27 +1019,31 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
-			if (m_char.is_dashing()) return;
+			if (m_char.is_dashing())
+				return;
 			m_char.set_color(1);
 			m_char.set_dash(true);
 		}
 		// green
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
-			if (m_char.is_dashing()) return;
+			if (m_char.is_dashing())
+				return;
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_char.set_color(2);
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
 		{
-			if (m_char.is_dashing()) return;
+			if (m_char.is_dashing())
+				return;
 			m_char.set_color(3);
 		}
 		// yellow
 		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
 		{
-			if (m_char.is_dashing()) return;
+			if (m_char.is_dashing())
+				return;
 			m_char.set_color(4);
 			m_map.set_flash(1);
 		}

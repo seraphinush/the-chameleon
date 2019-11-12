@@ -4,15 +4,14 @@
 #include "common.hpp"
 
 // start screen
-class StartScreen : public Entity
+class LevelScreen : public Entity
 {
 	// shared texture
 	static Texture pointer;
-	static Texture start_game;
-	static Texture controls;
-	static Texture levels;
-	static Texture quit;
-	static Texture game_title;
+	static Texture tutorial;
+	static Texture level1;
+	static Texture level2;
+	static Texture level3;
 
 	vec2 pointer_position;
 

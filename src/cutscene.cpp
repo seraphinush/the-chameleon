@@ -377,3 +377,34 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		motion.position = {350.f, 400.f};
 	}
 }
+
+void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int counter_value)
+{
+	dialogue_counter = counter_value;
+	current_cutscene_state = cutscene_state;
+
+	if (cutscene_state == 6000)
+	{
+		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {400.f, 700.f};
+	}
+	else if (cutscene_state == 1500)
+	{
+		dialogue_texture.load_from_file(textures_path("cutscenes/level1/30.png"));
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
+	}
+	else if (cutscene_state == 2500)
+	{
+		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/32.png"));
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
+	}
+	else if (cutscene_state == 3500)
+	{
+		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/34.png"));
+		physics.scale = {0.9f, 0.8f};
+		motion.position = {350.f, 400.f};
+	}
+}
