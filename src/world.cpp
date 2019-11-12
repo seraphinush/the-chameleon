@@ -315,12 +315,28 @@ bool World::update(float elapsed_ms)
 		for (auto &shooter : m_shooters)
 		{
 			shooter.update(elapsed_ms * m_current_speed);
+			// angle to shooter, alternative solution to save bullet angle as part of bullet struct
+			float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
+			if (angle_to_char < 0)
+			{
+				if (m_char.get_position().y > shooter.get_position().y)
+				{
+					angle_to_char += 3.14;
+				}
+			}
+
+			else if (m_char.get_position().x < shooter.get_position().x)
+			{
+				angle_to_char += 3.14;
+			}
 			if (shooter.is_shooting)
 			{
 				shooter.bullets.update(elapsed_ms * m_current_speed);
 				if (m_char.is_colliding(shooter.bullets))
 				{
 					m_char.set_color(0);
+					cooldown = 0;
+					m_char.change_position({25.f * cos(angle_to_char), 25.f * sin(angle_to_char)});
 				}
 			}
 		}
@@ -661,13 +677,16 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_char.flip_char();
 			m_char.change_direction(0);
 		}
-		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1)){
+		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
+		{
 			m_char.set_direction('U', true);
 			m_char.change_direction(2);
-		}else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1)){
+		}
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
+		{
 			m_char.set_direction('D', true);
 			m_char.change_direction(3);
-			}
+		}
 	}
 
 	// color, set color, consequences

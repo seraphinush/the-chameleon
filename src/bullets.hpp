@@ -17,7 +17,8 @@ private:
 	//std::vector<Bullet> m_bullets; // vector of pebbles
 
 public:
-	struct Bullet {
+	struct Bullet
+	{
 		float life = 0.0f;
 		vec2 position;
 		vec2 velocity;
@@ -27,7 +28,7 @@ public:
 	bool init();
 	void destroy();
 	void update(float ms);
-	void draw(const mat3& projection) override;
+	void draw(const mat3 &projection) override;
 
 	// spawn bullet
 	void spawn_bullet(vec2 position, float radians);
