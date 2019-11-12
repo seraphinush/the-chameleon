@@ -44,6 +44,7 @@ private:
 
 	// dash
 	bool m_dash;
+	int m_direction_change;
 
 	// ANIMATION
 	int sprite_switch = 1;
@@ -62,10 +63,10 @@ public:
 
 	// collision
 	bool collision(vec2 pos, vec2 box);
-	bool is_colliding(const Spotter& spotter);
-	bool is_colliding(const Wanderer& wanderer);
-	bool is_colliding(const Trophy& trophy);
-	bool is_colliding(const Bullets& bullets);
+	bool is_colliding(const Spotter &spotter);
+	bool is_colliding(const Wanderer &wanderer);
+	bool is_colliding(const Trophy &trophy);
+	bool is_colliding(const Bullets &bullets);
 	vec2 get_bounding_box() const;
 
 	// wall collision
@@ -74,6 +75,8 @@ public:
 
 	// movement
 	void set_direction(char direction, bool value);
+	int get_direction();
+	void change_direction(int c);
 	void change_position(vec2 off);
 	vec2 get_position() const;
 	bool is_moving() const;

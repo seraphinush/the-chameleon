@@ -11,6 +11,7 @@
 #include "complete_screen.hpp"
 #include "map.hpp"
 #include "trophy.hpp"
+#include "particles.hpp"
 #include "shooter.hpp"
 
 // stlib
@@ -71,6 +72,7 @@ private:
 	std::vector<Wanderer> m_wanderers;
 	std::vector<Shooter> m_shooters;
 	Trophy m_trophy;
+	Particles m_particles_emitter;
 
 	// variables
 	float m_current_speed;
@@ -99,17 +101,19 @@ public:
 	bool is_over() const;
 
 private:
-	mat3 calculateProjectionMatrix(int width, int height);
-
 	bool spawn_spotter();
+	bool spawn_shooter();
+
 	bool spawn_wanderer();
 
-	bool spawn_shooter();
+	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
+
+	mat3 calculateProjectionMatrix(int width, int height);
 
 	// reset
 	void reset_game();
