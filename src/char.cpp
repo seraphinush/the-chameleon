@@ -62,7 +62,7 @@ bool Char::init()
 
 	motion.position = {600.f, 600.f};
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 70.f;
 
 	physics.scale = {-config_scale, config_scale};
 
