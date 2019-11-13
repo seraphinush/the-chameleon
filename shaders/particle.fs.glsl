@@ -12,5 +12,5 @@ void main()
 	color = vec4(fcolor, 1.0);
 	if (fade_particle == 1 && fade_timer > 0)
 		if (gl_FragCoord.x < 2400 && gl_FragCoord.y < 1600)
-			color -= 0.1 * fade_timer * vec4(0.1, 0.1, 0.1, 0.5);
+			color -= 0.1 * fade_timer * vec4(0.1, 0.1, 0.1, 0);
 }

@@ -318,7 +318,7 @@ bool World::update(float elapsed_ms)
 		// DYNAMIC SPAWN
 		//////////////////////
 
-		if (m_particles_emitter.get_fade_time() > 1)
+		if (m_particles_emitter.get_fade_time() > 0.7)
 		{
 			m_particles_emitter.reset_fade_time();
 			m_particles_emitter.set_fade(0);
