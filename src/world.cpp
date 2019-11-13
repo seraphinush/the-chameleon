@@ -156,8 +156,9 @@ bool World::init(vec2 screen)
 		   m_control_screen.init() &&
 		   m_level_screen.init() &&
 		   m_cutscene.init() &&
+		   m_hud.init() &&
 		   m_map.init() &&
-		   m_char.init() &&
+		   m_char.init(m_map.get_spawn()) &&
 		   m_trophy.init() &&
 		   m_overlay.init(alert_mode) &&
 		   m_particles_emitter.init() &&
@@ -305,6 +306,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
 		for (auto& wanderer : m_wanderers) {
@@ -476,6 +478,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
@@ -711,6 +714,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
@@ -901,6 +905,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -1054,6 +1059,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_hud.draw(projection_2D);
+
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -1080,6 +1087,7 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -1101,6 +1109,8 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -1131,6 +1141,7 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -1503,7 +1514,46 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
-	//
+	// red tooltip
+	if (xpos >= 1049 && xpos <= 1096 && ypos >= 35 && ypos <= 81)
+	{
+		m_hud.set_tooltip('R', true);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	// green tooltip
+	else if (xpos >= 1049 && xpos <= 1096 && ypos >= 158 && ypos <= 200)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', true);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	// blue tooltip
+	else if (xpos >= 990 && xpos <= 1040 && ypos >= 95 && ypos <= 141)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', true);
+		m_hud.set_tooltip('Y', false);
+	}
+	// yellow tooltip
+	else if (xpos >= 1113 && xpos <= 1160 && ypos >= 95 && ypos <= 141)
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', true);
+	}
+	else
+	{
+		m_hud.set_tooltip('R', false);
+		m_hud.set_tooltip('G', false);
+		m_hud.set_tooltip('B', false);
+		m_hud.set_tooltip('Y', false);
+	}
+	
 }
 
 bool World::is_char_detectable(Map m_map)
@@ -1515,7 +1565,7 @@ void World::reset_game()
 {
 	m_char.destroy();
 	m_trophy.destroy();
-	m_char.init();
+	m_char.init(m_map.get_spawn());
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();

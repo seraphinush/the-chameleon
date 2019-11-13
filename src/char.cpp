@@ -9,7 +9,7 @@
 Texture Char::char_texture;
 using namespace std;
 
-bool Char::init()
+bool Char::init(vec2 spos)
 {
 	// load shared texture
 	if (!char_texture.is_valid())
@@ -60,7 +60,7 @@ bool Char::init()
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	motion.position = {0.f, 0.f};
+	motion.position = spos;
 	motion.radians = 0.f;
 	motion.speed = 65.f;
 
@@ -75,8 +75,6 @@ bool Char::init()
 	m_moving_left = false;
 	m_moving_up = false;
 	m_moving_down = false;
-
-	m_correction = vec2({0.f, 0.f});
 
 	m_wall_up = false;
 	m_wall_down = false;
@@ -350,16 +348,6 @@ void Char::set_wall_collision(char direction, bool value)
 		m_wall_up = value;
 	else if (direction == 'D')
 		m_wall_down = value;
-}
-
-void Char::change_correction(vec2 c)
-{
-	m_correction = c;
-}
-
-vec2 Char::get_correction() const
-{
-	return m_correction;
 }
 
 bool Char::is_wall_collision() const
