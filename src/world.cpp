@@ -246,6 +246,8 @@ bool World::update(float elapsed_ms)
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
 				m_cutscene.set_dialogue_counter(LEVEL_2_CUTSCENE, 70);
 				m_game_state = LEVEL_2_CUTSCENE;
+				m_char.kill();
+				return true;
 			}
 			m_char.kill();
 		}
@@ -420,6 +422,8 @@ bool World::update(float elapsed_ms)
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
 				m_cutscene.set_dialogue_counter(LEVEL_3_CUTSCENE, 81);
 				m_game_state = LEVEL_3_CUTSCENE;
+				m_char.kill();
+				return true;
 			}
 			m_char.kill();
 		}
@@ -1231,6 +1235,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_3;
 					m_map.set_current_map(LEVEL_3);
+					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -1378,7 +1383,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// reset
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		reset_game();
+		//reset_game();
 	}
 
 	// game current speed

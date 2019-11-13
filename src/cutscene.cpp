@@ -166,7 +166,7 @@ void Cutscene::draw(const mat3 &projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -214,7 +214,7 @@ void Cutscene::draw(const mat3 &projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -268,7 +268,7 @@ void Cutscene::draw(const mat3 &projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -330,7 +330,7 @@ void Cutscene::draw(const mat3 &projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// depth
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -420,6 +420,9 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
 		}
+
+		left_texture_position = {200.f, 540.f};
+		right_texture_position = {1000.f, 530.f};
 	}
 	else if (cutscene_state == 6000)
 	{
@@ -503,6 +506,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png"));
 		left_dialogue_texture.load_from_file(textures_path("spotters/3.png"));
 		right_dialogue_texture.load_from_file(textures_path("wanderers/1.png"));
+		left_texture_position = {200.f, 540.f};
+		right_texture_position = {1000.f, 530.f};
 	}
 	else if (cutscene_state == 6000)
 	{
