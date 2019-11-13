@@ -238,8 +238,9 @@ bool World::update(float elapsed_ms)
 		}
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
-			wanderer.update(elapsed_ms* m_current_speed);
+		for (auto &wanderer : m_wanderers)
+		{
+			wanderer.update(elapsed_ms * m_current_speed);
 			wanderer.alert_wanderer_status(false);
 		}
 
@@ -319,7 +320,8 @@ bool World::update(float elapsed_ms)
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
+		for (auto &wanderer : m_wanderers)
+		{
 			wanderer.update(elapsed_ms * m_current_speed);
 			wanderer.alert_wanderer_status(alert_mode);
 		}
@@ -480,7 +482,8 @@ bool World::update(float elapsed_ms)
 			spotter.update(elapsed_ms * m_current_speed);
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
+		for (auto &wanderer : m_wanderers)
+		{
 			wanderer.update(elapsed_ms * m_current_speed);
 			wanderer.alert_wanderer_status(alert_mode);
 		}
@@ -707,8 +710,9 @@ bool World::update(float elapsed_ms)
 		}
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
-			wanderer.update(elapsed_ms* m_current_speed);
+		for (auto &wanderer : m_wanderers)
+		{
+			wanderer.update(elapsed_ms * m_current_speed);
 			wanderer.alert_wanderer_status(alert_mode);
 		}
 
@@ -1332,9 +1336,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// movement, set movement
-	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL ) && !m_char.is_dashing())
+	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL) && !m_char.is_dashing())
 	{
-		 if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
+		if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
 			m_char.set_direction('U', true);
 			m_char.change_direction(0);
@@ -1465,46 +1469,90 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
-	// red tooltip
-	if (xpos >= 1049 && xpos <= 1096 && ypos >= 35 && ypos <= 81)
+	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
 	{
-		m_hud.set_tooltip('R', true);
-		m_hud.set_tooltip('G', false);
-		m_hud.set_tooltip('B', false);
-		m_hud.set_tooltip('Y', false);
+		// red tooltip
+		if (xpos >= 1026 && xpos <= 1074 && ypos >= 59 && ypos <= 106)
+		{
+			m_hud.set_tooltip('R', true);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
+		// green tooltip
+		else if (xpos >= 1026 && xpos <= 1074 && ypos >= 178 && ypos <= 226)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', true);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
+		// blue tooltip
+		else if (xpos >= 968 && xpos <= 1015 && ypos >= 116 && ypos <= 165)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', true);
+			m_hud.set_tooltip('Y', false);
+		}
+		// yellow tooltip
+		else if (xpos >= 1089 && xpos <= 1138 && ypos >= 116 && ypos <= 165)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', true);
+		}
+		else
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
 	}
-	// green tooltip
-	else if (xpos >= 1049 && xpos <= 1096 && ypos >= 158 && ypos <= 200)
+	else if (m_game_state == 6000)
 	{
-		m_hud.set_tooltip('R', false);
-		m_hud.set_tooltip('G', true);
-		m_hud.set_tooltip('B', false);
-		m_hud.set_tooltip('Y', false);
+		// red tooltip
+		if (xpos >= 1053 && xpos <= 1094 && ypos >= 52 && ypos <= 91)
+		{
+			m_hud.set_tooltip('R', true);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
+		// green tooltip
+		else if (xpos >= 1053 && xpos <= 1094 && ypos >= 153 && ypos <= 191)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', true);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
+		// blue tooltip
+		else if (xpos >= 1004 && xpos <= 1044 && ypos >= 101 && ypos <= 140)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', true);
+			m_hud.set_tooltip('Y', false);
+		}
+		// yellow tooltip
+		else if (xpos >= 1108 && xpos <= 1146 && ypos >= 101 && ypos <= 140)
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', true);
+		}
+		else
+		{
+			m_hud.set_tooltip('R', false);
+			m_hud.set_tooltip('G', false);
+			m_hud.set_tooltip('B', false);
+			m_hud.set_tooltip('Y', false);
+		}
 	}
-	// blue tooltip
-	else if (xpos >= 990 && xpos <= 1040 && ypos >= 95 && ypos <= 141)
-	{
-		m_hud.set_tooltip('R', false);
-		m_hud.set_tooltip('G', false);
-		m_hud.set_tooltip('B', true);
-		m_hud.set_tooltip('Y', false);
-	}
-	// yellow tooltip
-	else if (xpos >= 1113 && xpos <= 1160 && ypos >= 95 && ypos <= 141)
-	{
-		m_hud.set_tooltip('R', false);
-		m_hud.set_tooltip('G', false);
-		m_hud.set_tooltip('B', false);
-		m_hud.set_tooltip('Y', true);
-	}
-	else
-	{
-		m_hud.set_tooltip('R', false);
-		m_hud.set_tooltip('G', false);
-		m_hud.set_tooltip('B', false);
-		m_hud.set_tooltip('Y', false);
-	}
-	
 }
 
 bool World::is_char_detectable(Map m_map)

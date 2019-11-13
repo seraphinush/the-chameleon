@@ -106,22 +106,22 @@ void Hud::update(unsigned int game_state, vec2 char_position)
 {
     if (game_state == 1000 || game_state == 2000 || game_state == 3000)
     {
-        motion.position = {char_position.x + 100.f, char_position.y - 60.f};
+        motion.position = {char_position.x + 95.f, char_position.y - 55.f};
         physics.scale = {0.035f, 0.035f};
-        red_tooltip_position = {motion.position.x - 18, motion.position.y - 15};
-        blue_tooltip_position = {motion.position.x - 26, motion.position.y - 3};
-        yellow_tooltip_position = {motion.position.x - 13.8f, motion.position.y - 7};
-        green_tooltip_position = {motion.position.x - 18, motion.position.y + 10};
+        red_tooltip_position = {motion.position.x - 15, motion.position.y - 16.5f};
+        blue_tooltip_position = {motion.position.x - 27, motion.position.y - 4};
+        yellow_tooltip_position = {motion.position.x - 11, motion.position.y - 7};
+        green_tooltip_position = {motion.position.x - 17, motion.position.y + 9.5f};
         tooltip_scale = {0.055f, 0.015f};
     }
     else if (game_state == 6000)
     {
-        motion.position = {1095.f, 95.f};
+        motion.position = {1075.f, 120.f};
         physics.scale = {0.14f, 0.14f};
-        red_tooltip_position = {1040.f, 40.f};
-        blue_tooltip_position = {990.f, 75.f};
-        yellow_tooltip_position = {1057.f, 75.f};
-        green_tooltip_position = {1030.f, 120.f};
+        red_tooltip_position = {1020.f, 48.f};
+        blue_tooltip_position = {970.f, 90.f};
+        yellow_tooltip_position = {1052.f, 85.f};
+        green_tooltip_position = {1023.f, 130.f};
         tooltip_scale = {0.2f, 0.075f};
     }
 }
