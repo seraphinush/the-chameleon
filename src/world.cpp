@@ -307,8 +307,10 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
+		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms * m_current_speed);
+			wanderer.alert_wanderer_status(alert_mode);
+		}
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -480,8 +482,10 @@ bool World::update(float elapsed_ms)
 			spotter.update(elapsed_ms * m_current_speed);
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
+		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms * m_current_speed);
+			wanderer.alert_wanderer_status(alert_mode);
+		}
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -721,8 +725,7 @@ bool World::update(float elapsed_ms)
 		// update wanderers
 		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms* m_current_speed);
-			// TODO SET TO TRUE WHEN CHASE IS DONE
-			wanderer.alert_wanderer_status(false);
+			wanderer.alert_wanderer_status(alert_mode);
 		}
 
 		// update shooter

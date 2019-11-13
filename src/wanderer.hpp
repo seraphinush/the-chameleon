@@ -55,7 +55,8 @@ private:
 private:
 
 	// Pathing AI
-	bool alert_mode;
+	bool alert_mode = false;
+	int chase_refresh_timer;
 	void calculate_immediate_path(vec2 goal, int limit_search);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);

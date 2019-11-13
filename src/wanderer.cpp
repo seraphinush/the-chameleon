@@ -6,6 +6,9 @@
 #include <string> 
 #include <iostream>
 
+// CONSTANTS
+const int CHASE_REFRESH_MS = 5000;
+
 // texture
 Texture Wanderer::wanderer_texture;
 using namespace std;
@@ -101,8 +104,17 @@ void Wanderer::destroy()
 void Wanderer::update(float ms)
 {
 	if (alert_mode) {
-		// TODO: INVOKE CHASE AI
-
+		chase_refresh_timer -= ms;
+		if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])))
+		{
+			current_immediate_goal_index++;
+		}
+		if (chase_refresh_timer < 0 || current_immediate_goal_index == immediate_path.size())
+		{
+			chase_refresh_timer = CHASE_REFRESH_MS;
+			calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
+			current_immediate_goal_index = 1;
+		}
 	}
 	else {
 		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
@@ -212,15 +224,20 @@ vec2 Wanderer::get_bounding_box() const
 
 void Wanderer::alert_wanderer_status(bool alert) 
 {
-	alert_mode = alert;
-	if (alert_mode)
+	if (alert_mode == false && alert == true)
 	{
-		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 20);
-	}
-	else
-	{
-		calculate_immediate_path(m_path[current_goal_index], 0);
+		alert_mode = true;
+		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
 		current_immediate_goal_index = 1;
+		chase_refresh_timer = CHASE_REFRESH_MS;
+	}
+	else if (alert_mode == true && alert == false)
+	{
+		alert_mode = false;
+		set_position(m_map->get_tile_center_coords(m_path[0]));
+		current_goal_index = 1;
+		current_immediate_goal_index = 0;
+		calculate_immediate_path(m_path[current_goal_index], 0);
 	}
 }
 
@@ -228,6 +245,11 @@ void Wanderer::alert_wanderer_status(bool alert)
 void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 {
 	bool limit_set = limit_search != 0;
+	if (!limit_set)
+	{
+		limit_search = 1;
+	}
+
 	immediate_path.clear();
 
 	vec2 grid_position = m_map->get_grid_coords(motion.position);
@@ -241,7 +263,7 @@ void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 	paths_in_progress.push_back(beginning);
 
 	
-	while (paths_in_progress[0].heuristic != 0 || (limit_set && limit_search > 0))
+	while (paths_in_progress[0].heuristic != 0 && limit_search > 0)
 	{
 		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
 		paths_in_progress.erase(paths_in_progress.begin());
