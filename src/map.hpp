@@ -61,5 +61,6 @@ public:
 
 	float get_flash_time() const;
 
+	vec2 get_spawn();
 	void set_current_map(int level);
 };

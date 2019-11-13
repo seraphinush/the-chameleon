@@ -54,7 +54,7 @@ private:
 	int flip_in_x = 1;
 
 public:
-	bool init();
+	bool init(vec2 spawn_pos);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;
