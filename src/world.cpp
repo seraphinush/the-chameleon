@@ -1059,7 +1059,6 @@ void World::draw()
 	case LEVEL_1:
 		// draw map
 		m_map.draw(projection_2D);
-		m_overlay.draw(projection_2D);
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
@@ -1069,6 +1068,9 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+
+		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1089,6 +1091,7 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1150,10 +1153,10 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	}
 	else
 	{
-		left = m_char.get_position().x - ((float)width / (8 * m_screen_scale));
-		top = m_char.get_position().y - ((float)height / (8 * m_screen_scale));
-		right = m_char.get_position().x + ((float)width / (8 * m_screen_scale));
-		bottom = m_char.get_position().y + ((float)height / (8 * m_screen_scale));
+		left = m_char.get_position().x - ((float)width / (9.5 * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (9.5 * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (9.5 * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (9.5 * m_screen_scale));
 	}
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);

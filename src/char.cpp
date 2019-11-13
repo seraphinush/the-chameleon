@@ -62,7 +62,7 @@ bool Char::init(vec2 spawn_pos)
 
 	motion.position = spawn_pos;
 	motion.radians = 0.f;
-	motion.speed = 70.f;
+	motion.speed = 65.f;
 
 	physics.scale = {-config_scale, config_scale};
 
