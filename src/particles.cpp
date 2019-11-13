@@ -99,30 +99,30 @@ void Particles::spawn_particle(vec2 position, int direction)
 	switch (direction)
 	{
 	case 0:
-		off_y_1 = 1;
-		off_y_2 = -1;
-		off_x_1 = -1;
-		off_x_2 = -1;
-		break;
-	case 1:
-		// fprintf(stderr, "hit left or right wall");
-		off_y_1 = 1;
-		off_y_2 = -1;
-		off_x_1 = 1;
-		off_x_2 = 1;
-		break;
-	case 2:
 		off_x_1 = 1;
 		off_x_2 = -1;
 		off_y_1 = 1;
 		off_y_2 = 1;
 		break;
-	case 3:
-		// fprintf(stderr, "hit top or bottom wall");
+	case 1:
+		// fprintf(stderr, "hit left or right wall");
 		off_x_1 = 1;
 		off_x_2 = -1;
 		off_y_1 = -1;
 		off_y_2 = -1;
+		break;
+	case 2:
+		off_y_1 = 1;
+		off_y_2 = -1;
+		off_x_1 = 1;
+		off_x_2 = 1;
+		break;
+	case 3:
+		// fprintf(stderr, "hit top or bottom wall");
+		off_y_1 = 1;
+		off_y_2 = -1;
+		off_x_1 = -1;
+		off_x_2 = -1;
 		break;
 	default:
 		off_x_1 = 1;
