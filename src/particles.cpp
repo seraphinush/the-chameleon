@@ -57,14 +57,12 @@ bool Particles::init()
 // Releases all graphics resources
 void Particles::destroy()
 {
+	m_particles.clear();
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &m_instance_vbo);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
-
-	m_particles.clear();
+	effect.release();
 }
 
 void Particles::update(float ms)

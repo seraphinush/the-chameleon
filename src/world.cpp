@@ -1318,6 +1318,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	{
 		m_current_game_state = 0;
 		m_game_state = START_SCREEN;
+		reset_game();
 	}
 
 	// movement, set movement

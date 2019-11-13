@@ -58,11 +58,9 @@ void Bullets::destroy()
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &m_instance_vbo);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
-
 	m_bullets.clear();
+
+	effect.release();
 }
 
 void Bullets::update(float ms)

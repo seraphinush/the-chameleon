@@ -84,8 +84,6 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 	m_wall_left = false;
 	m_wall_right = false;
 
-
-
 	return true;
 }
 
@@ -96,9 +94,7 @@ void Wanderer::destroy()
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 }
 
 void Wanderer::update(float ms)

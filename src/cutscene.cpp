@@ -115,9 +115,7 @@ void Cutscene::destroy()
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 }
 
 void Cutscene::update(unsigned int game_state)

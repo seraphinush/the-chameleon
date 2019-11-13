@@ -99,9 +99,7 @@ void Hud::destroy()
     glDeleteBuffers(1, &mesh.ibo);
     glDeleteVertexArrays(1, &mesh.vao);
 
-    glDeleteShader(effect.vertex);
-    glDeleteShader(effect.fragment);
-    glDeleteShader(effect.program);
+	effect.release();
 }
 
 void Hud::update(unsigned int game_state, vec2 char_position)

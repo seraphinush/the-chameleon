@@ -42,9 +42,7 @@ bool Overlay::init(bool in_alert_mode) {
 void Overlay::destroy() {
 	glDeleteBuffers(1, &mesh.vbo);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 }
 
 void Overlay::update_alert_mode(bool in_alert_mode) {
