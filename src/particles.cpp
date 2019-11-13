@@ -58,7 +58,7 @@ bool Particles::init()
 void Particles::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
-	//glDeleteBuffers(1, &m_instance_vbo);
+	glDeleteBuffers(1, &m_instance_vbo);
 
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);

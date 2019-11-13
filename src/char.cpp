@@ -93,7 +93,7 @@ void Char::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
+	glDeleteVertexArrays(1, &mesh.vao);
 
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
@@ -105,12 +105,12 @@ void Char::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
 
-	// speed up on dash
-	if (m_dash)
-		step *= 2;
-
 	if (m_is_alive)
 	{
+		// speed up on dash
+		if (m_dash)
+			step *= 2;
+
 		// go in random direction on dash
 		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
 		{
@@ -162,18 +162,6 @@ void Char::update(float ms)
 			if (m_moving_right && !m_wall_right)
 				change_position({step, 0.f});
 		}
-
-
-		// sprite change
-		//if (sprite_countdown > 0.f)
-		//	sprite_countdown -= ms;
-
-		//sprite_switch < 17 ? sprite_switch++ : sprite_switch = 1;
-
-		//if (flip_in_x) {
-		//	physics.scale.x = -physics.scale.x;
-		//	flip_in_x = 0;
-		//}
 	}
 }
 
