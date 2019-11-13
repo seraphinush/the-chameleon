@@ -157,7 +157,7 @@ bool World::init(vec2 screen)
 		   m_level_screen.init() &&
 		   m_cutscene.init() &&
 		   m_map.init() &&
-		   m_char.init(m_map.get_spawn()) &&
+		   m_char.init() &&
 		   m_trophy.init() &&
 		   m_overlay.init(alert_mode) &&
 		   m_particles_emitter.init() &&
@@ -1245,6 +1245,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_TUTORIAL;
 					m_map.set_current_map(LEVEL_TUTORIAL);
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1255,6 +1256,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_cutscene.dialogue_done(m_game_state))
 				{
 					m_game_state = LEVEL_1_CUTSCENE;
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1266,6 +1268,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_1;
 					m_map.set_current_map(LEVEL_1);
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1277,6 +1280,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_2;
 					m_map.set_current_map(LEVEL_2);
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1288,6 +1292,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_3;
 					m_map.set_current_map(LEVEL_3);
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1466,7 +1471,7 @@ void World::reset_game()
 {
 	m_char.destroy();
 	m_trophy.destroy();
-	m_char.init(m_map.get_spawn());
+	m_char.init();
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();
