@@ -56,8 +56,9 @@ char level_test[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -79,7 +80,7 @@ char level_tutorial[40][61] = {
 	"WSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCACW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -140,8 +141,9 @@ char level_1[40][61] = {
 	"WCCCCCCCWCCCSSSSSSSCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRWW",
 	"WCCCCCCCWCCCCCCCCCCCCCSSSSBBSSSSRRSSSSYYSSSSBBSSSSSGGSSSRRSW",
 	"WCCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WWCCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WCCACCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 char level_2[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -182,8 +184,9 @@ char level_2[40][61] = {
 	"WCCCCRRCCCCWSSSSSSSSSSBSRWWGGWYYYSWBBWGGSWBBBYYYSSSSSRSWYYYW",
 	"WWWWWRRWWWWWYYYYYYYYYYYYRSWGGSYYWWWBBWGGGWWWBBYYYYYRRRRWWWYW",
 	"WSSSSRRSSSSWYYYYYYYYYYYYRRSGGGYYSSSBBWGGGSSSGRRRRRYYYYRSSSYW",
-	"WCCCCRRCCCCWYYYYYYYYYYYYGGGGGGBBBBBBBWGGGGGGGRRRRRRRRRYYYYYW",
-	"WWWWWRRWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WCACCRRCCCCWYYYYYYYYYYYYGGGGGGBBBBBBBWGGGGGGGRRRRRRRRRYYYYYW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 char level_3[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -224,8 +227,9 @@ char level_3[40][61] = {
 	"WCCWGGWWWWWWWWWGGWBBWWWWRRWBBWWWWWWWWWWBBWYYWBBWWWWBBBBBBBBW",
 	"WCCWGGSSSSSSSSSGGWBBSSSWRRWBBSSSSSSSSSSBBSYYWBBSSSSBBBBBBBBW",
 	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
-	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
-	"WCCWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WACWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 bool Map::init()
 {
@@ -380,7 +384,7 @@ void Map::draw(const mat3 &projection)
 				// Draw a Shadow Wall
 				draw_element(projection, wall_light_texture);
 			}
-			else if (current_level[i][j] == 'C')
+			else if ((current_level[i][j] == 'C') || (current_level[i][j] == 'A'))
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
@@ -477,65 +481,111 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall_collision(Char &character)
+void Map::check_wall(Char &ch, const float ms)
 {
-	vec2 pos = character.get_position();
-	vec2 box = character.get_bounding_box();
+	if (!ch.is_moving())
+		return;
+	
+	// ch info
+	vec2 pos = ch.get_position();
+	vec2 box = ch.get_bounding_box();
+	vec2 dir = ch.get_velocity();
+	float step = ch.is_dashing() ? 2 * ch.get_speed() * (ms / 1000) : ch.get_speed() * (ms / 1000);
 
-	// get 4 corners of char: top left, top right, bottom left, bottom right
+	// get 4 corners of char
 	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
+	
+	// initialize
+	int tile_x_top_left = 0;
+	int tile_y_top_left = 0;
+	int tile_x_top_right = 0;
+	int tile_y_top_right = 0;
+	int tile_x_bottom_left = 0;
+	int tile_y_bottom_left = 0;
+	int tile_x_bottom_right = 0;
+	int tile_y_bottom_right = 0;
 
-	// top left
-	int tile_x_top_left = (int)pos_top_left.x / 20;
-	int tile_y_top_left = (int)pos_top_left.y / 20;
-	int tile_x_top_right = (int)pos_top_right.x / 20;
-	int tile_y_top_right = (int)pos_top_right.y / 20;
-	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
-	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
-	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
-	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+	// correction
+	float d = 0.f;
 
-	if ((current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W') ||
-		(current_level[tile_y_top_left][tile_x_top_left] == 'S' && current_level[tile_y_top_right][tile_x_top_right] == 'S'))
+	// up
+	if (dir.y < 0.f)
 	{
-		character.set_wall_collision('U', true);
+		tile_x_top_left = (int)pos_top_left.x / 20;
+		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
+		tile_x_top_right = (int)pos_top_right.x / 20;
+		tile_y_top_right = (int)(pos_top_right.y - step) / 20;
+		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
+			level_1[tile_y_top_right][tile_x_top_right] == 'W' ||	level_1[tile_y_top_right][tile_x_top_right] == 'S')
+		{
+			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('U', true);
+		}
+		else
+		{
+			ch.set_wall_collision('U', false);
+		}
 	}
-	else
+	// down
+	else if (dir.y > 0)
 	{
-		character.set_wall_collision('U', false);
+		tile_x_bottom_left = (int)pos_bottom_left.x / 20;
+		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / 20;
+		tile_x_bottom_right = (int)pos_bottom_right.x / 20;
+		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / 20;
+		if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' || level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
+			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('D', true);
+		}
+		else
+		{
+			ch.set_wall_collision('D', false);
+		}
 	}
-
-	if ((current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
-		(current_level[tile_y_top_right][tile_x_top_right] == 'S' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
+	// left
+	if (dir.x < 0)
 	{
-		character.set_wall_collision('R', true);
+		tile_x_top_left = (int)(pos_top_left.x - step) / 20;
+		tile_y_top_left = (int)pos_top_left.y / 20;
+		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / 20;
+		tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
+			level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S')
+		{
+			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('L', true);
+		}
+		else
+		{
+			ch.set_wall_collision('L', false);
+		}
 	}
-	else
+	// right
+	else if (dir.x > 0)
 	{
-		character.set_wall_collision('R', false);
-	}
-
-	if ((current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
-		(current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
-	{
-		character.set_wall_collision('D', true);
-	}
-	else
-	{
-		character.set_wall_collision('D', false);
-	}
-
-	if ((current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W') ||
-		(current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' && current_level[tile_y_top_left][tile_x_top_left] == 'S'))
-	{
-		character.set_wall_collision('L', true);
-	}
-	else
-	{
-		character.set_wall_collision('L', false);
+		tile_x_top_right = (int)(pos_top_right.x + step) / 20;
+		tile_y_top_right = (int)pos_top_right.y / 20;
+		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / 20;
+		tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+		if (level_1[tile_y_top_right][tile_x_top_right] == 'W' || level_1[tile_y_top_right][tile_x_top_right] == 'S' ||
+			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('R', true);
+		}
+		else
+		{
+			ch.set_wall_collision('R', false);
+		}
 	}
 }
 
@@ -611,6 +661,8 @@ int Map::get_tile(Char character)
 		return 1;
 	else if (current_level[y][x] == 'C')
 		return 6;
+	else if (current_level[y][x] == 'A')
+		return 6;
 	else if (current_level[y][x] == 'R')
 		return 2;
 	else if (current_level[y][x] == 'G')
@@ -657,6 +709,47 @@ void Map::reset_flash_time()
 float Map::get_flash_time() const
 {
 	return glfwGetTime() - m_flash_time;
+}
+
+vec2 Map::get_tile_center_coords(vec2 tile_indices)
+{
+	return vec2{ (tile_indices.x * 20) + 10, (tile_indices.y * 20) + 10 };
+}
+
+vec2 Map::get_grid_coords(vec2 position)
+{
+	int truncated_x = (int)position.x / 20;
+	int truncated_y = (int)position.y / 20;
+	return vec2{ (float)truncated_x, (float)truncated_y };
+}
+
+bool Map::is_wall(vec2 grid_coords)
+{
+	int x = grid_coords.x;
+	int y = grid_coords.y;
+	return level_1[y][x] == 'W' || level_1[y][x] == 'S';
+}
+
+vec2 Map::get_spawn() {
+
+	translation_tile = vec2({ 10.0, 10.0 });
+
+	for (int i = 0; i < 40; i++)
+	{
+		// Increment the row
+		for (int j = 0; j < 61; j++)
+		{
+			if (level_1[i][j] == 'A')
+			{
+				return translation_tile;
+			}
+
+			translation_tile.x += 20.0;
+		}
+		translation_tile.x = 10.0;
+		translation_tile.y += 20.0;
+
+	}
 }
 
 void Map::set_current_map(int level)

@@ -42,7 +42,7 @@ public:
 	int get_tile(Char character);
 
 	// wall collision
-	void is_wall_collision(Char &character);
+	void check_wall(Char &ch, const float ms);
 	
 	// TO REMOVE - placeholder for randomize path wall collision
 	void is_wall_collision(Wanderer &wanderer);
@@ -61,5 +61,11 @@ public:
 
 	float get_flash_time() const;
 
+	// Pathing helper functions
+	vec2 get_tile_center_coords(vec2 tile_indices);
+	vec2 get_grid_coords(vec2 position);
+	bool is_wall(vec2 grid_coords);
+
+	vec2 get_spawn();
 	void set_current_map(int level);
 };
