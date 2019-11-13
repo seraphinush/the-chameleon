@@ -1201,7 +1201,7 @@ bool World::spawn_shooter()
 bool World::spawn_wanderer(std::vector<vec2> path)
 {
 	Wanderer wanderer;
-	if (wanderer.init(path, m_map))
+	if (wanderer.init(path, m_map, m_char))
 	{
 		m_wanderers.emplace_back(wanderer);
 		return true;

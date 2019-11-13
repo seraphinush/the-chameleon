@@ -3,10 +3,13 @@
 // internal
 #include "common.hpp"
 #include "map.hpp"
+#include "char.hpp"
 
 #include <vector>
 
 class Map;
+
+class Char;
 
 struct path_construction
 {
@@ -46,6 +49,7 @@ private:
 
 	// Pathing AI
 	Map* m_map;
+	Char* m_player;
 	std::vector<vec2> m_path;
 	std::vector<vec2> immediate_path;
 	int current_goal_index;
@@ -61,7 +65,7 @@ private:
 	std::vector<path_construction> merge_in_order(std::vector<path_construction> p1, std::vector<path_construction> p2);
 
 public:
-	bool init(std::vector<vec2> path, Map& map);
+	bool init(std::vector<vec2> path, Map& map, Char& player);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3& projection) override;
