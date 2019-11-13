@@ -42,7 +42,7 @@ public:
 	int get_tile(Char character);
 
 	// wall collision
-	void is_wall_collision(Char &character);
+	void check_wall(Char &ch, const float ms);
 	
 	// TO REMOVE - placeholder for randomize path wall collision
 	void is_wall_collision(Wanderer &wanderer);

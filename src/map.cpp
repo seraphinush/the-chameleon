@@ -477,16 +477,23 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall_collision(Char &character)
+void Map::check_wall(Char &ch, const float ms)
 {
-	vec2 pos = character.get_position();
-	vec2 box = character.get_bounding_box();
+	if (!ch.is_moving())
+		return;
+	
+	// ch info
+	vec2 pos = ch.get_position();
+	vec2 box = ch.get_bounding_box();
+	vec2 dir = ch.get_velocity();
+	float step = ch.is_dashing() ? 2 * ch.get_speed() * (ms / 1000) : ch.get_speed() * (ms / 1000);
 
-	// get 4 corners of char: top left, top right, bottom left, bottom right
+	// get 4 corners of char
 	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
+<<<<<<< HEAD
 
 	// top left
 	int tile_x_top_left = (int)pos_top_left.x / 20;
@@ -522,20 +529,109 @@ void Map::is_wall_collision(Char &character)
 		(current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
 	{
 		character.set_wall_collision('D', true);
-	}
-	else
+=======
+	
+	// initialize
+	int tile_x_top_left = 0;
+	int tile_y_top_left = 0;
+	int tile_x_top_right = 0;
+	int tile_y_top_right = 0;
+	int tile_x_bottom_left = 0;
+	int tile_y_bottom_left = 0;
+	int tile_x_bottom_right = 0;
+	int tile_y_bottom_right = 0;
+
+	// correction
+	float d = 0.f;
+
+	// up
+	if (dir.y < 0.f)
 	{
-		character.set_wall_collision('D', false);
+		tile_x_top_left = (int)pos_top_left.x / 20;
+		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
+		tile_x_top_right = (int)pos_top_right.x / 20;
+		tile_y_top_right = (int)(pos_top_right.y - step) / 20;
+		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
+			level_1[tile_y_top_right][tile_x_top_right] == 'W' ||	level_1[tile_y_top_right][tile_x_top_right] == 'S')
+		{
+			fprintf(stderr, "collision\n");
+			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('U', true);
+		}
+		else
+		{
+			ch.set_wall_collision('U', false);
+		}
+>>>>>>> 3e4b693e5b2571fe3aa1c7275fe916e02344d2dc
 	}
+	// down
+	else if (dir.y > 0)
+	{
+		tile_x_bottom_left = (int)pos_bottom_left.x / 20;
+		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / 20;
+		tile_x_bottom_right = (int)pos_bottom_right.x / 20;
+		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / 20;
+		if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' || level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
+			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			fprintf(stderr, "collision\n");
+			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
+			fprintf(stderr, "%d %f %f\n", tile_y_bottom_left * 20, pos_bottom_left.y, d);
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('D', true);
+		}
+		else
+		{
+			ch.set_wall_collision('D', false);
+		}
+	}
+<<<<<<< HEAD
 
 	if ((current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W') ||
 		(current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' && current_level[tile_y_top_left][tile_x_top_left] == 'S'))
+=======
+	// left
+	if (dir.x < 0)
+>>>>>>> 3e4b693e5b2571fe3aa1c7275fe916e02344d2dc
 	{
-		character.set_wall_collision('L', true);
+		tile_x_top_left = (int)(pos_top_left.x - step) / 20;
+		tile_y_top_left = (int)pos_top_left.y / 20;
+		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / 20;
+		tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
+			level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S')
+		{
+			fprintf(stderr, "collision\n");
+			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('L', true);
+		}
+		else
+		{
+			ch.set_wall_collision('L', false);
+		}
 	}
-	else
+	// right
+	else if (dir.x > 0)
 	{
-		character.set_wall_collision('L', false);
+		tile_x_top_right = (int)(pos_top_right.x + step) / 20;
+		tile_y_top_right = (int)pos_top_right.y / 20;
+		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / 20;
+		tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+		if (level_1[tile_y_top_right][tile_x_top_right] == 'W' || level_1[tile_y_top_right][tile_x_top_right] == 'S' ||
+			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			fprintf(stderr, "collision\n");
+			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
+			fprintf(stderr, "%d %f %f\n", tile_y_bottom_left * 20, pos_bottom_left.y, d);
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('R', true);
+		}
+		else
+		{
+			ch.set_wall_collision('R', false);
+		}
 	}
 }
 
