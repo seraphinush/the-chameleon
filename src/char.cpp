@@ -69,6 +69,7 @@ bool Char::init()
 	// initial values
 	m_is_alive = true;
 	m_color = 0;
+	m_direction_change = 0;
 
 	m_moving_right = false;
 	m_moving_left = false;
@@ -105,23 +106,41 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 
 	// speed up on dash
-	if (m_dash) step *= 2;
+	if (m_dash)
+		step *= 2;
 
 	if (m_is_alive)
-	{ 
+	{
 		// go in random direction on dash
 		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
 		{
 			int random = rand() % 4;
 			// chose direction
-			if (random == 0) m_moving_up = true;
-			else if (random == 1) m_moving_down = true;
-			else if (random == 2) m_moving_left = true;
-			else if (random == 3) m_moving_right = true;
+			if (random == 0)
+			{
+				m_moving_left = true;
+				m_direction_change = 0;
+			}
+			else if (random == 1)
+			{
+				m_moving_right = true;
+				m_direction_change = 1;
+			}
+			else if (random == 2)
+			{
+				m_moving_up = true;
+				m_direction_change = 2;
+			}
+			else if (random == 3)
+			{
+				m_moving_down = true;
+				m_direction_change = 3;
+			}
 		}
 
 		// opposite direction if blue
-		if (m_color == 3) step = (-step);
+		if (m_color == 3)
+			step = (-step);
 
 		if (m_moving_right && !m_wall_right)
 			change_position({step, 0.f});
@@ -142,7 +161,6 @@ void Char::update(float ms)
 		//	physics.scale.x = -physics.scale.x;
 		//	flip_in_x = 0;
 		//}
-
 	}
 }
 
@@ -192,11 +210,12 @@ void Char::draw(const mat3 &projection)
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
-	if ((sprite_countdown < 0) && (m_moving_right || m_moving_left || m_moving_up || m_moving_down))  {
+	if ((sprite_countdown < 0) && (m_moving_right || m_moving_left || m_moving_up || m_moving_down))
+	{
 		string temp_str = "data/textures/person_png/" + to_string(sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
-		const char* path = s.c_str();
+		const char *path = s.c_str();
 
 		char_texture.load_from_file(path);
 		sprite_countdown = 200.f;
@@ -250,9 +269,9 @@ bool Char::collision(vec2 pos, vec2 box)
 		if (char_box.x > box.x)
 		{
 			inside = char_pos.y - char_box.y < pos.y &&
-				char_pos.y + char_box.y > pos.y &&
-				char_pos.x - char_box.x < pos.x &&
-				char_pos.x + char_box.x > pos.x;
+					 char_pos.y + char_box.y > pos.y &&
+					 char_pos.x - char_box.x < pos.x &&
+					 char_pos.x + char_box.x > pos.x;
 		}
 	}
 
@@ -261,7 +280,6 @@ bool Char::collision(vec2 pos, vec2 box)
 
 	if ((char_pos.y + char_box.y) >= (pos.y + box.y) && (char_pos.y - char_box.y) <= (pos.y - box.y))
 		return collision_x_right || collision_x_left || inside;
-
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
@@ -273,14 +291,17 @@ bool Char::is_colliding(const Spotter &spotter)
 	return collision(pos, box);
 }
 
-
-bool Char::is_colliding(const Bullets& bullets)
+bool Char::is_colliding(Bullets &bullets)
 {
-	for (auto& bullet : bullets.m_bullets) {
+	for (auto &bullet : bullets.m_bullets)
+	{
 		vec2 pos = bullet.position;
-		vec2 box = { bullet.radius, bullet.radius };
+		vec2 box = {bullet.radius, bullet.radius};
 		if (collision(pos, box))
+		{
+			bullet.life = 0.f;
 			return true;
+		}
 	}
 	return false;
 }
@@ -306,10 +327,14 @@ vec2 Char::get_bounding_box() const
 
 void Char::set_wall_collision(char direction, bool value)
 {
-	if (direction == 'R') m_wall_right = value;
-	else if (direction == 'L') m_wall_left = value;
-	else if (direction == 'U') m_wall_up = value;
-	else if (direction == 'D') m_wall_down = value;
+	if (direction == 'R')
+		m_wall_right = value;
+	else if (direction == 'L')
+		m_wall_left = value;
+	else if (direction == 'U')
+		m_wall_up = value;
+	else if (direction == 'D')
+		m_wall_down = value;
 }
 
 bool Char::is_wall_collision() const
@@ -324,14 +349,42 @@ bool Char::is_wall_collision() const
 void Char::set_direction(char direction, bool value)
 {
 	// prevent direction change upon dash consequence
-	if (m_dash) {
-		if (value) return;
+	if (m_dash)
+	{
+		if (value)
+			return;
 	}
 
-	else if (direction == 'U') m_moving_up = value;
-	else if (direction == 'D') m_moving_down = value;
-	else if (direction == 'R') m_moving_right = value;
-	else if (direction == 'L') m_moving_left = value;
+	else if (direction == 'U')
+		m_moving_up = value;
+	else if (direction == 'D')
+		m_moving_down = value;
+	else if (direction == 'R')
+		m_moving_right = value;
+	else if (direction == 'L')
+		m_moving_left = value;
+}
+
+// int Char::get_direction()
+// {
+// 	if (m_moving_up)
+// 		return 2;
+// 	else if (m_moving_down)
+// 		return 3;
+// 	else if (m_moving_right)
+// 		return 1;
+// 	else if (m_moving_left)
+// 		return 0;
+// 	return 1;
+// }
+void Char::change_direction(int direction)
+{
+	m_direction_change = direction;
+}
+
+int Char::get_direction()
+{
+	return m_direction_change;
 }
 
 void Char::change_position(vec2 offset)
@@ -373,8 +426,9 @@ int Char::get_color() const
 void Char::set_dash(bool value)
 {
 	m_dash = value;
-	
-	if (!value)	m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
+
+	if (!value)
+		m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
 bool Char::is_dashing()
@@ -391,7 +445,7 @@ void Char::set_rotation(float radians)
 	motion.radians = radians;
 }
 
-void Char::flip_char() 
+void Char::flip_char()
 {
 	flip_in_x = 1;
 }

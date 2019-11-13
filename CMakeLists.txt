@@ -46,6 +46,7 @@ set(SOURCE_FILES
   src/shooter.cpp
   src/bullets.cpp
   src/level_screen.cpp
+  src/particles.cpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -58,6 +59,7 @@ set(SOURCE_FILES
 	src/map.hpp
 	src/trophy.hpp
   src/cutscene.hpp  
+  src/particles.hpp
 	src/shooter.hpp
 	src/bullets.hpp
   src/level_screen.hpp
