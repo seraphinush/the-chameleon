@@ -120,6 +120,12 @@ private:
 	{{23,2}, {48,3}},
 	{{39,15}, {39,7}, {51,7}, {51,15}},
 	{{35,12}, {23,12}, {23,15}, {29,20}, {33,20}, {36,15}} };
+
+	vector<vector<vec2>> wanderer_paths_2 =
+	{};
+
+	vector<vector<vec2>> wanderer_paths_3 =
+	{};
 public:
 	World();
 	~World();

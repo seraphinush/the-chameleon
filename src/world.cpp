@@ -557,9 +557,9 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		if (m_wanderers.size() < wanderer_paths.size())
+		while (m_wanderers.size() < wanderer_paths_2.size())
 		{
-			if (!spawn_wanderer(wanderer_paths[0]))
+			if (!spawn_wanderer(wanderer_paths_2[m_wanderers.size()]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
@@ -841,9 +841,9 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		if (m_wanderers.size() < wanderer_paths.size())
+		while (m_wanderers.size() < wanderer_paths_3.size())
 		{
-			if (!spawn_wanderer(wanderer_paths[0]))
+			if (!spawn_wanderer(wanderer_paths_3[m_wanderers.size()]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
