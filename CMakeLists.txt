@@ -46,6 +46,8 @@ set(SOURCE_FILES
   src/cutscene.cpp    
   src/shooter.cpp
   src/bullets.cpp
+  src/overlay.cpp
+  src/overlay.hpp
   src/level_screen.cpp
   src/particles.cpp
   src/project_path.hpp

@@ -9,7 +9,7 @@
 Texture Char::char_texture;
 using namespace std;
 
-bool Char::init(vec2 spawn_pos)
+bool Char::init()
 {
 	// load shared texture
 	if (!char_texture.is_valid())
@@ -60,9 +60,9 @@ bool Char::init(vec2 spawn_pos)
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	motion.position = spawn_pos;
+	motion.position = {0.f, 0.f};
 	motion.radians = 0.f;
-	motion.speed = 70.f;
+	motion.speed = 65.f;
 
 	physics.scale = {-config_scale, config_scale};
 
@@ -141,17 +141,30 @@ void Char::update(float ms)
 		}
 
 		// opposite direction if blue
+		// TODO
 		if (m_color == 3)
-			step = (-step);
+		{
+			if (m_moving_up && !m_wall_down)
+				change_position({0.f, step});
+			if (m_moving_down && !m_wall_up)
+				change_position({0.f, -step});
+			if (m_moving_left && !m_wall_right)
+				change_position({step, 0.f});
+			if (m_moving_right && !m_wall_left)
+				change_position({-step, 0.f});
+		}
+		else 
+		{
+			if (m_moving_up && !m_wall_up)
+				change_position({0.f, -step});
+			if (m_moving_down && !m_wall_down)
+				change_position({0.f, step});
+			if (m_moving_left && !m_wall_left)
+				change_position({-step, 0.f});
+			if (m_moving_right && !m_wall_right)
+				change_position({step, 0.f});
+		}
 
-		if (m_moving_right && !m_wall_right)
-			change_position({step, 0.f});
-		if (m_moving_left && !m_wall_left)
-			change_position({-step, 0.f});
-		if (m_moving_up && !m_wall_up)
-			change_position({0.f, -step});
-		if (m_moving_down && !m_wall_down)
-			change_position({0.f, step});
 
 		// sprite change
 		//if (sprite_countdown > 0.f)
@@ -375,6 +388,11 @@ void Char::set_direction(char direction, bool value)
 		m_moving_right = value;
 	else if (direction == 'L')
 		m_moving_left = value;
+}
+
+void Char::set_position(vec2 pos)
+{
+	motion.position = pos;
 }
 
 void Char::change_position(vec2 offset)

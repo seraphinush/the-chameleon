@@ -23,7 +23,7 @@ class Char : public Entity
 
 private:
 	// config
-	const float config_scale = 0.03f;
+	const float config_scale = 0.02f;
 
 	bool m_is_alive;
 
@@ -54,7 +54,7 @@ private:
 	int flip_in_x = 1;
 
 public:
-	bool init(vec2 spawn_pos);
+	bool init();
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;
@@ -79,6 +79,7 @@ public:
 
 	// movement
 	void set_direction(char direction, bool value);
+	void set_position(vec2 pos);
 	void change_position(vec2 off);
 	vec2 get_position() const;
 	float get_speed() const;

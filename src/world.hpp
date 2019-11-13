@@ -14,6 +14,7 @@
 #include "hud.hpp"
 #include "particles.hpp"
 #include "shooter.hpp"
+#include "overlay.hpp"
 #include "level_screen.hpp"
 
 // stlib
@@ -68,6 +69,7 @@ private:
 	bool m_show_story_screen;
 
 	Map m_map;
+	Overlay m_overlay;
 
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
@@ -104,7 +106,28 @@ private:
 
 	bool recent_dash = false;
 
-	vector<vector<vec2>> wanderer_paths = { {{6,6}, {6,2}, {1,2}, {1,6}} };
+	vector<vector<vec2>> wanderer_paths =
+	{ {{6,6}, {6,2}, {1,2}, {1,6}},
+	{{8,6}, {8,2}, {16,2}, {16,6}},
+	{{6,11}, {1,11}, {1,9}, {6,9}},
+	{{8,11}, {8,9}, {13,9}, {13,11}},
+	{{1,14}, {16,14}},
+	{{1,17}, {12,18}},
+	{{20,18}, {31,25}, {41,16}, {32,25}},
+	{{18,22}, {31,28}, {34,28}, {42,20}, {34,28}, {30,28}},
+	{{19,38}, {19,27}, {11,27}, {11,38}},
+	{{22,38}, {58,37}},
+	{{45,26}, {45,18}, {52,18}, {52,26}},
+	{{19,2}, {19,15}},
+	{{23,2}, {48,3}},
+	{{39,15}, {39,7}, {51,7}, {51,15}},
+	{{35,12}, {23,12}, {23,15}, {29,20}, {33,20}, {36,15}} };
+
+	vector<vector<vec2>> wanderer_paths_2 =
+	{};
+
+	vector<vector<vec2>> wanderer_paths_3 =
+	{};
 public:
 	World();
 	~World();
@@ -114,6 +137,8 @@ public:
 	bool update(float ms);
 	void draw();
 	bool is_over() const;
+
+	bool alert_mode;
 
 private:
 	bool spawn_spotter();

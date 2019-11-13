@@ -10,10 +10,11 @@
 Texture Wanderer::wanderer_texture;
 using namespace std;
 
-bool Wanderer::init(vector<vec2> path, Map& map)
+bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 {
 	// Pathing AI init
 	m_map = &map;
+	m_player = &player;
 	m_path = path;
 	set_position(m_map->get_tile_center_coords(m_path[0]));
 	current_goal_index = 1;
@@ -99,9 +100,9 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	if (cool_down > 0.f) {
+	if (alert_mode) {
 		// INVOKE CHASE AI
-		cool_down -= ms;
+
 	}
 	else {
 		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
@@ -217,10 +218,7 @@ void Wanderer::alert_wanderer()
 
 void Wanderer::calculate_immediate_path(vec2 goal)
 {
-	immediate_path.clear();// TODO middle steps
-	//immediate_path.push_back(goal);
-	//immediate_path.push_back(goal);
-	//return;
+	immediate_path.clear();
 
 	vec2 grid_position = m_map->get_grid_coords(motion.position);
 

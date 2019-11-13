@@ -108,7 +108,7 @@ void Hud::update(unsigned int game_state, vec2 char_position)
 {
     if (game_state == 1000 || game_state == 2000 || game_state == 3000)
     {
-        motion.position = {char_position.x + 125.f, char_position.y - 77.f};
+        motion.position = {char_position.x + 100.f, char_position.y - 60.f};
         physics.scale = {0.035f, 0.035f};
         red_tooltip_position = {motion.position.x - 18, motion.position.y - 15};
         blue_tooltip_position = {motion.position.x - 26, motion.position.y - 3};
