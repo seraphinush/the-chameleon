@@ -265,6 +265,69 @@ bool World::update(float elapsed_ms)
 		// DYNAMIC SPAWN
 		//////////////////////
 
+		if (m_particles_emitter.get_fade_time() > 1)
+		{
+			m_particles_emitter.reset_fade_time();
+			m_particles_emitter.set_fade(0);
+			m_particles_emitter.destroy();
+			m_particles_emitter.init();
+		}
+
+		if (m_char.is_dashing())
+		{
+			if (m_char.is_wall_collision())
+			{
+				m_char.set_dash(false);
+				recent_dash = true;
+				spawn_particles = true;
+				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
+				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			}
+			else
+			{
+				m_char.set_dash(true);
+			}
+		}
+		if (recent_dash)
+		{
+			recent_dash = false;
+			cooldown = 0;
+			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			switch (m_char.get_direction())
+			{
+			case 0:
+				m_char.set_direction('L', true);
+				m_char.change_position({-15.f, 0.f});
+				m_char.set_direction('L', false);
+				break;
+			case 1:
+				m_char.set_direction('R', true);
+				m_char.change_position({15.f, 0.f});
+				m_char.set_direction('R', false);
+				break;
+			case 2:
+				m_char.set_direction('D', true);
+				m_char.change_position({0.f, 15.f});
+				m_char.set_direction('D', false);
+				break;
+			case 3:
+				m_char.set_direction('U', true);
+				m_char.change_position({0.f, -15.f});
+				m_char.set_direction('U', false);
+				break;
+			}
+		}
+
+		//particles update
+		m_particles_emitter.update(elapsed_ms);
+
+		// Spawning new Particles
+		if (spawn_particles)
+		{
+			//fprintf(stderr, "spawn pebble called");
+			spawn_particles = false;
+		}
+
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
@@ -286,7 +349,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 2)
+		if (m_map.get_flash_time() > 0.5)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -391,6 +454,69 @@ bool World::update(float elapsed_ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
+		if (m_particles_emitter.get_fade_time() > 1)
+		{
+			m_particles_emitter.reset_fade_time();
+			m_particles_emitter.set_fade(0);
+			m_particles_emitter.destroy();
+			m_particles_emitter.init();
+		}
+
+		if (m_char.is_dashing())
+		{
+			if (m_char.is_wall_collision())
+			{
+				m_char.set_dash(false);
+				recent_dash = true;
+				spawn_particles = true;
+				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
+				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			}
+			else
+			{
+				m_char.set_dash(true);
+			}
+		}
+		if (recent_dash)
+		{
+			recent_dash = false;
+			cooldown = 0;
+			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			switch (m_char.get_direction())
+			{
+			case 0:
+				m_char.set_direction('L', true);
+				m_char.change_position({-15.f, 0.f});
+				m_char.set_direction('L', false);
+				break;
+			case 1:
+				m_char.set_direction('R', true);
+				m_char.change_position({15.f, 0.f});
+				m_char.set_direction('R', false);
+				break;
+			case 2:
+				m_char.set_direction('D', true);
+				m_char.change_position({0.f, 15.f});
+				m_char.set_direction('D', false);
+				break;
+			case 3:
+				m_char.set_direction('U', true);
+				m_char.change_position({0.f, -15.f});
+				m_char.set_direction('U', false);
+				break;
+			}
+		}
+
+		//particles update
+		m_particles_emitter.update(elapsed_ms);
+
+		// Spawning new Particles
+		if (spawn_particles)
+		{
+			//fprintf(stderr, "spawn pebble called");
+			spawn_particles = false;
+		}
+
 		// spawn wanderer
 		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
 		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
@@ -412,7 +538,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 2)
+		if (m_map.get_flash_time() > 0.5)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -714,11 +840,78 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		//////////////////////
+		// DYNAMIC SPAWN
+		//////////////////////
+
+		if (m_particles_emitter.get_fade_time() > 1)
+		{
+			m_particles_emitter.reset_fade_time();
+			m_particles_emitter.set_fade(0);
+			m_particles_emitter.destroy();
+			m_particles_emitter.init();
+		}
+
+		if (m_char.is_dashing())
+		{
+			if (m_char.is_wall_collision())
+			{
+				m_char.set_dash(false);
+				recent_dash = true;
+				spawn_particles = true;
+				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
+				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			}
+			else
+			{
+				m_char.set_dash(true);
+			}
+		}
+		if (recent_dash)
+		{
+			recent_dash = false;
+			cooldown = 0;
+			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+			switch (m_char.get_direction())
+			{
+			case 0:
+				m_char.set_direction('L', true);
+				m_char.change_position({-15.f, 0.f});
+				m_char.set_direction('L', false);
+				break;
+			case 1:
+				m_char.set_direction('R', true);
+				m_char.change_position({15.f, 0.f});
+				m_char.set_direction('R', false);
+				break;
+			case 2:
+				m_char.set_direction('D', true);
+				m_char.change_position({0.f, 15.f});
+				m_char.set_direction('D', false);
+				break;
+			case 3:
+				m_char.set_direction('U', true);
+				m_char.change_position({0.f, -15.f});
+				m_char.set_direction('U', false);
+				break;
+			}
+		}
+
+		//particles update
+		m_particles_emitter.update(elapsed_ms);
+
+		// Spawning new Particles
+		if (spawn_particles)
+		{
+			//fprintf(stderr, "spawn pebble called");
+			spawn_particles = false;
+		}
+
+		//////////////////////
 		// CONSEQUENCES
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 2)
+		if (m_map.get_flash_time() > 0.5)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -791,7 +984,12 @@ void World::draw()
 		// draw map
 		m_map.draw(projection_2D);
 		m_cutscene.draw(projection_2D);
-		m_char.draw(projection_2D);
+
+		if (m_map.get_flash() == 0)
+		{
+			m_char.draw(projection_2D);
+			m_particles_emitter.draw(projection_2D);
+		}
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
