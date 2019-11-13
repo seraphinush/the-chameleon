@@ -11,6 +11,7 @@
 #include "complete_screen.hpp"
 #include "trophy.hpp"
 #include "cutscene.hpp"
+#include "hud.hpp"
 #include "particles.hpp"
 #include "shooter.hpp"
 #include "overlay.hpp"
@@ -61,6 +62,7 @@ private:
 	CompleteScreen m_complete_screen;
 	LevelScreen m_level_screen;
 	Cutscene m_cutscene;
+	Hud m_hud;
 
 	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 	// story screen handle
