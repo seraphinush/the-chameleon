@@ -1069,6 +1069,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_overlay.draw(projection_2D);
+
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -1088,6 +1090,8 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
