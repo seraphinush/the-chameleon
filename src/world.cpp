@@ -160,7 +160,7 @@ bool World::init(vec2 screen)
 		   m_map.init() &&
 		   m_char.init(m_map.get_spawn()) &&
 		   m_trophy.init() &&
-		   m_overlay.init(alert_mode) &&
+		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init();
 }
@@ -255,6 +255,7 @@ bool World::update(float elapsed_ms)
 	if (!(cooldown >= MAX_COOLDOWN))
 	{
 		cooldown++;
+		m_overlay.set_cooldown(cooldown);
 	}
 
 	if (m_game_state == LEVEL_1)
@@ -1515,7 +1516,7 @@ void World::reset_game()
 	m_current_speed = 1.f;
 	m_overlay.destroy();
 	alert_mode = false;
-	m_overlay.init(alert_mode);
+	m_overlay.init(alert_mode, MAX_COOLDOWN);
 
 	// reset direction for every spotter
 	for (auto &spotter : m_spotters)

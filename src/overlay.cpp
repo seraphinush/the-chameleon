@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-bool Overlay::init(bool in_alert_mode) {
+bool Overlay::init(bool in_alert_mode,  int max_cooldown) {
 	m_dead_time = -1;
-
+	glGetIntegerv(GL_VIEWPORT, view_port);
 	// Since we are not going to apply transformation to this screen geometry
 	// The coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
 	// Make the size slightly larger then the screen to crop the boundary.
@@ -34,6 +34,8 @@ bool Overlay::init(bool in_alert_mode) {
 
 	alert_mode = in_alert_mode;
 	oscillation_value = 0.f;
+	cooldown = 0;
+	MAX_COOLDOWN = max_cooldown;
 
 	return true;
 }
@@ -64,12 +66,21 @@ void Overlay::draw(const mat3& projection) {
 	GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
 	GLuint alert_mode_uloc = glGetUniformLocation(effect.program, "alert_mode");
 	GLuint oscillation_value_uloc = glGetUniformLocation(effect.program, "oscillation_value");
+	GLuint cooldown_value_uloc = glGetUniformLocation(effect.program, "cooldown");
+	GLuint max_cooldown_value_uloc = glGetUniformLocation(effect.program, "MAX_COOLDOWN");
+
+	GLuint window_width_uloc = glGetUniformLocation(effect.program, "window_width");
+	GLuint window_height_uloc = glGetUniformLocation(effect.program, "window_height");
+
 	glUniform1i(screen_text_uloc, 0);
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	glUniform1f(alert_mode_uloc, (alert_mode) ? 1.f : 0.f);
 	glUniform1f(oscillation_value_uloc, oscillation_value);
+	glUniform1i(cooldown_value_uloc, cooldown);
+	glUniform1i(max_cooldown_value_uloc, MAX_COOLDOWN);
 	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
-
+	glUniform1i(window_width_uloc, view_port[2]);
+	glUniform1i(window_height_uloc, view_port[3]);
 	// Draw the screen texture on the quad geometry
 	// Setting vertices
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -88,4 +99,9 @@ void Overlay::oscillation() {
 		oscillation_value = 0.f;
 	}
 	oscillation_value += 0.05f;
+}
+
+void Overlay::set_cooldown(int value) {
+	
+	cooldown = value;
 }

@@ -6,8 +6,10 @@
 class Overlay : public Entity
 {
 public:
+	int view_port[4];
+
 	// Creates all the associated render resources and default transform
-	bool init(bool in_alert_mode);
+	bool init(bool in_alert_mode, int max_cooldown);
 
 	// Releases all associated resources
 	void destroy();
@@ -17,6 +19,8 @@ public:
 
 	void oscillation();
 
+	void set_cooldown(int value);
+
 	void update_alert_mode(bool in_alert_mode);
 
 
@@ -25,4 +29,6 @@ private:
 	float m_dead_time;
 	bool alert_mode;
 	float oscillation_value;
+	int cooldown;
+	int MAX_COOLDOWN;
 };
