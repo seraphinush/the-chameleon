@@ -16,6 +16,8 @@ World world;
 const int width = 1200;
 const int height = 800;
 
+const float TICK = 40.f;
+
 // Entry point
 int main(int argc, char* argv[])
 {
@@ -30,7 +32,10 @@ int main(int argc, char* argv[])
 
 	auto t = Clock::now();
 
-	// variable timestep loop.. can be improved (:
+	float avg_ms = 0.f;
+	float dt = 0.f;
+
+	// variable timestep loop
 	while (!world.is_over())
 	{
 		// Processes system messages, if this wasn't present the window would become unresponsive
@@ -38,10 +43,20 @@ int main(int argc, char* argv[])
 
 		// Calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
-		float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+		float ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+
+		avg_ms = (avg_ms + ms) / 2;
+		fprintf(stderr, "cur:%f, avg:%f\n", ms, avg_ms);
+
+		if (ms < TICK)
+		{
+			dt = 0.f;
+			Sleep(TICK - ms);
+		}
+
 		t = now;
 
-		world.update(elapsed_sec);
+		world.update(ms - dt);
 		world.draw();
 	}
 
