@@ -26,6 +26,7 @@ private:
 	float m_dead_time;
 	float m_flash_time;
 	int flash_map;
+	char current_level[40][61];
 
 public:
 	bool init();
@@ -41,7 +42,7 @@ public:
 	int get_tile(Char character);
 
 	// wall collision
-	void is_wall_collision(Char &character);
+	void check_wall(Char &ch, const float ms);
 	
 	// TO REMOVE - placeholder for randomize path wall collision
 	void is_wall_collision(Wanderer &wanderer);
@@ -61,4 +62,5 @@ public:
 	float get_flash_time() const;
 
 	vec2 get_spawn();
+	void set_current_map(int level);
 };
