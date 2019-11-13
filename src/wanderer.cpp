@@ -99,9 +99,8 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
-	if (cool_down > 0.f) {
+	if (alert_mode) {
 		// INVOKE CHASE AI
-		cool_down -= ms;
 	}
 	else {
 		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))

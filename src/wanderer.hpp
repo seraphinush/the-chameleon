@@ -73,6 +73,8 @@ public:
 	void set_wall_collision(char direction, bool value);
 	vec2 get_bounding_box() const;
 
-	// ALERT WANDERER METHOD
 	void alert_wanderer();
+
+	// ALERT WANDERER METHOD
+	bool alert_mode;
 };

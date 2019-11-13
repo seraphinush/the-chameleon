@@ -185,7 +185,7 @@ bool Shooter::collision_with(Char m_char)
 	float difference_in_x = m_char.get_position().x - motion.position.x;
 	float difference_in_y = m_char.get_position().y - motion.position.y;
 
-	if ((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= 100) {
+	if ((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) {
 		return true;
 	}
 	else {

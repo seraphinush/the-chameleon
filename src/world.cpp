@@ -19,6 +19,9 @@ int cooldown = MAX_COOLDOWN;
 const size_t MAX_PARTICLES = 5;
 bool spawn_particles = false;
 
+const size_t MAX_ALERT_MODE_COOLDOWN = 100;
+int alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
+
 // TODO
 vec2 spotter_loc[5];
 
@@ -59,11 +62,11 @@ bool World::init(vec2 screen)
 	spotter_loc[4] = {800, 500};
 
 	// TODO
-	shooter_loc[0] = {100 + 50, 100 + 50};
-	shooter_loc[1] = {screen.x - 50, 100 + 50};
-	shooter_loc[2] = {150, screen.y - 150};
-	shooter_loc[3] = {screen.x - 50, screen.y - 50};
-	shooter_loc[4] = {850, 550};
+	shooter_loc[0] = { 100 + 100, 100 + 50 };
+	shooter_loc[1] = { screen.x - 50, 100 + 50 };
+	shooter_loc[2] = { 150, screen.y - 150 };
+	shooter_loc[3] = { screen.x - 50, screen.y - 50 };
+	shooter_loc[4] = { 850, 550 };
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -156,6 +159,7 @@ bool World::init(vec2 screen)
 		   m_map.init() &&
 		   m_char.init(m_map.get_spawn()) &&
 		   m_trophy.init() &&
+		   m_overlay.init(alert_mode) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init();
 }
@@ -186,6 +190,7 @@ void World::destroy()
 	m_char.destroy();
 	m_particles_emitter.destroy();
 	m_map.destroy();
+	m_overlay.destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -203,11 +208,49 @@ bool World::update(float elapsed_ms)
 	m_cutscene.update(m_current_game_state);
 	m_complete_screen.update(m_current_game_state);
 
+	//////////////////////
+	// COOLDOWN
+	//////////////////////
+	if (!(alert_mode_cooldown >= MAX_ALERT_MODE_COOLDOWN))
+	{
+		alert_mode_cooldown++;
+	}
+	else
+	{
+		alert_mode = false;
+		// update spotters
+		for (auto& spotter : m_spotters) {
+			if (alert_mode) {
+				spotter.alert_mode = false;
+			}
+		}
+
+		// update wanderers
+		for (auto& wanderer : m_wanderers) {
+			wanderer.update(elapsed_ms* m_current_speed);
+			wanderer.alert_mode = false;
+		}
+
+		// update shooters
+		for (auto& shooter : m_shooters) {
+			if (alert_mode) {
+				shooter.alert_mode = false;
+			}
+		}
+	}
+
+	// IF ALERT MODE OVERLAY
+	m_overlay.update_alert_mode(alert_mode);
+	if (alert_mode) {
+		m_overlay.oscillation();
+	}
+
 	// cooldown update
 	if (!(cooldown >= MAX_COOLDOWN))
 	{
 		cooldown++;
 	}
+
 	if (m_game_state == LEVEL_1)
 	{
 		//////////////////////
@@ -575,6 +618,20 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 
+		// proximity, spotter
+		for (auto& spotter : m_spotters)
+			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			{
+				if (m_char.is_alive())
+				{
+					alert_mode = true;
+					spotter.alert_mode = true;
+					alert_mode_cooldown = 0;
+				}
+				break;
+			}
+
+
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
@@ -597,6 +654,8 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
+					alert_mode = true;
+					alert_mode_cooldown = 0;
 					// ROTATE SHOOTER TO POINT AT M_CHAR
 					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
 					if (angle_to_char < 0)
@@ -646,16 +705,27 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		// update spotters
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters) {
+			if (alert_mode) {
+				spotter.alert_mode = true;
+			}
 			spotter.update(elapsed_ms * m_current_speed);
+		}
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
-			wanderer.update(elapsed_ms * m_current_speed);
+		for (auto& wanderer : m_wanderers) {
+			wanderer.update(elapsed_ms* m_current_speed);
+			// setting it to false : SET TRUE WHEN JOSE IS READY WITH CHASE AI
+			wanderer.alert_mode = false;
+		}
 
 		// update shooter
-		for (auto &shooter : m_shooters)
-		{
+		for (auto& shooter : m_shooters) {
+
+			if (alert_mode) {
+				shooter.alert_mode = true;
+			}
+
 			shooter.update(elapsed_ms * m_current_speed);
 			// angle to shooter, alternative solution to save bullet angle as part of bullet struct
 			float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
@@ -989,7 +1059,6 @@ void World::draw()
 	case LEVEL_1:
 		// draw map
 		m_map.draw(projection_2D);
-
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
@@ -1047,6 +1116,8 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1320,6 +1391,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			cooldown = 0;
 			m_char.set_color(2);
+			alert_mode = true;
+			alert_mode_cooldown = 0;
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
@@ -1332,6 +1405,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
+			alert_mode = true;
+			alert_mode_cooldown = 0;
 			cooldown = 0;
 		}
 	}
@@ -1391,6 +1466,16 @@ void World::reset_game()
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();
+	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
+	m_overlay.destroy();	
+	alert_mode = false;
+	m_overlay.init(alert_mode);
+	
+	// reset direction for every spotter
+	for (auto& spotter : m_spotters) 
+	{
+		spotter.reset_direction();
+	}
 }

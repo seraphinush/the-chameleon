@@ -13,6 +13,7 @@
 #include "cutscene.hpp"
 #include "particles.hpp"
 #include "shooter.hpp"
+#include "overlay.hpp"
 #include "level_screen.hpp"
 
 // stlib
@@ -66,6 +67,7 @@ private:
 	bool m_show_story_screen;
 
 	Map m_map;
+	Overlay m_overlay;
 
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
@@ -112,6 +114,8 @@ public:
 	bool update(float ms);
 	void draw();
 	bool is_over() const;
+
+	bool alert_mode;
 
 private:
 	bool spawn_spotter();
