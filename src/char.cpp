@@ -118,22 +118,22 @@ void Char::update(float ms)
 			// chose direction
 			if (r == 0)
 			{
-				m_moving_left = true;
+				m_moving_up = true;
 				m_direction_change = 0;
 			}
 			else if (r == 1)
 			{
-				m_moving_right = true;
+				m_moving_down = true;
 				m_direction_change = 1;
 			}
 			else if (r == 2)
 			{
-				m_moving_up = true;
+				m_moving_left = true;
 				m_direction_change = 2;
 			}
 			else if (r == 3)
 			{
-				m_moving_down = true;
+				m_moving_right = true;
 				m_direction_change = 3;
 			}
 		}
