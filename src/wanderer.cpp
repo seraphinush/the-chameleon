@@ -300,6 +300,15 @@ vector<path_construction> Wanderer::find_paths_from(path_construction origin, ve
 			{
 				continue;
 			}
+
+			if (x != 0 && y != 0) // is diagonal from origin
+			{
+				if (!tile_is_accessible(point_of_origin, x, y))
+				{
+					continue;
+				}
+			}
+
 			path_construction new_path;
 			new_path.path = origin.path;
 			vec2 new_point = { point_of_origin.x + x, point_of_origin.y + y };
@@ -371,4 +380,9 @@ vector<path_construction> Wanderer::merge_in_order(vector<path_construction> p1,
 		}
 	}
 	return return_list;
+}
+
+bool Wanderer::tile_is_accessible(vec2 origin, int x_delta, int y_delta)
+{
+	return !m_map->is_wall({ origin.x, origin.y + y_delta }) && !m_map->is_wall({ origin.x + x_delta, origin.y });
 }

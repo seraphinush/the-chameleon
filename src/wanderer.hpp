@@ -51,17 +51,18 @@ private:
 	std::vector<vec2> immediate_path;
 	int current_goal_index;
 	int current_immediate_goal_index;
+	bool alert_mode = false;
+	int chase_refresh_timer;
 
 private:
 
 	// Pathing AI
-	bool alert_mode = false;
-	int chase_refresh_timer;
 	void calculate_immediate_path(vec2 goal, int limit_search);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);
 	std::vector<path_construction> find_paths_from(path_construction origin, vec2 goal);
 	std::vector<path_construction> merge_in_order(std::vector<path_construction> p1, std::vector<path_construction> p2);
+	bool tile_is_accessible(vec2 origin, int x_delta, int y_delta);
 
 public:
 	bool init(std::vector<vec2> path, Map& map, Char& player);
