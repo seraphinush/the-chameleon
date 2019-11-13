@@ -22,6 +22,9 @@ bool spawn_particles = false;
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 int alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
 
+// fade/flash
+const float FADE_TIME = 0.7;
+const float FLASH_TIME = 0.5;
 // TODO
 vec2 spotter_loc[5];
 
@@ -319,7 +322,7 @@ bool World::update(float elapsed_ms)
 		// DYNAMIC SPAWN
 		//////////////////////
 
-		if (m_particles_emitter.get_fade_time() > 0.7)
+		if (m_particles_emitter.get_fade_time() > FADE_TIME)
 		{
 			m_particles_emitter.reset_fade_time();
 			m_particles_emitter.set_fade(0);
@@ -381,7 +384,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 0.5)
+		if (m_map.get_flash_time() > FLASH_TIME)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -491,7 +494,7 @@ bool World::update(float elapsed_ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
-		if (m_particles_emitter.get_fade_time() > 1)
+		if (m_particles_emitter.get_fade_time() > FADE_TIME)
 		{
 			m_particles_emitter.reset_fade_time();
 			m_particles_emitter.set_fade(0);
@@ -553,7 +556,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 0.5)
+		if (m_map.get_flash_time() > FLASH_TIME)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -754,7 +757,7 @@ bool World::update(float elapsed_ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
-		if (m_particles_emitter.get_fade_time() > 1)
+		if (m_particles_emitter.get_fade_time() > FADE_TIME)
 		{
 			m_particles_emitter.reset_fade_time();
 			m_particles_emitter.set_fade(0);
@@ -825,7 +828,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 0.5)
+		if (m_map.get_flash_time() > FLASH_TIME)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -867,7 +870,7 @@ bool World::update(float elapsed_ms)
 		// DYNAMIC SPAWN
 		//////////////////////
 
-		if (m_particles_emitter.get_fade_time() > 1)
+		if (m_particles_emitter.get_fade_time() > FADE_TIME)
 		{
 			m_particles_emitter.reset_fade_time();
 			m_particles_emitter.set_fade(0);
@@ -920,7 +923,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// yellow
-		if (m_map.get_flash_time() > 0.5)
+		if (m_map.get_flash_time() > FLASH_TIME)
 		{
 			m_map.reset_flash_time();
 			m_map.set_flash(0);
@@ -1323,7 +1326,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// movement, set movement
-	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL ) && !m_char.is_dashing())
 	{
 		 if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
