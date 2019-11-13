@@ -231,6 +231,7 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				m_cutscene.set_dialogue_counter(LEVEL_2_CUTSCENE, 70);
 				m_game_state = LEVEL_2_CUTSCENE;
 			}
 			m_char.kill();
@@ -341,6 +342,7 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				m_cutscene.set_dialogue_counter(LEVEL_3_CUTSCENE, 81);
 				m_game_state = LEVEL_3_CUTSCENE;
 			}
 			m_char.kill();
@@ -706,28 +708,13 @@ void World::draw()
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_1_CUTSCENE:
-		// draw map
 		m_cutscene.draw(projection_2D);
-
-		// bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_2_CUTSCENE:
-		// draw map
 		m_cutscene.draw(projection_2D);
-
-		// bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_3_CUTSCENE:
-		// draw map
 		m_cutscene.draw(projection_2D);
-
-		// bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_1:
 		// draw map
@@ -980,17 +967,17 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					break;
 				case 1:
 					m_game_state = LEVEL_1_CUTSCENE;
-					m_cutscene.set_dialogue_counter(m_game_state, 30);
+					m_cutscene.set_dialogue_counter(m_game_state, 50);
 					m_current_level_state = 0;
 					break;
 				case 2:
 					m_game_state = LEVEL_2_CUTSCENE;
-					m_cutscene.set_dialogue_counter(m_game_state, 32);
+					m_cutscene.set_dialogue_counter(m_game_state, 70);
 					m_current_level_state = 0;
 					break;
 				case 3:
 					m_game_state = LEVEL_3_CUTSCENE;
-					m_cutscene.set_dialogue_counter(m_game_state, 34);
+					m_cutscene.set_dialogue_counter(m_game_state, 81);
 					m_current_level_state = 0;
 					break;
 				}
