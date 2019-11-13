@@ -233,7 +233,7 @@ bool World::update(float elapsed_ms)
 		{
 			if (alert_mode)
 			{
-				spotter.alert_mode = false;
+				spotter.alert_mode = true;
 			}
 		}
 
@@ -455,6 +455,20 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
+		// proximity, spotter
+		for (auto& spotter : m_spotters) {
+			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			{
+				if (m_char.is_alive())
+				{
+					printf("test");
+					alert_mode = true;
+					spotter.alert_mode = true;
+					alert_mode_cooldown = 0;
+				}
+				break;
+			}
+		}
 		// collision, char-trophy
 		if (m_char.is_colliding(m_trophy))
 		{
@@ -597,11 +611,11 @@ bool World::update(float elapsed_ms)
 
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
-		for (auto &wanderer : m_wanderers)
+		for (auto& wanderer : m_wanderers)
 			m_map.is_wall_collision(wanderer);
 
 		// collision, char-spotter
-		for (const auto &spotter : m_spotters)
+		for (const auto& spotter : m_spotters)
 			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
@@ -614,17 +628,19 @@ bool World::update(float elapsed_ms)
 			}
 
 		// proximity, spotter
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters) {
 			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{
+					printf("test");
 					alert_mode = true;
 					spotter.alert_mode = true;
 					alert_mode_cooldown = 0;
 				}
 				break;
 			}
+		}
 
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)

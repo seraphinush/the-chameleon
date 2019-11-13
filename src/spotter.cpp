@@ -21,6 +21,7 @@ bool Spotter::init()
 		}
 	}
 
+	direction = vec2({ 0.f, -1.f });
 	// the position corresponds to the center of the texture
 	float wr = spotter_texture.width * 0.5f;
 	float hr = spotter_texture.height * 0.5f;
@@ -187,7 +188,7 @@ bool Spotter::collision_with(Char m_char)
 
 
 
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && (in_direction)) {
+	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && in_direction) {
 		return true;
 	}
 	else {
