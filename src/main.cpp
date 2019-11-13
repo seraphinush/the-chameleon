@@ -50,7 +50,11 @@ int main(int argc, char* argv[])
 
 		if (ms < TICK)
 		{
-			Sleep(TICK - ms);
+			#if __APPLE__
+				usleep(TICK - ms);
+			#else
+   			Sleep(TICK - ms);
+			#endif
 		}
 
 		t = now;
