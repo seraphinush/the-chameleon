@@ -736,23 +736,19 @@ bool Map::is_wall(vec2 grid_coords)
 
 vec2 Map::get_spawn() {
 
-	translation_tile = vec2({ 10.0, 10.0 });
+	vec2 res = vec2({ 0.f, 0.f });
 
 	for (int i = 0; i < 40; i++)
 	{
-		// Increment the row
 		for (int j = 0; j < 61; j++)
 		{
-			if (level_1[i][j] == 'A')
+			if (current_level[i][j] == 'A')
 			{
-				return translation_tile;
+				res.x = j * 20 + 10;
+				res.y = i * 20 + 10;
+				return res;
 			}
-
-			translation_tile.x += 20.0;
 		}
-		translation_tile.x = 10.0;
-		translation_tile.y += 20.0;
-
 	}
 }
 

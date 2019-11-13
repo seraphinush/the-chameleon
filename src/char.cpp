@@ -9,7 +9,7 @@
 Texture Char::char_texture;
 using namespace std;
 
-bool Char::init(vec2 spawn_pos)
+bool Char::init()
 {
 	// load shared texture
 	if (!char_texture.is_valid())
@@ -60,7 +60,7 @@ bool Char::init(vec2 spawn_pos)
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-	motion.position = spawn_pos;
+	motion.position = {0.f, 0.f};
 	motion.radians = 0.f;
 	motion.speed = 65.f;
 
@@ -375,6 +375,11 @@ void Char::set_direction(char direction, bool value)
 		m_moving_right = value;
 	else if (direction == 'L')
 		m_moving_left = value;
+}
+
+void Char::set_position(vec2 pos)
+{
+	motion.position = pos;
 }
 
 void Char::change_position(vec2 offset)
