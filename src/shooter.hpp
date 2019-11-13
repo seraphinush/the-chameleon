@@ -20,7 +20,7 @@ private:
 	float shooter_sprite_countdown = 1500.f;
 
 	// AI stuff
-	float radius = 100.f;
+	float radius = 20.f;
 
 public:
 	bool init();
