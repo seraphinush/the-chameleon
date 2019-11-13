@@ -10,6 +10,7 @@ class StartScreen : public Entity
 	static Texture pointer;
 	static Texture start_game;
 	static Texture controls;
+	static Texture levels;
 	static Texture quit;
 	static Texture game_title;
 

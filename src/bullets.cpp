@@ -16,7 +16,8 @@ bool Bullets::init()
 	std::vector<GLfloat> screen_vertex_buffer_data;
 	constexpr float z = -0.1;
 
-	for (int i = 0; i < NUM_SEGMENTS; i++) {
+	for (int i = 0; i < NUM_SEGMENTS; i++)
+	{
 		screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
 		screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
 		screen_vertex_buffer_data.push_back(z);
@@ -66,16 +67,30 @@ void Bullets::destroy()
 
 void Bullets::update(float ms)
 {
-	vec2 newton_F = { 0, 9.8f };
+	vec2 newton_F = {0, 9.8f};
+	int count = 1;
 	// MOTION
-	for (auto& bullet : m_bullets) {
+	for (auto &bullet : m_bullets)
+	{
 		// s = ut + 1/2at^2
-		bullet.position.x += bullet.velocity.x * (ms / 100) + 0.5f * newton_F.x * pow(ms / 100, 2);
-		bullet.position.y += bullet.velocity.y * (ms / 100) + 0.5f * newton_F.y * pow(ms / 100, 2);
+		if ((bullet.life <= 0 )|| (bullet.position.x <= 0 || bullet.position.x >= 1200 ) || (bullet.position.y <= 0 || bullet.position.y >= 800)){
+			fprintf(stderr, "Out of bounds ");
+
+			if(m_bullets.size() == count )
+				m_bullets.pop_back();
+			else
+				m_bullets.erase(m_bullets.begin() + count);
+		}
+		else
+		{
+			bullet.position.x += bullet.velocity.x * (ms / 100) + 0.5f * newton_F.x * pow(ms / 100, 2);
+			bullet.position.y += bullet.velocity.y * (ms / 100) + 0.5f * newton_F.y * pow(ms / 100, 2);
+			count++;
+		}
 	}
 }
 
-void Bullets::draw(const mat3& projection)
+void Bullets::draw(const mat3 &projection)
 {
 	// set shaders
 	glUseProgram(effect.program);
@@ -92,9 +107,9 @@ void Bullets::draw(const mat3& projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "color");
 
 	// color
-	float color[] = { 1.f, 1.f, 1.f };
+	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// draw the screen texture on the geometry
 	// set vertices
@@ -103,7 +118,7 @@ void Bullets::draw(const mat3& projection)
 	// mesh vertex positions
 	// bind to attribute 0 (in_position) as in the vertex shader
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 	glVertexAttribDivisor(0, 0);
 
 	// load up bullet into buffer
@@ -113,13 +128,13 @@ void Bullets::draw(const mat3& projection)
 	// bullet translations
 	// bind to attribute 1 (in_translate) as in vertex shader
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Bullet), (GLvoid*)offsetof(Bullet, position));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Bullet), (GLvoid *)offsetof(Bullet, position));
 	glVertexAttribDivisor(1, 1);
 
 	// bullet radii
 	// bind to attribute 2 (in_scale) as in vertex shader
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Bullet), (GLvoid*)offsetof(Bullet, radius));
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Bullet), (GLvoid *)offsetof(Bullet, radius));
 	glVertexAttribDivisor(2, 1);
 
 	// draw
@@ -136,7 +151,7 @@ void Bullets::spawn_bullet(vec2 position, float radians)
 	b.position = position;
 	b.life = 5.0f;
 
-	b.velocity = { 20*cos(radians) , 20*sin(radians)};
+	b.velocity = {20 * cos(radians), 20 * sin(radians)};
 	b.radius = 2;
 	m_bullets.emplace_back(b);
 }

@@ -8,11 +8,12 @@
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
-#include "story_screen.hpp"
 #include "complete_screen.hpp"
 #include "trophy.hpp"
+#include "cutscene.hpp"
 #include "particles.hpp"
 #include "shooter.hpp"
+#include "level_screen.hpp"
 
 // stlib
 #include <vector>
@@ -26,6 +27,8 @@
 // game state
 #define START_SCREEN 0
 #define CONTROL_SCREEN 1
+#define LEVEL_SCREEN 2
+#define QUIT 3
 #define STORY_SCREEN 4
 #define WIN_SCREEN 5
 #define LEVEL_1 1000
@@ -33,6 +36,12 @@
 #define LEVEL_3 3000
 #define LEVEL_4 4000
 #define LEVEL_5 5000
+#define LEVEL_TUTORIAL 6000
+#define LEVEL_1_CUTSCENE 1500
+#define LEVEL_2_CUTSCENE 2500
+#define LEVEL_3_CUTSCENE 3500
+#define LEVEL_4_CUTSCENE 4500
+#define LEVEL_5_CUTSCENE 5500
 
 class World
 {
@@ -48,8 +57,9 @@ private:
 	// screens
 	StartScreen m_start_screen;
 	ControlScreen m_control_screen;
-	StoryScreen m_story_screen;
 	CompleteScreen m_complete_screen;
+	LevelScreen m_level_screen;
+	Cutscene m_cutscene;
 
 	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 	// story screen handle
@@ -65,6 +75,9 @@ private:
 
 	// current game state
 	unsigned int m_current_game_state;
+
+	// current level state
+	unsigned int m_current_level_state;
 
 	// entities
 	Char m_char;
