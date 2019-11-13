@@ -343,29 +343,14 @@ bool World::update(float elapsed_ms)
 			recent_dash = false;
 			cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			switch (m_char.get_direction())
-			{
-			case 0:
-				m_char.set_direction('L', true);
-				m_char.change_position({-15.f, 0.f});
-				m_char.set_direction('L', false);
-				break;
-			case 1:
-				m_char.set_direction('R', true);
-				m_char.change_position({15.f, 0.f});
-				m_char.set_direction('R', false);
-				break;
-			case 2:
-				m_char.set_direction('D', true);
-				m_char.change_position({0.f, 15.f});
-				m_char.set_direction('D', false);
-				break;
-			case 3:
-				m_char.set_direction('U', true);
-				m_char.change_position({0.f, -15.f});
-				m_char.set_direction('U', false);
-				break;
-			}
+			if (m_char.get_direction() == 0)
+				m_char.change_position({0.f, 5.f});
+			else if (m_char.get_direction() == 1)
+				m_char.change_position({0.f, -5.f});
+			else if (m_char.get_direction() == 2)
+				m_char.change_position({5.f, 0.f});
+			else if (m_char.get_direction() == 3)
+				m_char.change_position({-5.f, 0.f});
 		}
 
 		//particles update
@@ -527,29 +512,14 @@ bool World::update(float elapsed_ms)
 			recent_dash = false;
 			cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			switch (m_char.get_direction())
-			{
-			case 0:
-				m_char.set_direction('L', true);
-				m_char.change_position({-15.f, 0.f});
-				m_char.set_direction('L', false);
-				break;
-			case 1:
-				m_char.set_direction('R', true);
-				m_char.change_position({15.f, 0.f});
-				m_char.set_direction('R', false);
-				break;
-			case 2:
-				m_char.set_direction('D', true);
-				m_char.change_position({0.f, 15.f});
-				m_char.set_direction('D', false);
-				break;
-			case 3:
-				m_char.set_direction('U', true);
-				m_char.change_position({0.f, -15.f});
-				m_char.set_direction('U', false);
-				break;
-			}
+			if (m_char.get_direction() == 0)
+				m_char.change_position({0.f, 5.f});
+			else if (m_char.get_direction() == 1)
+				m_char.change_position({0.f, -5.f});
+			else if (m_char.get_direction() == 2)
+				m_char.change_position({5.f, 0.f});
+			else if (m_char.get_direction() == 3)
+				m_char.change_position({-5.f, 0.f});
 		}
 
 		//particles update
@@ -806,29 +776,14 @@ bool World::update(float elapsed_ms)
 			recent_dash = false;
 			cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			switch (m_char.get_direction())
-			{
-			case 0:
-				m_char.set_direction('L', true);
-				m_char.change_position({-15.f, 0.f});
-				m_char.set_direction('L', false);
-				break;
-			case 1:
-				m_char.set_direction('R', true);
-				m_char.change_position({15.f, 0.f});
-				m_char.set_direction('R', false);
-				break;
-			case 2:
-				m_char.set_direction('D', true);
-				m_char.change_position({0.f, 15.f});
-				m_char.set_direction('D', false);
-				break;
-			case 3:
-				m_char.set_direction('U', true);
-				m_char.change_position({0.f, -15.f});
-				m_char.set_direction('U', false);
-				break;
-			}
+			if (m_char.get_direction() == 0)
+				m_char.change_position({0.f, 5.f});
+			else if (m_char.get_direction() == 1)
+				m_char.change_position({0.f, -5.f});
+			else if (m_char.get_direction() == 2)
+				m_char.change_position({5.f, 0.f});
+			else if (m_char.get_direction() == 3)
+				m_char.change_position({-5.f, 0.f});
 		}
 
 		//particles update
@@ -933,29 +888,14 @@ bool World::update(float elapsed_ms)
 			recent_dash = false;
 			cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			switch (m_char.get_direction())
-			{
-			case 0:
-				m_char.set_direction('L', true);
-				m_char.change_position({-15.f, 0.f});
-				m_char.set_direction('L', false);
-				break;
-			case 1:
-				m_char.set_direction('R', true);
-				m_char.change_position({15.f, 0.f});
-				m_char.set_direction('R', false);
-				break;
-			case 2:
-				m_char.set_direction('D', true);
-				m_char.change_position({0.f, 15.f});
-				m_char.set_direction('D', false);
-				break;
-			case 3:
-				m_char.set_direction('U', true);
-				m_char.change_position({0.f, -15.f});
-				m_char.set_direction('U', false);
-				break;
-			}
+			if (m_char.get_direction() == 0)
+				m_char.change_position({0.f, 5.f});
+			else if (m_char.get_direction() == 1)
+				m_char.change_position({0.f, -5.f});
+			else if (m_char.get_direction() == 2)
+				m_char.change_position({5.f, 0.f});
+			else if (m_char.get_direction() == 3)
+				m_char.change_position({-5.f, 0.f});
 		}
 
 		//particles update
@@ -1371,26 +1311,26 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// movement, set movement
 	if (action == GLFW_PRESS && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
 	{
-		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
+		 if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
-			m_char.set_direction('R', true);
-			m_char.flip_char();
+			m_char.set_direction('U', true);
+			m_char.change_direction(0);
+		}
+		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
+		{
+			m_char.set_direction('D', true);
 			m_char.change_direction(1);
 		}
 		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 		{
 			m_char.set_direction('L', true);
 			m_char.flip_char();
-			m_char.change_direction(0);
-		}
-		else if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
-		{
-			m_char.set_direction('U', true);
 			m_char.change_direction(2);
 		}
-		else if ((key == GLFW_KEY_S && m_control == 0) || (key == GLFW_KEY_DOWN && m_control == 1))
+		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 		{
-			m_char.set_direction('D', true);
+			m_char.set_direction('R', true);
+			m_char.flip_char();
 			m_char.change_direction(3);
 		}
 	}
