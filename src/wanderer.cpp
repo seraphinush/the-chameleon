@@ -10,8 +10,16 @@
 Texture Wanderer::wanderer_texture;
 using namespace std;
 
-bool Wanderer::init()
+bool Wanderer::init(vector<vec2> path, Map& map)
 {
+	// Pathing AI init
+	m_map = &map;
+	m_path = path;
+	set_position(m_map->get_tile_center_coords(m_path[0]));
+	current_goal_index = 1;
+	current_immediate_goal_index = 1;
+	calculate_immediate_path(m_path[current_goal_index]);
+
 	// load shared texture
 	if (!wanderer_texture.is_valid())
 	{
@@ -95,37 +103,18 @@ void Wanderer::update(float ms)
 		// INVOKE CHASE AI
 	}
 	else {
-		// TO REMOVE - placeholder for randomize path wall collision
-		// movement
-		int r = rand() % 3;
-		if (direction.x < 0 && m_wall_left)
+		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
 		{
-			direction.x = 1;
-			if (!m_wall_up && !m_wall_down)
-				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			current_goal_index = (current_goal_index + 1) % m_path.size();
+			calculate_immediate_path(m_path[current_goal_index]);
+			current_immediate_goal_index = 1;
 		}
-		if (direction.x > 0 && m_wall_right)
+		else if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])))
 		{
-			direction.x = -1;
-			if (!m_wall_up && !m_wall_down)
-				direction.y = r == 0 ? -1 : (r == 1 ? 0 : 1);
+			current_immediate_goal_index++;
 		}
-		if (direction.y < 0 && m_wall_up)
-		{
-			if (!m_wall_left && !m_wall_right)
-				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-			direction.y = 1;
-		}
-		if (direction.y > 0 && m_wall_down)
-		{
-			if (!m_wall_left && !m_wall_right)
-				direction.x = r == 0 ? -1 : (r == 1 ? 0 : 1);
-			direction.y = -1;
-		}
+		move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);;
 	}
-	
-	motion.position.x += direction.x * motion.speed * (ms / 1000);
-	motion.position.y += direction.y * motion.speed * (ms / 1000);
 
 	// sprite change
 	if (sprite_countdown > 0.f)
@@ -217,4 +206,137 @@ void Wanderer::set_wall_collision(char direction, bool value)
 vec2 Wanderer::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
+}
+
+void Wanderer::alert_wanderer() 
+{
+	cool_down = 5000.f;
+}
+
+
+void Wanderer::calculate_immediate_path(vec2 goal)
+{
+	immediate_path.clear();// TODO middle steps
+	//immediate_path.push_back(goal);
+	//immediate_path.push_back(goal);
+	//return;
+
+	vec2 grid_position = m_map->get_grid_coords(motion.position);
+
+	vector<path_construction> paths_in_progress;
+	path_construction beginning;
+	beginning.path = { {grid_position} };
+	beginning.heuristic = abs(grid_position.x - goal.x) + abs(grid_position.y - goal.y);
+	beginning.expected_total = beginning.heuristic;
+
+	paths_in_progress.push_back(beginning);
+
+	
+	while (paths_in_progress[0].heuristic != 0)
+	{
+		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
+		paths_in_progress.erase(paths_in_progress.begin());
+		paths_in_progress = merge_in_order(paths_in_progress, new_paths);
+	}
+
+	immediate_path = paths_in_progress[0].path;
+}
+
+bool Wanderer::check_goal_arrival(vec2 goal)
+{
+	return fabs(goal.x - motion.position.x) < 5 && fabs(goal.y - motion.position.y) < 5;
+}
+
+void Wanderer::move_towards_goal(vec2 goal, float ms)
+{
+	float step = -1.0 * motion.speed * (ms / 1000);
+	vec2 motionVector = { motion.position.x - goal.x, motion.position.y - goal.y };
+	float magnitude = std::sqrt((motionVector.x * motionVector.x) + (motionVector.y * motionVector.y));
+	motion.position.y += step * (motionVector.y / magnitude);
+	motion.position.x += step * (motionVector.x / magnitude);
+}
+
+vector<path_construction> Wanderer::find_paths_from(path_construction origin, vec2 goal)
+{
+	vec2 point_of_origin = origin.path[origin.path.size() - 1];
+	vector<path_construction> return_list;
+	for (int x = 1; x > -2; x--)
+	{
+		for (int y = 1; y > -2; y--)
+		{
+			if (x == 0 && y == 0)
+			{
+				continue;
+			}
+			path_construction new_path;
+			new_path.path = origin.path;
+			vec2 new_point = { point_of_origin.x + x, point_of_origin.y + y };
+			if (m_map->is_wall(new_point))
+			{
+				continue;
+			}
+
+			new_path.path.push_back(new_point);
+			new_path.heuristic = abs(new_point.x - goal.x) + abs(new_point.y - goal.y);
+			new_path.expected_total = new_path.heuristic + origin.path.size();
+			
+			if (return_list.empty())
+			{
+				return_list.insert(return_list.begin(), new_path);
+			}
+			else
+			{
+				int insertion_index = 0;
+				for (path_construction construction : return_list)
+				{
+					if (construction.expected_total > new_path.expected_total)
+					{
+						break;
+					}
+					else
+					{
+						insertion_index++;
+					}
+				}
+				return_list.insert(return_list.begin() + insertion_index, new_path);
+			}
+		}
+	}
+	return return_list;
+}
+
+vector<path_construction> Wanderer::merge_in_order(vector<path_construction> p1, vector<path_construction> p2)
+{
+	if (p1.empty())
+	{
+		return p2;
+	}
+	else if (p2.empty())
+	{
+		return p1;
+	}
+	int p1_index = 0;
+	int p2_index = 0;
+	vector<path_construction> return_list;
+
+	for (int i = 0; i < p1.size() + p2.size(); i++)
+	{
+		if (p1_index == p1.size())
+		{
+			return_list.push_back(p2[p2_index++]);
+		}
+		else if (p2_index == p2.size())
+		{
+			return_list.push_back(p1[p1_index++]);
+		}
+		else if (p1[p1_index].expected_total < p2[p2_index].expected_total)
+		{
+			return_list.push_back(p1[p1_index++]);
+		}
+		else
+		{
+			return_list.push_back(p2[p2_index++]);
+		}
+	}
+	return return_list;
 }

@@ -23,7 +23,7 @@ class Char : public Entity
 
 private:
 	// config
-	const float config_scale = 0.06f;
+	const float config_scale = 0.03f;
 
 	bool m_is_alive;
 
@@ -32,6 +32,8 @@ private:
 	bool m_moving_left;
 	bool m_moving_up;
 	bool m_moving_down;
+
+	vec2 m_correction;
 
 	// color
 	int m_color;
@@ -44,6 +46,7 @@ private:
 
 	// dash
 	bool m_dash;
+	int m_direction_change;
 
 	// ANIMATION
 	int sprite_switch = 1;
@@ -51,7 +54,7 @@ private:
 	int flip_in_x = 1;
 
 public:
-	bool init();
+	bool init(vec2 spawn_pos);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;
@@ -65,18 +68,26 @@ public:
 	bool is_colliding(const Spotter &spotter);
 	bool is_colliding(const Wanderer &wanderer);
 	bool is_colliding(const Trophy &trophy);
-	bool is_colliding(Bullets& bullets);
+	bool is_colliding(Bullets &bullets);
 	vec2 get_bounding_box() const;
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
+	void change_correction(vec2 c);
+	vec2 get_correction() const;
 	bool is_wall_collision() const;
 
 	// movement
 	void set_direction(char direction, bool value);
 	void change_position(vec2 off);
 	vec2 get_position() const;
+	float get_speed() const;
+	vec2 get_velocity();
 	bool is_moving() const;
+
+	// dash
+	void change_direction(int c);
+	int get_direction() const;
 
 	// color change
 	void set_color(int color);

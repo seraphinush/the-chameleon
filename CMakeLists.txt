@@ -40,12 +40,15 @@ set(SOURCE_FILES
   src/map.cpp
   src/start_screen.cpp
   src/control_screen.cpp  
-  src/story_screen.cpp
-  src/complete_screen.cpp  
+  src/complete_screen.cpp
+  src/trophy.cpp
+  src/cutscene.cpp    
   src/shooter.cpp
   src/bullets.cpp
   src/overlay.cpp
   src/overlay.hpp
+  src/level_screen.cpp
+  src/particles.cpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -53,14 +56,15 @@ set(SOURCE_FILES
 	src/world.hpp
   src/start_screen.hpp
   src/control_screen.hpp
-  src/story_screen.hpp
   src/complete_screen.hpp
   src/char.hpp
 	src/map.hpp
 	src/trophy.hpp
-	src/trophy.cpp
+  src/cutscene.hpp  
+  src/particles.hpp
 	src/shooter.hpp
 	src/bullets.hpp
+  src/level_screen.hpp
 	)
 
 if (IS_OS_MAC)

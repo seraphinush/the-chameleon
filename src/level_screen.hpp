@@ -3,15 +3,15 @@
 // internal
 #include "common.hpp"
 
-// story screen
-class StoryScreen : public Entity
+// start screen
+class LevelScreen : public Entity
 {
 	// shared texture
 	static Texture pointer;
-	static Texture story_game;
-	static Texture controls;
-	static Texture quit;
-	static Texture game_title;
+	static Texture tutorial;
+	static Texture level1;
+	static Texture level2;
+	static Texture level3;
 
 	vec2 pointer_position;
 
@@ -19,5 +19,5 @@ public:
 	bool init();
 	void destroy();
 	void update(unsigned int game_state);
-	void draw(const mat3 &projection) override;
+	void draw(const mat3& projection) override;
 };
