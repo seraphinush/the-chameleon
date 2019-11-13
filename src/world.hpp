@@ -4,12 +4,12 @@
 #include "char.hpp"
 #include "common.hpp"
 #include "spotter.hpp"
+#include "map.hpp"
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "story_screen.hpp"
 #include "complete_screen.hpp"
-#include "map.hpp"
 #include "trophy.hpp"
 #include "particles.hpp"
 #include "shooter.hpp"
@@ -117,7 +117,4 @@ private:
 
 	// reset
 	void reset_game();
-
-	//Pathing Utility
-	vector<vec2> translate_to_coords(vector<vec2> path);
 };

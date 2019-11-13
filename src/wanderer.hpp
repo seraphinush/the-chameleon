@@ -2,9 +2,13 @@
 
 // internal
 #include "common.hpp"
+#include "map.hpp"
 
 #include <vector>
 
+class Map;
+
+//class Map;
 // guard type 1 : wanderer
 class Wanderer : public Entity
 {
@@ -34,6 +38,7 @@ private:
 	int flip_in_x = 1;
 
 	// Pathing AI
+	Map* m_map;
 	std::vector<vec2> m_path;
 	std::vector<vec2> immediate_path;
 	int current_goal_index;
@@ -47,7 +52,7 @@ private:
 	void move_towards_goal(vec2 goal, float ms);
 
 public:
-	bool init(std::vector<vec2> path);
+	bool init(std::vector<vec2> path, Map& map);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3& projection) override;

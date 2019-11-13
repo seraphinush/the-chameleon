@@ -414,7 +414,7 @@ bool World::update(float elapsed_ms)
 		// spawn wanderer
 		if (m_wanderers.size() < wanderer_paths.size())
 		{
-			if (!spawn_wanderer(translate_to_coords(wanderer_paths[0])))
+			if (!spawn_wanderer(wanderer_paths[0]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
@@ -589,7 +589,7 @@ bool World::spawn_shooter()
 bool World::spawn_wanderer(std::vector<vec2> path)
 {
 	Wanderer wanderer;
-	if (wanderer.init(path))
+	if (wanderer.init(path, m_map))
 	{
 		m_wanderers.emplace_back(wanderer);
 		return true;
@@ -750,16 +750,4 @@ void World::reset_game()
 	m_wanderers.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
-}
-
-vector<vec2> World::translate_to_coords(vector<vec2> path)
-{
-	vector<vec2> translation;
-	for (vec2 checkpoint : path)
-	{
-		vec2 translated_point = m_map.get_tile_center_coords(checkpoint);
-		translation.push_back(translated_point);
-	}
-
-	return translation;
 }

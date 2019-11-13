@@ -10,11 +10,12 @@
 Texture Wanderer::wanderer_texture;
 using namespace std;
 
-bool Wanderer::init(vector<vec2> path)
+bool Wanderer::init(vector<vec2> path, Map& map)
 {
 	// Pathing AI init
+	m_map = &map;
 	m_path = path;
-	set_position(m_path[0]);
+	set_position(m_map->get_tile_center_coords(m_path[0]));
 	current_goal_index = 1;
 	current_immediate_goal_index = 1;
 	calculate_immediate_path(m_path[current_goal_index]);
@@ -103,21 +104,18 @@ void Wanderer::update(float ms)
 		cool_down -= ms;
 	}
 	else {
-		if (check_goal_arrival(m_path[current_goal_index]))
+		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
 		{
 			current_goal_index = (current_goal_index + 1) % m_path.size();
 			calculate_immediate_path(m_path[current_goal_index]);
 			current_immediate_goal_index = 1;
 		}
-		else if (check_goal_arrival(immediate_path[current_immediate_goal_index]))
+		else if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])))
 		{
 			current_immediate_goal_index++;
 		}
-		move_towards_goal(immediate_path[current_immediate_goal_index], ms);;
+		move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);;
 	}
-	
-	//motion.position.x += direction.x * motion.speed * (ms / 1000);
-	//motion.position.y += direction.y * motion.speed * (ms / 1000);
 
 	// sprite change
 	if (sprite_countdown > 0.f)
