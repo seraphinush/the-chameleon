@@ -71,7 +71,7 @@ public:
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
-	bool is_wall_collision() const;
+	bool is_wall_collision();
 
 	// movement
 	void set_direction(char direction, bool value);

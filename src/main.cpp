@@ -46,11 +46,10 @@ int main(int argc, char* argv[])
 		float ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 
 		avg_ms = (avg_ms + ms) / 2;
-		fprintf(stderr, "cur:%f, avg:%f\n", ms, avg_ms);
+		//fprintf(stderr, "cur:%f, avg:%f\n", ms, avg_ms);
 
 		if (ms < TICK)
 		{
-			dt = 0.f;
 			Sleep(TICK - ms);
 		}
 
@@ -58,6 +57,8 @@ int main(int argc, char* argv[])
 
 		world.update(ms - dt);
 		world.draw();
+		
+		dt = 0.f;
 	}
 
 	world.destroy();

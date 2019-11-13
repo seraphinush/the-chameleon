@@ -350,7 +350,7 @@ void Char::set_wall_collision(char direction, bool value)
 		m_wall_down = value;
 }
 
-bool Char::is_wall_collision() const
+bool Char::is_wall_collision()
 {
 	return m_wall_down || m_wall_left || m_wall_right || m_wall_up;
 }

@@ -487,7 +487,13 @@ void Map::set_position(vec2 position)
 void Map::check_wall(Char &ch, const float ms)
 {
 	if (!ch.is_moving())
+	{
+		ch.set_wall_collision('U', false);
+		ch.set_wall_collision('D', false);
+		ch.set_wall_collision('L', false);
+		ch.set_wall_collision('R', false);
 		return;
+	}
 	
 	// ch info
 	vec2 pos = ch.get_position();
@@ -522,7 +528,7 @@ void Map::check_wall(Char &ch, const float ms)
 	}
 
 	// up
-	if (dir.y < 0.f)
+	if (dir.y < 0)
 	{
 		tile_x_top_left = (int)pos_top_left.x / 20;
 		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
