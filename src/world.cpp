@@ -330,19 +330,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		if (m_wanderers.size() < wanderer_paths.size())
 		{
-			if (!spawn_wanderer())
+			if (!spawn_wanderer(wanderer_paths[0]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
-
-			// set initial position
-			new_wanderer.set_position({screen.x - 50, 100 + m_dist(m_rng) * (screen.y - 100)});
-
-			// next spawn
-			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 		}
 
 		//////////////////////
@@ -521,19 +514,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		if (m_wanderers.size() < wanderer_paths.size())
 		{
-			if (!spawn_wanderer())
+			if (!spawn_wanderer(wanderer_paths[0]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
-
-			// set initial position
-			new_wanderer.set_position({screen.x - 50, 100 + m_dist(m_rng) * (screen.y - 100)});
-
-			// next spawn
-			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 		}
 
 		//////////////////////
