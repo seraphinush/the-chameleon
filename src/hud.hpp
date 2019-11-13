@@ -25,7 +25,7 @@ class Hud : public Entity
 public:
 	bool init();
 	void destroy();
-	void update(unsigned int game_state);
+	void update(unsigned int game_state, vec2 char_position);
 	void draw(const mat3& projection) override;
     void set_tooltip(char color, bool value);
 };

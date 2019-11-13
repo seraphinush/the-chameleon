@@ -71,12 +71,12 @@ bool Hud::init()
 
     motion.radians = 0.f;
     motion.speed = 200.f;
-    motion.position = {1100.f, 700.f};
+    motion.position = {1095.f, 95.f};
 
-    red_tooltip_position = {1050.f, 610.f};
-    blue_tooltip_position = {990.f, 670.f};
-    yellow_tooltip_position = {1055.f, 670.f};
-    green_tooltip_position = {1030.f, 710.f};
+    red_tooltip_position = {1040.f, 40.f};
+    blue_tooltip_position = {990.f, 75.f};
+    yellow_tooltip_position = {1057.f, 75.f};
+    green_tooltip_position = {1030.f, 120.f};
 
     show_red_tooltip = false;
     show_blue_tooltip = false;
@@ -85,7 +85,7 @@ bool Hud::init()
 
     // set initial values, scale is negative to make it face the opposite way
     // 1.0 would be as big as the original texture.
-    physics.scale = {0.095f, 0.095f};
+    physics.scale = {0.14f, 0.14f};
 
     tooltip_scale = {0.2f, 0.075f};
 
@@ -104,8 +104,28 @@ void Hud::destroy()
     glDeleteShader(effect.program);
 }
 
-void Hud::update(unsigned int game_state)
+void Hud::update(unsigned int game_state, vec2 char_position)
 {
+    if (game_state == 1000 || game_state == 2000 || game_state == 3000)
+    {
+        motion.position = {char_position.x + 125.f, char_position.y - 77.f};
+        physics.scale = {0.035f, 0.035f};
+        red_tooltip_position = {motion.position.x - 18, motion.position.y - 15};
+        blue_tooltip_position = {motion.position.x - 26, motion.position.y - 3};
+        yellow_tooltip_position = {motion.position.x - 13.8f, motion.position.y - 7};
+        green_tooltip_position = {motion.position.x - 18, motion.position.y + 10};
+        tooltip_scale = {0.055f, 0.015f};
+    }
+    else if (game_state == 6000)
+    {
+        motion.position = {1095.f, 95.f};
+        physics.scale = {0.14f, 0.14f};
+        red_tooltip_position = {1040.f, 40.f};
+        blue_tooltip_position = {990.f, 75.f};
+        yellow_tooltip_position = {1057.f, 75.f};
+        green_tooltip_position = {1030.f, 120.f};
+        tooltip_scale = {0.2f, 0.075f};
+    }
 }
 
 void Hud::draw(const mat3 &projection)
@@ -227,7 +247,8 @@ void Hud::draw(const mat3 &projection)
 
 void Hud::set_tooltip(char color, bool value)
 {
-    switch (color) {
+    switch (color)
+    {
     case 'R':
         show_red_tooltip = value;
         if (value)

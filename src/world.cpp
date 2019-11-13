@@ -212,7 +212,6 @@ bool World::update(float elapsed_ms)
 	}
 	if (m_game_state == LEVEL_1)
 	{
-		m_hud.update(m_current_game_state);
 		//////////////////////
 		// COLLISION
 		//////////////////////
@@ -260,6 +259,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
 		for (auto &wanderer : m_wanderers)
@@ -436,6 +436,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
@@ -661,6 +662,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
@@ -831,7 +833,6 @@ bool World::update(float elapsed_ms)
 	}
 	else if (m_game_state == LEVEL_TUTORIAL)
 	{
-		m_hud.update(m_current_game_state);
 		//////////////////////
 		// COLLISION
 		//////////////////////
@@ -845,6 +846,7 @@ bool World::update(float elapsed_ms)
 
 		// update char
 		m_char.update(elapsed_ms);
+		m_hud.update(m_game_state, m_char.get_position());
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -990,7 +992,6 @@ void World::draw()
 	case LEVEL_TUTORIAL:
 		// draw map
 		m_map.draw(projection_2D);
-		m_hud.draw(projection_2D);
 		m_cutscene.draw(projection_2D);
 
 		if (m_map.get_flash() == 0)
@@ -998,6 +999,8 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1014,7 +1017,6 @@ void World::draw()
 		break;
 	case LEVEL_1:
 		// draw map
-		m_hud.draw(projection_2D);
 		m_map.draw(projection_2D);
 
 		if (m_map.get_flash() == 0)
@@ -1027,13 +1029,14 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_hud.draw(projection_2D);
+
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_2:
 		// draw map
-		m_hud.draw(projection_2D);
 		m_map.draw(projection_2D);
 
 		if (m_map.get_flash() == 0)
@@ -1048,13 +1051,14 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
+		m_hud.draw(projection_2D);
+
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_3:
 		// draw map
-		m_hud.draw(projection_2D);
 		m_map.draw(projection_2D);
 
 		if (m_map.get_flash() == 0)
@@ -1076,6 +1080,8 @@ void World::draw()
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
+
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1405,7 +1411,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
 	// red tooltip
-	if (xpos >= 1086 && xpos <= 1114 && ypos >= 655 && ypos <= 680)
+	if (xpos >= 1073 && xpos <= 1114 && ypos >= 27 && ypos <= 66)
 	{
 		m_hud.set_tooltip('R', true);
 		m_hud.set_tooltip('G', false);
@@ -1413,7 +1419,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 		m_hud.set_tooltip('Y', false);
 	}
 	// green tooltip
-	else if (xpos >= 1086 && xpos <= 1114 && ypos >= 719 && ypos <= 751)
+	else if (xpos >= 1073 && xpos <= 1114 && ypos >= 127 && ypos <= 166)
 	{
 		m_hud.set_tooltip('R', false);
 		m_hud.set_tooltip('G', true);
@@ -1421,7 +1427,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 		m_hud.set_tooltip('Y', false);
 	}
 	// blue tooltip
-	else if (xpos >= 1052 && xpos <= 1076 && ypos >= 690 && ypos <= 712)
+	else if (xpos >= 1023 && xpos <= 1063 && ypos >= 77 && ypos <= 117)
 	{
 		m_hud.set_tooltip('R', false);
 		m_hud.set_tooltip('G', false);
@@ -1429,7 +1435,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 		m_hud.set_tooltip('Y', false);
 	}
 	// yellow tooltip
-	else if (xpos >= 1121 && xpos <= 1145 && ypos >= 690 && ypos <= 712)
+	else if (xpos >= 1126 && xpos <= 1167 && ypos >= 77 && ypos <= 117)
 	{
 		m_hud.set_tooltip('R', false);
 		m_hud.set_tooltip('G', false);
