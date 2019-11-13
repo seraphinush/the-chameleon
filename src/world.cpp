@@ -62,11 +62,11 @@ bool World::init(vec2 screen)
 	spotter_loc[4] = {800, 500};
 
 	// TODO
-	shooter_loc[0] = { 100 + 100, 100 + 50 };
-	shooter_loc[1] = { screen.x - 50, 100 + 50 };
-	shooter_loc[2] = { 150, screen.y - 150 };
-	shooter_loc[3] = { screen.x - 50, screen.y - 50 };
-	shooter_loc[4] = { 850, 550 };
+	shooter_loc[0] = {100 + 100, 100 + 50};
+	shooter_loc[1] = {screen.x - 50, 100 + 50};
+	shooter_loc[2] = {150, screen.y - 150};
+	shooter_loc[3] = {screen.x - 50, screen.y - 50};
+	shooter_loc[4] = {850, 550};
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -219,21 +219,26 @@ bool World::update(float elapsed_ms)
 	{
 		alert_mode = false;
 		// update spotters
-		for (auto& spotter : m_spotters) {
-			if (alert_mode) {
+		for (auto &spotter : m_spotters)
+		{
+			if (alert_mode)
+			{
 				spotter.alert_mode = false;
 			}
 		}
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
-			wanderer.update(elapsed_ms* m_current_speed);
+		for (auto &wanderer : m_wanderers)
+		{
+			wanderer.update(elapsed_ms * m_current_speed);
 			wanderer.alert_mode = false;
 		}
 
 		// update shooters
-		for (auto& shooter : m_shooters) {
-			if (alert_mode) {
+		for (auto &shooter : m_shooters)
+		{
+			if (alert_mode)
+			{
 				shooter.alert_mode = false;
 			}
 		}
@@ -241,7 +246,8 @@ bool World::update(float elapsed_ms)
 
 	// IF ALERT MODE OVERLAY
 	m_overlay.update_alert_mode(alert_mode);
-	if (alert_mode) {
+	if (alert_mode)
+	{
 		m_overlay.oscillation();
 	}
 
@@ -619,7 +625,7 @@ bool World::update(float elapsed_ms)
 			}
 
 		// proximity, spotter
-		for (auto& spotter : m_spotters)
+		for (auto &spotter : m_spotters)
 			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
@@ -630,7 +636,6 @@ bool World::update(float elapsed_ms)
 				}
 				break;
 			}
-
 
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
@@ -705,24 +710,29 @@ bool World::update(float elapsed_ms)
 		m_char.update(elapsed_ms);
 
 		// update spotters
-		for (auto& spotter : m_spotters) {
-			if (alert_mode) {
+		for (auto &spotter : m_spotters)
+		{
+			if (alert_mode)
+			{
 				spotter.alert_mode = true;
 			}
 			spotter.update(elapsed_ms * m_current_speed);
 		}
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers) {
-			wanderer.update(elapsed_ms* m_current_speed);
+		for (auto &wanderer : m_wanderers)
+		{
+			wanderer.update(elapsed_ms * m_current_speed);
 			// setting it to false : SET TRUE WHEN JOSE IS READY WITH CHASE AI
 			wanderer.alert_mode = false;
 		}
 
 		// update shooter
-		for (auto& shooter : m_shooters) {
+		for (auto &shooter : m_shooters)
+		{
 
-			if (alert_mode) {
+			if (alert_mode)
+			{
 				shooter.alert_mode = true;
 			}
 
@@ -1069,7 +1079,6 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-
 		m_overlay.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
@@ -1323,6 +1332,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				case 0:
 					m_game_state = LEVEL_TUTORIAL;
 					m_map.set_current_map(LEVEL_TUTORIAL);
+					m_char.set_position(m_map.get_spawn());
 					m_cutscene.set_dialogue_counter(m_game_state, 28);
 					m_current_level_state = 0;
 					break;
@@ -1442,6 +1452,39 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_control = 1;
 	}
 
+	// skip dialogues
+	if (action == GLFW_PRESS && key == GLFW_KEY_SPACE)
+	{
+		if (m_game_state == 4)
+		{
+			m_game_state = LEVEL_TUTORIAL;
+			m_map.set_current_map(LEVEL_TUTORIAL);
+			m_char.set_position(m_map.get_spawn());
+			m_cutscene.set_dialogue_counter(m_game_state, 28);
+		}
+		else if (m_game_state == 1500)
+		{
+			m_game_state = LEVEL_1;
+			m_map.set_current_map(LEVEL_1);
+			m_char.set_position(m_map.get_spawn());
+			m_cutscene.set_dialogue_counter(m_game_state, 50);
+		}
+		else if (m_game_state == 2500)
+		{
+			m_game_state = LEVEL_2;
+			m_map.set_current_map(LEVEL_2);
+			m_char.set_position(m_map.get_spawn());
+			m_cutscene.set_dialogue_counter(m_game_state, 70);
+		}
+		else if (m_game_state == 3500)
+		{
+			m_game_state = LEVEL_3;
+			m_map.set_current_map(LEVEL_3);
+			m_char.set_position(m_map.get_spawn());
+			m_cutscene.set_dialogue_counter(m_game_state, 81);
+		}
+	}
+
 	// reset
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
@@ -1478,12 +1521,12 @@ void World::reset_game()
 	m_shooters.clear();
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
-	m_overlay.destroy();	
+	m_overlay.destroy();
 	alert_mode = false;
 	m_overlay.init(alert_mode);
-	
+
 	// reset direction for every spotter
-	for (auto& spotter : m_spotters) 
+	for (auto &spotter : m_spotters)
 	{
 		spotter.reset_direction();
 	}
