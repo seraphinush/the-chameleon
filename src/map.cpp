@@ -384,7 +384,7 @@ void Map::draw(const mat3 &projection)
 				// Draw a Shadow Wall
 				draw_element(projection, wall_light_texture);
 			}
-			else if ((level_1[i][j] == 'C') || (level_1[i][j] == 'A'))
+			else if ((current_level[i][j] == 'C') || (current_level[i][j] == 'A'))
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
