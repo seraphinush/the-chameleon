@@ -337,6 +337,14 @@ bool Map::init()
 
 	physics.scale = {1.0f, 1.0f};
 
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 61; j++)
+		{
+			current_level[i][j] = level_tutorial[i][j];
+		}
+	}
+
 	return true;
 }
 
@@ -362,37 +370,37 @@ void Map::draw(const mat3 &projection)
 		// Increment the row
 		for (int j = 0; j < 61; j++)
 		{
-			if (level_1[i][j] == 'W')
+			if (current_level[i][j] == 'W')
 			{
 				// Draw a Wall
 				draw_element(projection, wall_texture);
 			}
-			else if (level_1[i][j] == 'S')
+			else if (current_level[i][j] == 'S')
 			{
 				// Draw a Shadow Wall
 				draw_element(projection, wall_light_texture);
 			}
-			else if (level_1[i][j] == 'C')
+			else if (current_level[i][j] == 'C')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (level_1[i][j] == 'R')
+			else if (current_level[i][j] == 'R')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_red);
 			}
-			else if (level_1[i][j] == 'B')
+			else if (current_level[i][j] == 'B')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_blue);
 			}
-			else if (level_1[i][j] == 'G')
+			else if (current_level[i][j] == 'G')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_green);
 			}
-			else if (level_1[i][j] == 'Y')
+			else if (current_level[i][j] == 'Y')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_yellow);
@@ -490,8 +498,8 @@ void Map::is_wall_collision(Char &character)
 	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
 	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
 
-	if ((level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W') ||
-		(level_1[tile_y_top_left][tile_x_top_left] == 'S' && level_1[tile_y_top_right][tile_x_top_right] == 'S'))
+	if ((current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W') ||
+		(current_level[tile_y_top_left][tile_x_top_left] == 'S' && current_level[tile_y_top_right][tile_x_top_right] == 'S'))
 	{
 		character.set_wall_collision('U', true);
 	}
@@ -500,8 +508,8 @@ void Map::is_wall_collision(Char &character)
 		character.set_wall_collision('U', false);
 	}
 
-	if ((level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
-		(level_1[tile_y_top_right][tile_x_top_right] == 'S' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
+	if ((current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
+		(current_level[tile_y_top_right][tile_x_top_right] == 'S' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
 	{
 		character.set_wall_collision('R', true);
 	}
@@ -510,8 +518,8 @@ void Map::is_wall_collision(Char &character)
 		character.set_wall_collision('R', false);
 	}
 
-	if ((level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
-		(level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
+	if ((current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
+		(current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
 	{
 		character.set_wall_collision('D', true);
 	}
@@ -520,8 +528,8 @@ void Map::is_wall_collision(Char &character)
 		character.set_wall_collision('D', false);
 	}
 
-	if ((level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W') ||
-		(level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' && level_1[tile_y_top_left][tile_x_top_left] == 'S'))
+	if ((current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W') ||
+		(current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' && current_level[tile_y_top_left][tile_x_top_left] == 'S'))
 	{
 		character.set_wall_collision('L', true);
 	}
@@ -556,7 +564,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
 	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
 
-	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
+	if (current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W')
 	{
 		wanderer.set_wall_collision('U', true);
 	}
@@ -565,7 +573,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('U', false);
 	}
 
-	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
+	if (current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W')
 	{
 		wanderer.set_wall_collision('R', true);
 	}
@@ -574,7 +582,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('R', false);
 	}
 
-	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	if (current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W')
 	{
 		wanderer.set_wall_collision('D', true);
 	}
@@ -583,7 +591,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('D', false);
 	}
 
-	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W')
 	{
 		wanderer.set_wall_collision('L', true);
 	}
@@ -599,17 +607,17 @@ int Map::get_tile(Char character)
 	int x = (int)pos.x / 20;
 	int y = (int)pos.y / 20;
 
-	if (level_1[y][x] == 'W')
+	if (current_level[y][x] == 'W')
 		return 1;
-	else if (level_1[y][x] == 'C')
+	else if (current_level[y][x] == 'C')
 		return 6;
-	else if (level_1[y][x] == 'R')
+	else if (current_level[y][x] == 'R')
 		return 2;
-	else if (level_1[y][x] == 'G')
+	else if (current_level[y][x] == 'G')
 		return 3;
-	else if (level_1[y][x] == 'B')
+	else if (current_level[y][x] == 'B')
 		return 4;
-	else if (level_1[y][x] == 'Y')
+	else if (current_level[y][x] == 'Y')
 		return 5;
 	else
 		return 0;
@@ -649,4 +657,47 @@ void Map::reset_flash_time()
 float Map::get_flash_time() const
 {
 	return glfwGetTime() - m_flash_time;
+}
+
+void Map::set_current_map(int level)
+{
+	switch (level)
+	{
+	case 6000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_tutorial[i][j];
+			}
+		}
+		break;
+	case 1000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_1[i][j];
+			}
+		}
+		break;
+	case 2000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_2[i][j];
+			}
+		}
+		break;
+	case 3000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_3[i][j];
+			}
+		}
+		break;
+	}
 }
