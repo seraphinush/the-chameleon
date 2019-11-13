@@ -60,11 +60,7 @@ bool Char::init()
 	if (!effect.load_from_file(shader_path("char.vs.glsl"), shader_path("char.fs.glsl")))
 		return false;
 
-<<<<<<< HEAD
 	motion.position = {600.f, 400.f};
-=======
-	motion.position = {550.f, 600.f};
->>>>>>> 3e4b693e5b2571fe3aa1c7275fe916e02344d2dc
 	motion.radians = 0.f;
 	motion.speed = 70.f;
 

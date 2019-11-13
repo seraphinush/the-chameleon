@@ -493,43 +493,6 @@ void Map::check_wall(Char &ch, const float ms)
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
-<<<<<<< HEAD
-
-	// top left
-	int tile_x_top_left = (int)pos_top_left.x / 20;
-	int tile_y_top_left = (int)pos_top_left.y / 20;
-	int tile_x_top_right = (int)pos_top_right.x / 20;
-	int tile_y_top_right = (int)pos_top_right.y / 20;
-	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
-	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
-	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
-	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
-
-	if ((current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W') ||
-		(current_level[tile_y_top_left][tile_x_top_left] == 'S' && current_level[tile_y_top_right][tile_x_top_right] == 'S'))
-	{
-		character.set_wall_collision('U', true);
-	}
-	else
-	{
-		character.set_wall_collision('U', false);
-	}
-
-	if ((current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W') ||
-		(current_level[tile_y_top_right][tile_x_top_right] == 'S' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S'))
-	{
-		character.set_wall_collision('R', true);
-	}
-	else
-	{
-		character.set_wall_collision('R', false);
-	}
-
-	if ((current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W') ||
-		(current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S'))
-	{
-		character.set_wall_collision('D', true);
-=======
 	
 	// initialize
 	int tile_x_top_left = 0;
@@ -554,7 +517,6 @@ void Map::check_wall(Char &ch, const float ms)
 		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
 			level_1[tile_y_top_right][tile_x_top_right] == 'W' ||	level_1[tile_y_top_right][tile_x_top_right] == 'S')
 		{
-			fprintf(stderr, "collision\n");
 			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
 			ch.change_position({0.f, d});
 			ch.set_wall_collision('U', true);
@@ -563,7 +525,6 @@ void Map::check_wall(Char &ch, const float ms)
 		{
 			ch.set_wall_collision('U', false);
 		}
->>>>>>> 3e4b693e5b2571fe3aa1c7275fe916e02344d2dc
 	}
 	// down
 	else if (dir.y > 0)
@@ -575,9 +536,7 @@ void Map::check_wall(Char &ch, const float ms)
 		if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' || level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
 			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
-			fprintf(stderr, "collision\n");
 			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
-			fprintf(stderr, "%d %f %f\n", tile_y_bottom_left * 20, pos_bottom_left.y, d);
 			ch.change_position({0.f, d});
 			ch.set_wall_collision('D', true);
 		}
@@ -586,14 +545,8 @@ void Map::check_wall(Char &ch, const float ms)
 			ch.set_wall_collision('D', false);
 		}
 	}
-<<<<<<< HEAD
-
-	if ((current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W') ||
-		(current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' && current_level[tile_y_top_left][tile_x_top_left] == 'S'))
-=======
 	// left
 	if (dir.x < 0)
->>>>>>> 3e4b693e5b2571fe3aa1c7275fe916e02344d2dc
 	{
 		tile_x_top_left = (int)(pos_top_left.x - step) / 20;
 		tile_y_top_left = (int)pos_top_left.y / 20;
@@ -602,7 +555,6 @@ void Map::check_wall(Char &ch, const float ms)
 		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
 			level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S')
 		{
-			fprintf(stderr, "collision\n");
 			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
 			ch.change_position({d, 0.f});
 			ch.set_wall_collision('L', true);
@@ -622,9 +574,7 @@ void Map::check_wall(Char &ch, const float ms)
 		if (level_1[tile_y_top_right][tile_x_top_right] == 'W' || level_1[tile_y_top_right][tile_x_top_right] == 'S' ||
 			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
-			fprintf(stderr, "collision\n");
 			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
-			fprintf(stderr, "%d %f %f\n", tile_y_bottom_left * 20, pos_bottom_left.y, d);
 			ch.change_position({d, 0.f});
 			ch.set_wall_collision('R', true);
 		}

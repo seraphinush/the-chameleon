@@ -379,7 +379,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.is_wall_collision(m_char);
+		m_map.check_wall(m_char, elapsed_ms);
 
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
@@ -570,7 +570,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.is_wall_collision(m_char);
+		m_map.check_wall(m_char, elapsed_ms);
 
 		// TO REMOVE - placeholder for randomize path wall collision
 		// collision, wanderer-wall
@@ -834,7 +834,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.is_wall_collision(m_char);
+		m_map.check_wall(m_char, elapsed_ms);
 
 		//////////////////////
 		// UPDATE
