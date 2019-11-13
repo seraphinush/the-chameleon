@@ -14,7 +14,7 @@ bool Char::init()
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
-		if (!char_texture.load_from_file(textures_path("char.png")))
+		if (!char_texture.load_from_file(textures_path("piere_background_less.png")))
 		{
 			fprintf(stderr, "Failed to load char texture!\n");
 			return false;
@@ -62,13 +62,14 @@ bool Char::init()
 
 	motion.position = {600.f, 400.f};
 	motion.radians = 0.f;
-	motion.speed = 200.f;
+	motion.speed = 70.f;
 
 	physics.scale = {-config_scale, config_scale};
 
 	// initial values
 	m_is_alive = true;
 	m_color = 0;
+	m_direction_change = 0;
 
 	m_moving_right = false;
 	m_moving_left = false;
@@ -81,6 +82,8 @@ bool Char::init()
 	m_wall_right = false;
 
 	m_dash = false;
+
+	flip_in_x = 0;
 
 	return true;
 }
@@ -103,23 +106,41 @@ void Char::update(float ms)
 	float step = motion.speed * (ms / 1000);
 
 	// speed up on dash
-	if (m_dash) step *= 2;
+	if (m_dash)
+		step *= 2;
 
 	if (m_is_alive)
-	{ 
+	{
 		// go in random direction on dash
 		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
 		{
 			int random = rand() % 4;
 			// chose direction
-			if (random == 0) m_moving_up = true;
-			else if (random == 1) m_moving_down = true;
-			else if (random == 2) m_moving_left = true;
-			else if (random == 3) m_moving_right = true;
+			if (random == 0)
+			{
+				m_moving_left = true;
+				m_direction_change = 0;
+			}
+			else if (random == 1)
+			{
+				m_moving_right = true;
+				m_direction_change = 1;
+			}
+			else if (random == 2)
+			{
+				m_moving_up = true;
+				m_direction_change = 2;
+			}
+			else if (random == 3)
+			{
+				m_moving_down = true;
+				m_direction_change = 3;
+			}
 		}
 
 		// opposite direction if blue
-		if (m_color == 3) step = (-step);
+		if (m_color == 3)
+			step = (-step);
 
 		if (m_moving_right && !m_wall_right)
 			change_position({step, 0.f});
@@ -129,6 +150,17 @@ void Char::update(float ms)
 			change_position({0.f, -step});
 		if (m_moving_down && !m_wall_down)
 			change_position({0.f, step});
+
+		// sprite change
+		//if (sprite_countdown > 0.f)
+		//	sprite_countdown -= ms;
+
+		//sprite_switch < 17 ? sprite_switch++ : sprite_switch = 1;
+
+		//if (flip_in_x) {
+		//	physics.scale.x = -physics.scale.x;
+		//	flip_in_x = 0;
+		//}
 	}
 }
 
@@ -178,6 +210,16 @@ void Char::draw(const mat3 &projection)
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
+	if ((sprite_countdown < 0) && (m_moving_right || m_moving_left || m_moving_up || m_moving_down))
+	{
+		string temp_str = "data/textures/person_png/" + to_string(sprite_switch) + ".png";
+		string s(PROJECT_SOURCE_DIR);
+		s += temp_str;
+		const char *path = s.c_str();
+
+		char_texture.load_from_file(path);
+		sprite_countdown = 200.f;
+	}
 	// color
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
@@ -213,19 +255,31 @@ void Char::kill()
 // aabb-aabb collision
 bool Char::collision(vec2 pos, vec2 box)
 {
-	float half_width = char_texture.width * 0.5f * std::fabs(physics.scale.x);
-	float half_height = char_texture.height * 0.5f * std::fabs(physics.scale.y);
+	vec2 char_pos = motion.position;
+	vec2 char_box = get_bounding_box();
+	bool collision_x_right = (char_pos.x + char_box.x) >= (pos.x - box.x) && (char_pos.x + char_box.x) <= (pos.x + box.x);
+	bool collision_x_left = (char_pos.x - char_box.x) >= (pos.x - box.x) && (char_pos.x - char_box.x) <= (pos.x + box.x);
+	bool collision_y_top = (char_pos.y + char_box.y) >= (pos.y - box.y) && (char_pos.y + char_box.y) <= (pos.y + box.y);
+	bool collision_y_down = (char_pos.y - char_box.y) >= (pos.y - box.y) && (char_pos.y - char_box.y) <= (pos.y + box.y);
 
-	bool collision_x_right = (motion.position.x + half_width) >= (pos.x - box.x) && (motion.position.x + half_width) <= (pos.x + box.x);
-	bool collision_x_left = (motion.position.x - half_width) >= (pos.x - box.x) && (motion.position.x - half_width) <= (pos.x + box.x);
-	bool collision_y_top = (motion.position.y + half_height) >= (pos.y - box.y) && (motion.position.y + half_height) <= (pos.y + box.y);
-	bool collision_y_down = (motion.position.y - half_height) >= (pos.y - box.y) && (motion.position.y - half_height) <= (pos.y + box.y);
+	// bullet collision
+	bool inside = false;
+	if (char_box.y > box.y)
+	{
+		if (char_box.x > box.x)
+		{
+			inside = char_pos.y - char_box.y < pos.y &&
+					 char_pos.y + char_box.y > pos.y &&
+					 char_pos.x - char_box.x < pos.x &&
+					 char_pos.x + char_box.x > pos.x;
+		}
+	}
 
-	if ((motion.position.x + half_width) >= (pos.x + box.x) && (motion.position.x - half_width) <= (pos.x - box.x))
-		return collision_y_top || collision_y_down;
+	if ((char_pos.x + char_box.x) >= (pos.x + box.x) && (char_pos.x - char_box.x) <= (pos.x - box.x))
+		return collision_y_top || collision_y_down || inside;
 
-	if ((motion.position.y + half_height) >= (pos.y + box.y) && (motion.position.y - half_height) <= (pos.y - box.y))
-		return collision_x_right || collision_x_left;
+	if ((char_pos.y + char_box.y) >= (pos.y + box.y) && (char_pos.y - char_box.y) <= (pos.y - box.y))
+		return collision_x_right || collision_x_left || inside;
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
@@ -235,6 +289,21 @@ bool Char::is_colliding(const Spotter &spotter)
 	vec2 pos = spotter.get_position();
 	vec2 box = spotter.get_bounding_box();
 	return collision(pos, box);
+}
+
+bool Char::is_colliding(Bullets &bullets)
+{
+	for (auto &bullet : bullets.m_bullets)
+	{
+		vec2 pos = bullet.position;
+		vec2 box = {bullet.radius, bullet.radius};
+		if (collision(pos, box))
+		{
+			bullet.life = 0.f;
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Char::is_colliding(const Wanderer &wanderer)
@@ -258,10 +327,14 @@ vec2 Char::get_bounding_box() const
 
 void Char::set_wall_collision(char direction, bool value)
 {
-	if (direction == 'R') m_wall_right = value;
-	else if (direction == 'L') m_wall_left = value;
-	else if (direction == 'U') m_wall_up = value;
-	else if (direction == 'D') m_wall_down = value;
+	if (direction == 'R')
+		m_wall_right = value;
+	else if (direction == 'L')
+		m_wall_left = value;
+	else if (direction == 'U')
+		m_wall_up = value;
+	else if (direction == 'D')
+		m_wall_down = value;
 }
 
 bool Char::is_wall_collision() const
@@ -276,14 +349,42 @@ bool Char::is_wall_collision() const
 void Char::set_direction(char direction, bool value)
 {
 	// prevent direction change upon dash consequence
-	if (m_dash) {
-		if (value) return;
+	if (m_dash)
+	{
+		if (value)
+			return;
 	}
 
-	else if (direction == 'U') m_moving_up = value;
-	else if (direction == 'D') m_moving_down = value;
-	else if (direction == 'R') m_moving_right = value;
-	else if (direction == 'L') m_moving_left = value;
+	else if (direction == 'U')
+		m_moving_up = value;
+	else if (direction == 'D')
+		m_moving_down = value;
+	else if (direction == 'R')
+		m_moving_right = value;
+	else if (direction == 'L')
+		m_moving_left = value;
+}
+
+// int Char::get_direction()
+// {
+// 	if (m_moving_up)
+// 		return 2;
+// 	else if (m_moving_down)
+// 		return 3;
+// 	else if (m_moving_right)
+// 		return 1;
+// 	else if (m_moving_left)
+// 		return 0;
+// 	return 1;
+// }
+void Char::change_direction(int direction)
+{
+	m_direction_change = direction;
+}
+
+int Char::get_direction()
+{
+	return m_direction_change;
 }
 
 void Char::change_position(vec2 offset)
@@ -325,8 +426,9 @@ int Char::get_color() const
 void Char::set_dash(bool value)
 {
 	m_dash = value;
-	
-	if (!value)	m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
+
+	if (!value)
+		m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
 bool Char::is_dashing()
@@ -341,4 +443,9 @@ bool Char::is_dashing()
 void Char::set_rotation(float radians)
 {
 	motion.radians = radians;
+}
+
+void Char::flip_char()
+{
+	flip_in_x = 1;
 }

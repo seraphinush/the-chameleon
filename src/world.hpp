@@ -12,6 +12,9 @@
 #include "trophy.hpp"
 #include "cutscene.hpp"
 #include "hud.hpp"
+#include "particles.hpp"
+#include "shooter.hpp"
+#include "level_screen.hpp"
 
 // stlib
 #include <vector>
@@ -25,6 +28,8 @@
 // game state
 #define START_SCREEN 0
 #define CONTROL_SCREEN 1
+#define LEVEL_SCREEN 2
+#define QUIT 3
 #define STORY_SCREEN 4
 #define WIN_SCREEN 5
 #define LEVEL_1 1000
@@ -33,6 +38,11 @@
 #define LEVEL_4 4000
 #define LEVEL_5 5000
 #define LEVEL_TUTORIAL 6000
+#define LEVEL_1_CUTSCENE 1500
+#define LEVEL_2_CUTSCENE 2500
+#define LEVEL_3_CUTSCENE 3500
+#define LEVEL_4_CUTSCENE 4500
+#define LEVEL_5_CUTSCENE 5500
 
 class World
 {
@@ -49,6 +59,7 @@ private:
 	StartScreen m_start_screen;
 	ControlScreen m_control_screen;
 	CompleteScreen m_complete_screen;
+	LevelScreen m_level_screen;
 	Cutscene m_cutscene;
 	Hud m_hud;
 
@@ -67,11 +78,16 @@ private:
 	// current game state
 	unsigned int m_current_game_state;
 
+	// current level state
+	unsigned int m_current_level_state;
+
 	// entities
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
+	std::vector<Shooter> m_shooters;
 	Trophy m_trophy;
+	Particles m_particles_emitter;
 
 	// variables
 	float m_current_speed;
@@ -100,15 +116,19 @@ public:
 	bool is_over() const;
 
 private:
-	mat3 calculateProjectionMatrix(int width, int height);
-
 	bool spawn_spotter();
+	bool spawn_shooter();
+
 	bool spawn_wanderer();
+
+	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
+
+	mat3 calculateProjectionMatrix(int width, int height);
 
 	// reset
 	void reset_game();
