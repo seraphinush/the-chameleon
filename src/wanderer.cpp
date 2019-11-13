@@ -19,7 +19,7 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 	set_position(m_map->get_tile_center_coords(m_path[0]));
 	current_goal_index = 1;
 	current_immediate_goal_index = 1;
-	calculate_immediate_path(m_path[current_goal_index]);
+	calculate_immediate_path(m_path[current_goal_index], 0);
 
 	// load shared texture
 	if (!wanderer_texture.is_valid())
@@ -101,22 +101,22 @@ void Wanderer::destroy()
 void Wanderer::update(float ms)
 {
 	if (alert_mode) {
-		// INVOKE CHASE AI
+		// TODO: INVOKE CHASE AI
 
 	}
 	else {
 		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
 		{
 			current_goal_index = (current_goal_index + 1) % m_path.size();
-			calculate_immediate_path(m_path[current_goal_index]);
+			calculate_immediate_path(m_path[current_goal_index], 0);
 			current_immediate_goal_index = 1;
 		}
 		else if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])))
 		{
 			current_immediate_goal_index++;
 		}
-		move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);;
 	}
+	move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);
 
 	// sprite change
 	if (sprite_countdown > 0.f)
@@ -210,14 +210,24 @@ vec2 Wanderer::get_bounding_box() const
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
 }
 
-void Wanderer::alert_wanderer() 
+void Wanderer::alert_wanderer_status(bool alert) 
 {
-	cool_down = 5000.f;
+	alert_mode = alert;
+	if (alert_mode)
+	{
+		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 20);
+	}
+	else
+	{
+		calculate_immediate_path(m_path[current_goal_index], 0);
+		current_immediate_goal_index = 1;
+	}
 }
 
 
-void Wanderer::calculate_immediate_path(vec2 goal)
+void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 {
+	bool limit_set = limit_search != 0;
 	immediate_path.clear();
 
 	vec2 grid_position = m_map->get_grid_coords(motion.position);
@@ -231,11 +241,16 @@ void Wanderer::calculate_immediate_path(vec2 goal)
 	paths_in_progress.push_back(beginning);
 
 	
-	while (paths_in_progress[0].heuristic != 0)
+	while (paths_in_progress[0].heuristic != 0 || (limit_set && limit_search > 0))
 	{
 		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
 		paths_in_progress.erase(paths_in_progress.begin());
 		paths_in_progress = merge_in_order(paths_in_progress, new_paths);
+
+		if (limit_set)
+		{
+			limit_search--;
+		}
 	}
 
 	immediate_path = paths_in_progress[0].path;

@@ -228,7 +228,7 @@ bool World::update(float elapsed_ms)
 		// update wanderers
 		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms* m_current_speed);
-			wanderer.alert_mode = false;
+			wanderer.alert_wanderer_status(false);
 		}
 
 		// update shooters
@@ -715,8 +715,8 @@ bool World::update(float elapsed_ms)
 		// update wanderers
 		for (auto& wanderer : m_wanderers) {
 			wanderer.update(elapsed_ms* m_current_speed);
-			// setting it to false : SET TRUE WHEN JOSE IS READY WITH CHASE AI
-			wanderer.alert_mode = false;
+			// TODO SET TO TRUE WHEN CHASE IS DONE
+			wanderer.alert_wanderer_status(false);
 		}
 
 		// update shooter

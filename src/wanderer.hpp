@@ -30,9 +30,6 @@ private:
 	const float config_scale = 0.30f;
 	const float config_speed = 30.f;
 
-	// ALERT MODE COOL-DOWN
-	float cool_down;
-
 	// TO REMOVE - placeholder for randomize path wall collision
 	bool m_wall_up;
 	bool m_wall_down;
@@ -58,7 +55,8 @@ private:
 private:
 
 	// Pathing AI
-	void calculate_immediate_path(vec2 goal);
+	bool alert_mode;
+	void calculate_immediate_path(vec2 goal, int limit_search);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);
 	std::vector<path_construction> find_paths_from(path_construction origin, vec2 goal);
@@ -77,8 +75,5 @@ public:
 	void set_wall_collision(char direction, bool value);
 	vec2 get_bounding_box() const;
 
-	void alert_wanderer();
-
-	// ALERT WANDERER METHOD
-	bool alert_mode;
+	void alert_wanderer_status(bool alert);
 };
