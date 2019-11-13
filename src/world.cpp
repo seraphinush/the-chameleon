@@ -195,6 +195,12 @@ void World::destroy()
 	m_particles_emitter.destroy();
 	m_map.destroy();
 	m_overlay.destroy();
+	m_start_screen.destroy();
+	m_control_screen.destroy();
+	m_level_screen.destroy();
+	m_cutscene.destroy();
+	m_hud.destroy();
+	m_complete_screen.destroy();
 
 	glfwDestroyWindow(m_window);
 }
