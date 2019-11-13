@@ -141,17 +141,30 @@ void Char::update(float ms)
 		}
 
 		// opposite direction if blue
+		// TODO
 		if (m_color == 3)
-			step = (-step);
+		{
+			if (m_moving_up && !m_wall_down)
+				change_position({0.f, step});
+			if (m_moving_down && !m_wall_up)
+				change_position({0.f, -step});
+			if (m_moving_left && !m_wall_right)
+				change_position({step, 0.f});
+			if (m_moving_right && !m_wall_left)
+				change_position({-step, 0.f});
+		}
+		else 
+		{
+			if (m_moving_up && !m_wall_up)
+				change_position({0.f, -step});
+			if (m_moving_down && !m_wall_down)
+				change_position({0.f, step});
+			if (m_moving_left && !m_wall_left)
+				change_position({-step, 0.f});
+			if (m_moving_right && !m_wall_right)
+				change_position({step, 0.f});
+		}
 
-		if (m_moving_right && !m_wall_right)
-			change_position({step, 0.f});
-		if (m_moving_left && !m_wall_left)
-			change_position({-step, 0.f});
-		if (m_moving_up && !m_wall_up)
-			change_position({0.f, -step});
-		if (m_moving_down && !m_wall_down)
-			change_position({0.f, step});
 
 		// sprite change
 		//if (sprite_countdown > 0.f)
