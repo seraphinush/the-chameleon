@@ -31,8 +31,11 @@ vec4 color_shift(vec4 in_color)
 	float width = window_width - 300 -100 ;
 	float decrement = width/MAX_COOLDOWN; // Max cooldown set to 50
 	float off = cooldown * decrement;
+	float bar_width = window_width - 300 - off ;
+	if(cooldown == 0)
+		bar_width = 100;
 	vec4 color = in_color;
-		if (gl_FragCoord.x < window_width - 300 - off && gl_FragCoord.x > 100 && gl_FragCoord.y > 50 && gl_FragCoord.y < 60)
+		if (gl_FragCoord.x < bar_width && gl_FragCoord.x > 100 && gl_FragCoord.y > 50 && gl_FragCoord.y < 60)
 			color = vec4(1.0, 0.0, 0.0, 0.5);
 	return color;
 }
