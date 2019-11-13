@@ -33,6 +33,8 @@ private:
 	bool m_moving_up;
 	bool m_moving_down;
 
+	vec2 m_correction;
+
 	// color
 	int m_color;
 
@@ -71,15 +73,21 @@ public:
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
+	void change_correction(vec2 c);
+	vec2 get_correction() const;
 	bool is_wall_collision() const;
 
 	// movement
 	void set_direction(char direction, bool value);
-	int get_direction();
-	void change_direction(int c);
 	void change_position(vec2 off);
 	vec2 get_position() const;
+	float get_speed() const;
+	vec2 get_velocity();
 	bool is_moving() const;
+
+	// dash
+	void change_direction(int c);
+	int get_direction() const;
 
 	// color change
 	void set_color(int color);
