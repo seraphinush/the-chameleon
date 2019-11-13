@@ -4,11 +4,11 @@
 #include "char.hpp"
 #include "common.hpp"
 #include "spotter.hpp"
+#include "map.hpp"
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "complete_screen.hpp"
-#include "map.hpp"
 #include "trophy.hpp"
 #include "cutscene.hpp"
 #include "particles.hpp"
@@ -89,7 +89,6 @@ private:
 
 	// variables
 	float m_current_speed;
-	float m_next_wanderer_spawn;
 
 	// sound
 	Mix_Music *m_background_music;
@@ -103,6 +102,7 @@ private:
 
 	bool recent_dash = false;
 
+	vector<vector<vec2>> wanderer_paths = { {{6,6}, {6,2}, {1,2}, {1,6}} };
 public:
 	World();
 	~World();
@@ -117,7 +117,7 @@ private:
 	bool spawn_spotter();
 	bool spawn_shooter();
 
-	bool spawn_wanderer();
+	bool spawn_wanderer(std::vector<vec2> path);
 
 	bool spawn_trophy();
 

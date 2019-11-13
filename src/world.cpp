@@ -11,7 +11,6 @@ namespace
 {
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_SHOOTERS = 5;
-const size_t MAX_WANDERERS = 10;
 const size_t SPOTTER_DELAY_MS = 800;
 // Cooldown
 const int MAX_COOLDOWN = 50;
@@ -38,7 +37,6 @@ World::World() : m_control(0),
 				 m_current_game_state(0),
 				 m_current_level_state(0),
 				 m_game_state(START_SCREEN),
-				 m_next_wanderer_spawn(0.f),
 				 m_show_story_screen(true)
 {
 	// send rng with random device
@@ -53,6 +51,7 @@ World::~World()
 bool World::init(vec2 screen)
 {
 	// TODO
+	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
 	spotter_loc[0] = {100, 100};
 	spotter_loc[1] = {screen.x - 100, 100};
 	spotter_loc[2] = {100, screen.y - 100};
@@ -786,19 +785,12 @@ bool World::update(float elapsed_ms)
 		}
 
 		// spawn wanderer
-		m_next_wanderer_spawn -= elapsed_ms * m_current_speed;
-		if (m_wanderers.size() < MAX_WANDERERS && m_next_wanderer_spawn < 0.f)
+		if (m_wanderers.size() < wanderer_paths.size())
 		{
-			if (!spawn_wanderer())
+			if (!spawn_wanderer(wanderer_paths[0]))
 				return false;
 
 			Wanderer &new_wanderer = m_wanderers.back();
-
-			// set initial position
-			new_wanderer.set_position({screen.x - 50, 100 + m_dist(m_rng) * (screen.y - 100)});
-
-			// next spawn
-			m_next_wanderer_spawn = (SPOTTER_DELAY_MS / 2) + m_dist(m_rng) * (SPOTTER_DELAY_MS / 2);
 		}
 
 		//////////////////////
@@ -1145,10 +1137,10 @@ bool World::spawn_shooter()
 }
 
 // spawn wanderer
-bool World::spawn_wanderer()
+bool World::spawn_wanderer(std::vector<vec2> path)
 {
 	Wanderer wanderer;
-	if (wanderer.init())
+	if (wanderer.init(path, m_map))
 	{
 		m_wanderers.emplace_back(wanderer);
 		return true;
