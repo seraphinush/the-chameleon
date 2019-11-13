@@ -62,4 +62,6 @@ public:
 
 	// Pathing helper functions
 	vec2 get_tile_center_coords(vec2 tile_indices);
+	vec2 get_grid_coords(vec2 position);
+	bool is_wall(vec2 grid_coords);
 };

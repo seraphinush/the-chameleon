@@ -217,10 +217,30 @@ void Wanderer::alert_wanderer()
 
 void Wanderer::calculate_immediate_path(vec2 goal)
 {
-	immediate_path.clear();
-	immediate_path.push_back(motion.position);
-	// TODO middle steps
-	immediate_path.push_back(goal);
+	immediate_path.clear();// TODO middle steps
+	//immediate_path.push_back(goal);
+	//immediate_path.push_back(goal);
+	//return;
+
+	vec2 grid_position = m_map->get_grid_coords(motion.position);
+
+	vector<path_construction> paths_in_progress;
+	path_construction beginning;
+	beginning.path = { {grid_position} };
+	beginning.heuristic = abs(grid_position.x - goal.x) + abs(grid_position.y - goal.y);
+	beginning.expected_total = beginning.heuristic;
+
+	paths_in_progress.push_back(beginning);
+
+	
+	while (paths_in_progress[0].heuristic != 0)
+	{
+		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
+		paths_in_progress.erase(paths_in_progress.begin());
+		paths_in_progress = merge_in_order(paths_in_progress, new_paths);
+	}
+
+	immediate_path = paths_in_progress[0].path;
 }
 
 bool Wanderer::check_goal_arrival(vec2 goal)
@@ -235,4 +255,89 @@ void Wanderer::move_towards_goal(vec2 goal, float ms)
 	float magnitude = std::sqrt((motionVector.x * motionVector.x) + (motionVector.y * motionVector.y));
 	motion.position.y += step * (motionVector.y / magnitude);
 	motion.position.x += step * (motionVector.x / magnitude);
+}
+
+vector<path_construction> Wanderer::find_paths_from(path_construction origin, vec2 goal)
+{
+	vec2 point_of_origin = origin.path[origin.path.size() - 1];
+	vector<path_construction> return_list;
+	for (int x = 1; x > -2; x--)
+	{
+		for (int y = 1; y > -2; y--)
+		{
+			if (x == 0 && y == 0)
+			{
+				continue;
+			}
+			path_construction new_path;
+			new_path.path = origin.path;
+			vec2 new_point = { point_of_origin.x + x, point_of_origin.y + y };
+			if (m_map->is_wall(new_point))
+			{
+				continue;
+			}
+
+			new_path.path.push_back(new_point);
+			new_path.heuristic = abs(new_point.x - goal.x) + abs(new_point.y - goal.y);
+			new_path.expected_total = new_path.heuristic + origin.path.size();
+			
+			if (return_list.empty())
+			{
+				return_list.insert(return_list.begin(), new_path);
+			}
+			else
+			{
+				int insertion_index = 0;
+				for (path_construction construction : return_list)
+				{
+					if (construction.expected_total > new_path.expected_total)
+					{
+						break;
+					}
+					else
+					{
+						insertion_index++;
+					}
+				}
+				return_list.insert(return_list.begin() + insertion_index, new_path);
+			}
+		}
+	}
+	return return_list;
+}
+
+vector<path_construction> Wanderer::merge_in_order(vector<path_construction> p1, vector<path_construction> p2)
+{
+	if (p1.empty())
+	{
+		return p2;
+	}
+	else if (p2.empty())
+	{
+		return p1;
+	}
+	int p1_index = 0;
+	int p2_index = 0;
+	vector<path_construction> return_list;
+
+	for (int i = 0; i < p1.size() + p2.size(); i++)
+	{
+		if (p1_index == p1.size())
+		{
+			return_list.push_back(p2[p2_index++]);
+		}
+		else if (p2_index == p2.size())
+		{
+			return_list.push_back(p1[p1_index++]);
+		}
+		else if (p1[p1_index].expected_total < p2[p2_index].expected_total)
+		{
+			return_list.push_back(p1[p1_index++]);
+		}
+		else
+		{
+			return_list.push_back(p2[p2_index++]);
+		}
+	}
+	return return_list;
 }

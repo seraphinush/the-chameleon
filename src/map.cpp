@@ -655,3 +655,17 @@ vec2 Map::get_tile_center_coords(vec2 tile_indices)
 	return vec2{ (tile_indices.x * 20) + 10, (tile_indices.y * 20) + 10 };
 }
 
+vec2 Map::get_grid_coords(vec2 position)
+{
+	int truncated_x = (int)position.x / 20;
+	int truncated_y = (int)position.y / 20;
+	return vec2{ (float)truncated_x, (float)truncated_y };
+}
+
+bool Map::is_wall(vec2 grid_coords)
+{
+	int x = grid_coords.x;
+	int y = grid_coords.y;
+	return level_1[y][x] == 'W' || level_1[y][x] == 'S';
+}
+

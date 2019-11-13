@@ -8,6 +8,13 @@
 
 class Map;
 
+struct path_construction
+{
+	std::vector<vec2> path;
+	int heuristic;
+	int expected_total;
+};
+
 //class Map;
 // guard type 1 : wanderer
 class Wanderer : public Entity
@@ -50,6 +57,8 @@ private:
 	void calculate_immediate_path(vec2 goal);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);
+	std::vector<path_construction> find_paths_from(path_construction origin, vec2 goal);
+	std::vector<path_construction> merge_in_order(std::vector<path_construction> p1, std::vector<path_construction> p2);
 
 public:
 	bool init(std::vector<vec2> path, Map& map);
