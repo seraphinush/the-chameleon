@@ -514,6 +514,13 @@ void Map::check_wall(Char &ch, const float ms)
 	// correction
 	float d = 0.f;
 
+	// blue color
+	if (ch.get_color() == 3)
+	{
+		dir.x = -dir.x;
+		dir.y = -dir.y;
+	}
+
 	// up
 	if (dir.y < 0.f)
 	{
@@ -521,8 +528,8 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
 		tile_x_top_right = (int)pos_top_right.x / 20;
 		tile_y_top_right = (int)(pos_top_right.y - step) / 20;
-		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
-			level_1[tile_y_top_right][tile_x_top_right] == 'W' ||	level_1[tile_y_top_right][tile_x_top_right] == 'S')
+		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
+			current_level[tile_y_top_right][tile_x_top_right] == 'W' ||	current_level[tile_y_top_right][tile_x_top_right] == 'S')
 		{
 			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
 			ch.change_position({0.f, d});
@@ -540,8 +547,8 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / 20;
 		tile_x_bottom_right = (int)pos_bottom_right.x / 20;
 		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / 20;
-		if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' || level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
-			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' || current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
 			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
 			ch.change_position({0.f, d});
@@ -559,8 +566,8 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_y_top_left = (int)pos_top_left.y / 20;
 		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / 20;
 		tile_y_bottom_left = (int)pos_bottom_left.y / 20;
-		if (level_1[tile_y_top_left][tile_x_top_left] == 'W' || level_1[tile_y_top_left][tile_x_top_left] == 'S' ||
-			level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	level_1[tile_y_bottom_left][tile_x_bottom_left] == 'S')
+		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
+			current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S')
 		{
 			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
 			ch.change_position({d, 0.f});
@@ -578,8 +585,8 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_y_top_right = (int)pos_top_right.y / 20;
 		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / 20;
 		tile_y_bottom_right = (int)pos_bottom_right.y / 20;
-		if (level_1[tile_y_top_right][tile_x_top_right] == 'W' || level_1[tile_y_top_right][tile_x_top_right] == 'S' ||
-			level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	level_1[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		if (current_level[tile_y_top_right][tile_x_top_right] == 'W' || current_level[tile_y_top_right][tile_x_top_right] == 'S' ||
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
 			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
 			ch.change_position({d, 0.f});
@@ -591,7 +598,6 @@ void Map::check_wall(Char &ch, const float ms)
 		}
 	}
 }
-
 
 // TO REMOVE - placeholder for randomize path wall collision
 void Map::is_wall_collision(Wanderer &wanderer)
