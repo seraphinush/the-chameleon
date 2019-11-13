@@ -59,4 +59,6 @@ public:
 	void reset_flash_time();
 
 	float get_flash_time() const;
+
+	vec2 get_spawn();
 };
