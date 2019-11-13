@@ -118,22 +118,22 @@ void Char::update(float ms)
 			// chose direction
 			if (r == 0)
 			{
-				m_moving_left = true;
+				m_moving_up = true;
 				m_direction_change = 0;
 			}
 			else if (r == 1)
 			{
-				m_moving_right = true;
+				m_moving_down = true;
 				m_direction_change = 1;
 			}
 			else if (r == 2)
 			{
-				m_moving_up = true;
+				m_moving_left = true;
 				m_direction_change = 2;
 			}
 			else if (r == 3)
 			{
-				m_moving_down = true;
+				m_moving_right = true;
 				m_direction_change = 3;
 			}
 		}
@@ -415,9 +415,10 @@ bool Char::is_moving() const
 	return m_moving_up || m_moving_down || m_moving_left || m_moving_right;
 }
 
-void Char::change_direction(int direction)
+// up: 0, down: 1, left: 2, right: 3
+void Char::change_direction(int dir)
 {
-	m_direction_change = direction;
+	m_direction_change = dir;
 }
 
 int Char::get_direction() const
