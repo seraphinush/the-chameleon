@@ -158,7 +158,7 @@ bool World::init(vec2 screen)
 		   m_cutscene.init() &&
 		   m_hud.init() &&
 		   m_map.init() &&
-		   m_char.init() &&
+		   m_char.init(m_map.get_spawn()) &&
 		   m_trophy.init() &&
 		   m_overlay.init(alert_mode) &&
 		   m_particles_emitter.init() &&
@@ -1564,7 +1564,7 @@ void World::reset_game()
 {
 	m_char.destroy();
 	m_trophy.destroy();
-	m_char.init();
+	m_char.init(m_map.get_spawn());
 	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();

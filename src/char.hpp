@@ -33,8 +33,6 @@ private:
 	bool m_moving_up;
 	bool m_moving_down;
 
-	vec2 m_correction;
-
 	// color
 	int m_color;
 
@@ -54,7 +52,7 @@ private:
 	int flip_in_x = 1;
 
 public:
-	bool init();
+	bool init(vec2 pos);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;
@@ -73,8 +71,6 @@ public:
 
 	// wall collision
 	void set_wall_collision(char direction, bool value);
-	void change_correction(vec2 c);
-	vec2 get_correction() const;
 	bool is_wall_collision() const;
 
 	// movement
