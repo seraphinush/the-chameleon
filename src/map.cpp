@@ -16,6 +16,8 @@ Texture Map::corridor_texture_yellow;
 
 Texture Map::trophy_texture;
 
+static constexpr float TILE_SIZE = 20.f;
+
 // 800 * 1200 Map of Level 1
 // 61 for the \n of all chars
 // W = Wall, S = Wall_Shadow, R = Red Tile, G = Green tile, B = Blue Tile, Y = Yellow Tile, C = Plain_Corridor
@@ -313,11 +315,11 @@ bool Map::init()
 
 	// vertex buffer in local coordinates
 	TexturedVertex vertices[4];
-	vertices[0].position = {0.f, 20.f, 0.f}; // top left
+	vertices[0].position = {0.f, TILE_SIZE, 0.f}; // top left
 	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {20.f, 20.f, 0.f}; // top right
+	vertices[1].position = {TILE_SIZE, TILE_SIZE, 0.f}; // top right
 	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {20.f, 0.f, 0.f}; // bottom right
+	vertices[2].position = {TILE_SIZE, 0.f, 0.f}; // bottom right
 	vertices[2].texcoord = {1.f, 0.f};
 	vertices[3].position = {0.f, 0.f, 0.f}; // bottom left
 	vertices[3].texcoord = {0.f, 0.f};
@@ -353,11 +355,11 @@ bool Map::init()
 
 	physics.scale = {1.0f, 1.0f};
 
-	for (int i = 0; i < 40; i++)
+	for (int y = 0; y < 40; y++)
 	{
-		for (int j = 0; j < 61; j++)
+		for (int x = 0; x < 61; x++)
 		{
-			current_level[i][j] = level_tutorial[i][j];
+			current_level[y][x] = level_tutorial[y][x];
 		}
 	}
 
@@ -380,56 +382,56 @@ void Map::draw(const mat3 &projection)
 
 	translation_tile = vec2({0.0, 0.0});
 
-	for (int i = 0; i < 40; i++)
+	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
-		for (int j = 0; j < 61; j++)
+		for (int x = 0; x < 61; x++)
 		{
-			if (current_level[i][j] == 'W')
+			if (current_level[y][x] == 'W')
 			{
 				// Draw a Wall
 				draw_element(projection, wall_texture);
 			}
-			else if (current_level[i][j] == 'S')
+			else if (current_level[y][x] == 'S')
 			{
 				// Draw a Shadow Wall
 				draw_element(projection, wall_light_texture);
 			}
-			else if ((current_level[i][j] == 'C') || (current_level[i][j] == 'A'))
+			else if ((current_level[y][x] == 'C') || (current_level[y][x] == 'A'))
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if ((current_level[i][j] == 'Z'))
+			else if ((current_level[y][x] == 'Z'))
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
 			}
-			else if (current_level[i][j] == 'R')
+			else if (current_level[y][x] == 'R')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_red);
 			}
-			else if (current_level[i][j] == 'B')
+			else if (current_level[y][x] == 'B')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_blue);
 			}
-			else if (current_level[i][j] == 'G')
+			else if (current_level[y][x] == 'G')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_green);
 			}
-			else if (current_level[i][j] == 'Y')
+			else if (current_level[y][x] == 'Y')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_yellow);
 			}
 
-			translation_tile.x += 20.0;
+			translation_tile.x += TILE_SIZE;
 		}
 		translation_tile.x = 0.0;
-		translation_tile.y += 20.0;
+		translation_tile.y += TILE_SIZE;
 	}
 }
 
@@ -488,16 +490,6 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Map::get_position() const
-{
-	return motion.position;
-}
-
-void Map::set_position(vec2 position)
-{
-	motion.position = position;
-}
-
 void Map::check_wall(Char &ch, const float ms)
 {
 	if (!ch.is_moving())
@@ -544,14 +536,14 @@ void Map::check_wall(Char &ch, const float ms)
 	// up
 	if (dir.y < 0)
 	{
-		tile_x_top_left = (int)pos_top_left.x / 20;
-		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
-		tile_x_top_right = (int)pos_top_right.x / 20;
-		tile_y_top_right = (int)(pos_top_right.y - step) / 20;
+		tile_x_top_left = (int)pos_top_left.x / (int)TILE_SIZE;
+		tile_y_top_left = (int)(pos_top_left.y - step) / (int)TILE_SIZE;
+		tile_x_top_right = (int)pos_top_right.x / (int)TILE_SIZE;
+		tile_y_top_right = (int)(pos_top_right.y - step) / (int)TILE_SIZE;
 		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
 			current_level[tile_y_top_right][tile_x_top_right] == 'W' ||	current_level[tile_y_top_right][tile_x_top_right] == 'S')
 		{
-			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
+			d = TILE_SIZE - (pos_top_left.y - (tile_y_top_left * TILE_SIZE));
 			ch.change_position({0.f, d});
 			ch.set_wall_collision('U', true);
 		}
@@ -563,14 +555,14 @@ void Map::check_wall(Char &ch, const float ms)
 	// down
 	else if (dir.y > 0)
 	{
-		tile_x_bottom_left = (int)pos_bottom_left.x / 20;
-		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / 20;
-		tile_x_bottom_right = (int)pos_bottom_right.x / 20;
-		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / 20;
+		tile_x_bottom_left = (int)pos_bottom_left.x / (int)TILE_SIZE;
+		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / (int)TILE_SIZE;
+		tile_x_bottom_right = (int)pos_bottom_right.x / (int)TILE_SIZE;
+		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / (int)TILE_SIZE;
 		if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' || current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
 			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
-			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
+			d = (tile_y_bottom_left * TILE_SIZE) - pos_bottom_left.y - 0.001f;
 			ch.change_position({0.f, d});
 			ch.set_wall_collision('D', true);
 		}
@@ -582,14 +574,14 @@ void Map::check_wall(Char &ch, const float ms)
 	// left
 	if (dir.x < 0)
 	{
-		tile_x_top_left = (int)(pos_top_left.x - step) / 20;
-		tile_y_top_left = (int)pos_top_left.y / 20;
-		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / 20;
-		tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+		tile_x_top_left = (int)(pos_top_left.x - step) / (int)TILE_SIZE;
+		tile_y_top_left = (int)pos_top_left.y / (int)TILE_SIZE;
+		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / (int)TILE_SIZE;
+		tile_y_bottom_left = (int)pos_bottom_left.y / (int)TILE_SIZE;
 		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
 			current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S')
 		{
-			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
+			d = TILE_SIZE - (pos_top_left.x - (tile_x_top_left * TILE_SIZE));
 			ch.change_position({d, 0.f});
 			ch.set_wall_collision('L', true);
 		}
@@ -601,14 +593,14 @@ void Map::check_wall(Char &ch, const float ms)
 	// right
 	else if (dir.x > 0)
 	{
-		tile_x_top_right = (int)(pos_top_right.x + step) / 20;
-		tile_y_top_right = (int)pos_top_right.y / 20;
-		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / 20;
-		tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+		tile_x_top_right = (int)(pos_top_right.x + step) / (int)TILE_SIZE;
+		tile_y_top_right = (int)pos_top_right.y / (int)TILE_SIZE;
+		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / (int)TILE_SIZE;
+		tile_y_bottom_right = (int)pos_bottom_right.y / (int)TILE_SIZE;
 		if (current_level[tile_y_top_right][tile_x_top_right] == 'W' || current_level[tile_y_top_right][tile_x_top_right] == 'S' ||
 			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
-			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
+			d = (tile_x_top_right * TILE_SIZE) - pos_top_right.x - 0.001f;
 			ch.change_position({d, 0.f});
 			ch.set_wall_collision('R', true);
 		}
@@ -619,73 +611,71 @@ void Map::check_wall(Char &ch, const float ms)
 	}
 }
 
-// TO REMOVE - placeholder for randomize path wall collision
-void Map::is_wall_collision(Wanderer &wanderer)
+void Map::set_current_map(int level)
 {
-	vec2 pos = wanderer.get_position();
-	vec2 box = wanderer.get_bounding_box();
-
-	// get 4 corners of wanderer: top left, top right, bottom left, bottom right
-	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
-	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
-	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
-	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
-
-	int tile_x;
-	int tile_y;
-
-	// top left
-	int tile_x_top_left = (int)pos_top_left.x / 20;
-	int tile_y_top_left = (int)pos_top_left.y / 20;
-	int tile_x_top_right = (int)pos_top_right.x / 20;
-	int tile_y_top_right = (int)pos_top_right.y / 20;
-	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
-	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
-	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
-	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
-
-	if (current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W')
+	switch (level)
 	{
-		wanderer.set_wall_collision('U', true);
-	}
-	else
-	{
-		wanderer.set_wall_collision('U', false);
-	}
-
-	if (current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W')
-	{
-		wanderer.set_wall_collision('R', true);
-	}
-	else
-	{
-		wanderer.set_wall_collision('R', false);
-	}
-
-	if (current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W')
-	{
-		wanderer.set_wall_collision('D', true);
-	}
-	else
-	{
-		wanderer.set_wall_collision('D', false);
-	}
-
-	if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W')
-	{
-		wanderer.set_wall_collision('L', true);
-	}
-	else
-	{
-		wanderer.set_wall_collision('L', false);
+	case 6000:
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = level_tutorial[y][x];
+			}
+		}
+		break;
+	case 1000:
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = level_1[y][x];
+			}
+		}
+		break;
+	case 2000:
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = level_2[y][x];
+			}
+		}
+		break;
+	case 3000:
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = level_3[y][x];
+			}
+		}
+		break;
 	}
 }
 
-int Map::get_tile(Char character)
+vec2 Map::get_spawn_pos() const
 {
-	vec2 pos = character.get_position();
-	int x = (int)pos.x / 20;
-	int y = (int)pos.y / 20;
+	vec2 res = vec2({ 0.f, 0.f });
+
+	for (int y = 0; y < 40; y++)
+	{
+		for (int x = 0; x < 61; x++)
+		{
+			if (current_level[y][x] == 'A')
+			{
+				res.x = x * TILE_SIZE + TILE_SIZE / 2;
+				res.y = y * TILE_SIZE + TILE_SIZE / 2;
+				return res;
+			}
+		}
+	}
+}
+
+int Map::get_tile_type(vec2 pos)
+{
+	int x = (int)pos.x / (int)TILE_SIZE;
+	int y = (int)pos.y / (int)TILE_SIZE;
 
 	if (current_level[y][x] == 'W')
 		return 1;
@@ -707,6 +697,10 @@ int Map::get_tile(Char character)
 		return 0;
 }
 
+////////////////////
+// DEATH ANIM
+////////////////////
+
 void Map::set_char_dead()
 {
 	m_dead_time = glfwGetTime();
@@ -722,15 +716,14 @@ float Map::get_char_dead_time() const
 	return glfwGetTime() - m_dead_time;
 }
 
+////////////////////
+// FLASH
+////////////////////
+
 void Map::set_flash(int value)
 {
 	flash_map = value;
 	m_flash_time = glfwGetTime();
-}
-
-int Map::get_flash()
-{
-	return flash_map;
 }
 
 void Map::reset_flash_time()
@@ -738,20 +731,29 @@ void Map::reset_flash_time()
 	m_flash_time = glfwGetTime();
 }
 
+
+int Map::get_flash()
+{
+	return flash_map;
+}
 float Map::get_flash_time() const
 {
 	return glfwGetTime() - m_flash_time;
 }
 
+////////////////////
+// PATHING
+////////////////////
+
 vec2 Map::get_tile_center_coords(vec2 tile_indices)
 {
-	return vec2{ (tile_indices.x * 20) + 10, (tile_indices.y * 20) + 10 };
+	return vec2{ (tile_indices.x * TILE_SIZE) + TILE_SIZE / 2, (tile_indices.y * TILE_SIZE) + TILE_SIZE / 2 };
 }
 
 vec2 Map::get_grid_coords(vec2 position)
 {
-	int truncated_x = (int)position.x / 20;
-	int truncated_y = (int)position.y / 20;
+	int truncated_x = (int)position.x / (int)TILE_SIZE;
+	int truncated_y = (int)position.y / (int)TILE_SIZE;
 	return vec2{ (float)truncated_x, (float)truncated_y };
 }
 
@@ -760,65 +762,4 @@ bool Map::is_wall(vec2 grid_coords)
 	int x = grid_coords.x;
 	int y = grid_coords.y;
 	return current_level[y][x] == 'W' || current_level[y][x] == 'S';
-}
-
-vec2 Map::get_spawn() {
-
-	vec2 res = vec2({ 0.f, 0.f });
-
-	for (int i = 0; i < 40; i++)
-	{
-		for (int j = 0; j < 61; j++)
-		{
-			if (current_level[i][j] == 'A')
-			{
-				res.x = j * 20 + 10;
-				res.y = i * 20 + 10;
-				return res;
-			}
-		}
-	}
-}
-
-void Map::set_current_map(int level)
-{
-	switch (level)
-	{
-	case 6000:
-		for (int i = 0; i < 40; i++)
-		{
-			for (int j = 0; j < 61; j++)
-			{
-				current_level[i][j] = level_tutorial[i][j];
-			}
-		}
-		break;
-	case 1000:
-		for (int i = 0; i < 40; i++)
-		{
-			for (int j = 0; j < 61; j++)
-			{
-				current_level[i][j] = level_1[i][j];
-			}
-		}
-		break;
-	case 2000:
-		for (int i = 0; i < 40; i++)
-		{
-			for (int j = 0; j < 61; j++)
-			{
-				current_level[i][j] = level_2[i][j];
-			}
-		}
-		break;
-	case 3000:
-		for (int i = 0; i < 40; i++)
-		{
-			for (int j = 0; j < 61; j++)
-			{
-				current_level[i][j] = level_3[i][j];
-			}
-		}
-		break;
-	}
 }

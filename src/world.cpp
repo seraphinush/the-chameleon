@@ -161,7 +161,7 @@ bool World::init(vec2 screen)
 		   m_cutscene.init() &&
 		   m_hud.init() &&
 		   m_map.init() &&
-		   m_char.init(m_map.get_spawn()) &&
+		   m_char.init(m_map.get_spawn_pos()) &&
 		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init(screen);
@@ -273,11 +273,6 @@ bool World::update(float elapsed_ms)
 		// collision, char-wall
 		m_map.check_wall(m_char, elapsed_ms);
 
-		// TO REMOVE - placeholder for randomize path wall collision
-		// collision, wanderer-wall
-		for (auto &wanderer : m_wanderers)
-			m_map.is_wall_collision(wanderer);
-
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
@@ -294,7 +289,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-trophy
-		if (m_map.get_tile(m_char) == 100) {
+		if (m_map.get_tile_type(m_char.get_position()) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -417,11 +412,6 @@ bool World::update(float elapsed_ms)
 		// collision, char-wall
 		m_map.check_wall(m_char, elapsed_ms);
 
-		// TO REMOVE - placeholder for randomize path wall collision
-		// collision, wanderer-wall
-		for (auto &wanderer : m_wanderers)
-			m_map.is_wall_collision(wanderer);
-
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
 			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
@@ -464,7 +454,7 @@ bool World::update(float elapsed_ms)
 			}
 		}
 		// collision, char-trophy
-		if (m_map.get_tile(m_char) == 100) {
+		if (m_map.get_tile_type(m_char.get_position()) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -602,11 +592,6 @@ bool World::update(float elapsed_ms)
 		// collision, char-wall
 		m_map.check_wall(m_char, elapsed_ms);
 
-		// TO REMOVE - placeholder for randomize path wall collision
-		// collision, wanderer-wall
-		for (auto& wanderer : m_wanderers)
-			m_map.is_wall_collision(wanderer);
-
 		// collision, char-spotter
 		for (const auto& spotter : m_spotters)
 			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
@@ -688,7 +673,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-trophy
-		if (m_map.get_tile(m_char) == 100) {
+		if (m_map.get_tile_type(m_char.get_position()) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -1224,7 +1209,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_TUTORIAL;
 					m_map.set_current_map(LEVEL_TUTORIAL);
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1235,7 +1220,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_cutscene.dialogue_done(m_game_state))
 				{
 					m_game_state = LEVEL_1_CUTSCENE;
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1247,7 +1232,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_1;
 					m_map.set_current_map(LEVEL_1);
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1259,7 +1244,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_2;
 					m_map.set_current_map(LEVEL_2);
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1271,7 +1256,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				{
 					m_game_state = LEVEL_3;
 					m_map.set_current_map(LEVEL_3);
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
 				}
 				else
@@ -1302,7 +1287,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				case 0:
 					m_game_state = LEVEL_TUTORIAL;
 					m_map.set_current_map(LEVEL_TUTORIAL);
-					m_char.set_position(m_map.get_spawn());
+					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.set_dialogue_counter(m_game_state, 28);
 					m_current_level_state = 0;
 					break;
@@ -1430,28 +1415,28 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			m_game_state = LEVEL_TUTORIAL;
 			m_map.set_current_map(LEVEL_TUTORIAL);
-			m_char.set_position(m_map.get_spawn());
+			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 28);
 		}
 		else if (m_game_state == 1500)
 		{
 			m_game_state = LEVEL_1;
 			m_map.set_current_map(LEVEL_1);
-			m_char.set_position(m_map.get_spawn());
+			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
 		}
 		else if (m_game_state == 2500)
 		{
 			m_game_state = LEVEL_2;
 			m_map.set_current_map(LEVEL_2);
-			m_char.set_position(m_map.get_spawn());
+			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 70);
 		}
 		else if (m_game_state == 3500)
 		{
 			m_game_state = LEVEL_3;
 			m_map.set_current_map(LEVEL_3);
-			m_char.set_position(m_map.get_spawn());
+			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 81);
 		}
 	}
@@ -1562,13 +1547,13 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable(Map m_map)
 {
-	return m_char.is_moving() || (m_map.get_tile(m_char) != m_char.get_color() + 1);
+	return m_char.is_moving() || (m_map.get_tile_type(m_char.get_position()) != m_char.get_color() + 1);
 }
 
 void World::reset_game()
 {
 	m_char.destroy();
-	m_char.init(m_map.get_spawn());
+	m_char.init(m_map.get_spawn_pos());
 	m_spotters.clear();
 	m_wanderers.clear();
 	m_shooters.clear();
