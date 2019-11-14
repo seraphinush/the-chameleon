@@ -193,6 +193,7 @@ void Wanderer::draw(const mat3& projection)
 		s += temp_str;
 		const char* path = s.c_str();
 
+		glDeleteTextures(1, &wanderer_texture.id);
 		wanderer_texture.load_from_file(path);
 		sprite_countdown = 200.f;
 	}
