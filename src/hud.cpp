@@ -32,8 +32,8 @@ bool Hud::init()
   }
 
   // the position corresponds to the center of the texture
-  float wr = hud.width;
-  float hr = hud.height;
+  float wr = hud.width * 0.5f;
+  float hr = hud.height * 0.5f;
 
   TexturedVertex vertices[4];
   vertices[0].position = {-wr, +hr, -0.0f};
@@ -69,8 +69,6 @@ bool Hud::init()
   if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
     return false;
 
-  motion.radians = 0.f;
-  motion.speed = 200.f;
   motion.position = {1095.f, 95.f};
 
   red_tooltip_position = {1040.f, 40.f};
@@ -83,10 +81,7 @@ bool Hud::init()
   show_yellow_tooltip = false;
   show_green_tooltip = false;
 
-  // set initial values, scale is negative to make it face the opposite way
-  // 1.0 would be as big as the original texture.
   physics.scale = {0.14f, 0.14f};
-
   tooltip_scale = {0.2f, 0.075f};
 
   return true;
@@ -126,9 +121,12 @@ void Hud::update(unsigned int game_state, vec2 char_position)
   }
 }
 
+// TODO -- duplicate usage of program
+// -- duplicated draw code for both the indicate and tooltip
+// -- note, could potentially remove the tooltip
 void Hud::draw(const mat3 &projection)
 {
-  // Hud
+  // hud
   // transformation
   transform.begin();
   transform.translate(motion.position);
@@ -177,7 +175,8 @@ void Hud::draw(const mat3 &projection)
   // draw
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-  // Tooltip
+  // tooltip
+  // TODO
   transform.begin();
   if (show_red_tooltip)
   {
@@ -195,7 +194,6 @@ void Hud::draw(const mat3 &projection)
   {
     transform.translate(green_tooltip_position);
   }
-  transform.rotate(motion.radians);
   transform.scale(tooltip_scale);
   transform.end();
 
@@ -243,6 +241,7 @@ void Hud::draw(const mat3 &projection)
   }
 }
 
+// TODO
 void Hud::set_tooltip(char color, bool value)
 {
   switch (color)

@@ -1473,6 +1473,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
+	// TODO -- reference indicator position to get positions instead of hardcoding
 	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
 	{
 		// red tooltip
