@@ -72,7 +72,6 @@ void Bullets::update(float ms)
 	{
 		// s = ut + 1/2at^2
 		if ((bullet.life <= 0 )|| (bullet.position.x <= 0 || bullet.position.x >= 1200 ) || (bullet.position.y <= 0 || bullet.position.y >= 800)){
-			fprintf(stderr, "Out of bounds ");
 
 			if(m_bullets.size() == count )
 				m_bullets.pop_back();
