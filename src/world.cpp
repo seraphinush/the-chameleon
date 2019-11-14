@@ -156,7 +156,7 @@ bool World::init(vec2 screen)
 	m_current_speed = 1.f;
 
 	return m_start_screen.init() &&
-		   m_control_screen.init() &&
+		   m_control_screen.init(screen) &&
 		   m_level_screen.init() &&
 		   m_cutscene.init() &&
 		   m_hud.init() &&
@@ -211,7 +211,6 @@ bool World::update(float elapsed_ms)
 	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
 
 	m_start_screen.update(m_current_game_state);
-	m_control_screen.update(m_current_game_state);
 	m_level_screen.update(m_current_level_state);
 	m_cutscene.update(m_current_game_state);
 

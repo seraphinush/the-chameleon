@@ -56,8 +56,8 @@ bool CompleteScreen::init(vec2 screen)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.position.x = 600.0f;
-	motion.position.y = 400.0f;
+	motion.position.x = screen.x / 2;
+	motion.position.y = screen.y / 2;
 
 	physics.scale.x = screen.x / complete_screen.width;
 	physics.scale.y = screen.y / complete_screen.height;
@@ -73,11 +73,6 @@ void CompleteScreen::destroy()
 	glDeleteVertexArrays(1, &mesh.vao);
 
 	effect.release();
-}
-
-void CompleteScreen::update()
-{
-	//
 }
 
 void CompleteScreen::draw(const mat3 &projection)

@@ -7,17 +7,10 @@
 class ControlScreen : public Entity
 {
 	// shared texture
-	static Texture pointer;
-	static Texture control_game;
-	static Texture controls;
-	static Texture quit;
-	static Texture game_title;
-
-	vec2 pointer_position;
+	static Texture control_screen;
 
 public:
-	bool init();
+	bool init(vec2 screen);
 	void destroy();
-	void update(unsigned int game_state);
 	void draw(const mat3 &projection) override;
 };
