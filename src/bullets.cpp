@@ -6,8 +6,8 @@
 #include <cmath>
 #include <iostream>
 
-static const int MAX_BULLETS = 25;
-constexpr int NUM_SEGMENTS = 12;
+constexpr size_t NUM_SEGMENTS = 12;
+constexpr float LIFE = 5000.f;
 
 using namespace std;
 
@@ -46,7 +46,7 @@ bool Bullets::init()
 		return false;
 
 	// loading shaders
-	if (!effect.load_from_file(shader_path("pebble.vs.glsl"), shader_path("pebble.fs.glsl")))
+	if (!effect.load_from_file(shader_path("bullet.vs.glsl"), shader_path("bullet.fs.glsl")))
 		return false;
 
 	return true;
@@ -65,29 +65,27 @@ void Bullets::destroy()
 
 void Bullets::update(float ms)
 {
-	vec2 newton_F = {0, 9.8f};
+	vec2 g = {0, 9.8f};
 	int count = 1;
-	// MOTION
-	for (auto &bullet : m_bullets)
+
+	for (auto &b : m_bullets)
 	{
 		// s = ut + 1/2at^2
-		if ((bullet.life <= 0 )|| (bullet.position.x <= 0 || bullet.position.x >= 1200 ) || (bullet.position.y <= 0 || bullet.position.y >= 800)){
-
-			if(m_bullets.size() == count )
-				m_bullets.pop_back();
-			else
-				m_bullets.erase(m_bullets.begin() + count);
+		if (b.life <= 0)
+		{
+			m_bullets.size() == count ? m_bullets.pop_back() : m_bullets.erase(m_bullets.begin() + count);
 		}
 		else
 		{
-			bullet.position.x += bullet.velocity.x * (ms / 100) + 0.5f * newton_F.x * pow(ms / 100, 2);
-			bullet.position.y += bullet.velocity.y * (ms / 100) + 0.5f * newton_F.y * pow(ms / 100, 2);
+			b.life -= ms;
+			b.position.x += b.velocity.x * (ms / 100) + 0.5f * g.x * pow(ms / 100, 2);
+			b.position.y += b.velocity.y * (ms / 100) + 0.5f * g.y * pow(ms / 100, 2);
 			count++;
 		}
 	}
 }
 
-void Bullets::draw(const mat3 &projection)
+void Bullets::draw(const mat3& projection)
 {
 	// set shaders
 	glUseProgram(effect.program);
@@ -142,13 +140,13 @@ void Bullets::draw(const mat3 &projection)
 	glVertexAttribDivisor(2, 0);
 }
 
-void Bullets::spawn_bullet(vec2 position, float radians)
+void Bullets::spawn_bullet(vec2 pos, float rad)
 {
 	Bullet b;
-	b.position = position;
-	b.life = 5.0f;
-
-	b.velocity = {20 * cos(radians), 20 * sin(radians)};
+	b.life = LIFE;
+	b.position = pos;
 	b.radius = 2;
+	b.velocity = {20 * cos(rad), 20 * sin(rad)};
+
 	m_bullets.emplace_back(b);
 }

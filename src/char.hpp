@@ -3,6 +3,7 @@
 // internal
 #include "common.hpp"
 #include "map.hpp"
+#include "shooter.hpp"
 #include "spotter.hpp"
 #include "wanderer.hpp"
 #include "bullets.hpp"
@@ -10,6 +11,7 @@
 // stlib
 #include <vector>
 
+class Shooter;
 class Spotter;
 class Wanderer;
 class Bullets;
@@ -61,17 +63,18 @@ public:
 
 	// collision
 	bool collision(vec2 pos, vec2 box);
-	bool is_colliding(const Spotter &spotter);
-	bool is_colliding(const Wanderer &wanderer);
-	bool is_colliding(Bullets &bullets);
+	bool is_colliding(Bullets &b);
+	bool is_colliding(const Shooter &s);
+	bool is_colliding(const Spotter &s);
+	bool is_colliding(const Wanderer &w);
 	vec2 get_bounding_box() const;
 
 	// wall collision
-	void set_wall_collision(char direction, bool value);
+	void set_wall_collision(char dir, bool val);
 	bool is_wall_collision();
 
 	// movement
-	void set_direction(char direction, bool value);
+	void set_direction(char dir, bool val);
 	void set_position(vec2 pos);
 	void change_position(vec2 off);
 	vec2 get_position() const;
@@ -88,9 +91,9 @@ public:
 	int get_color() const;
 
 	// dash
-	void set_dash(bool value);
+	void set_dash(bool val);
 	bool is_dashing();
 
-	void set_rotation(float radians);
+	void set_rotation(float rad);
 	void flip_char();
 };

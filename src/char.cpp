@@ -265,42 +265,31 @@ bool Char::collision(vec2 pos, vec2 box)
 	bool collision_y_top = (char_pos.y + char_box.y) >= (pos.y - box.y) && (char_pos.y + char_box.y) <= (pos.y + box.y);
 	bool collision_y_down = (char_pos.y - char_box.y) >= (pos.y - box.y) && (char_pos.y - char_box.y) <= (pos.y + box.y);
 
-	// bullet collision
-	bool inside = false;
-	if (char_box.y > box.y)
-	{
-		if (char_box.x > box.x)
-		{
-			inside = char_pos.y - char_box.y < pos.y &&
-					 char_pos.y + char_box.y > pos.y &&
-					 char_pos.x - char_box.x < pos.x &&
-					 char_pos.x + char_box.x > pos.x;
-		}
-	}
-
 	if ((char_pos.x + char_box.x) >= (pos.x + box.x) && (char_pos.x - char_box.x) <= (pos.x - box.x))
-		return collision_y_top || collision_y_down || inside;
+		return collision_y_top || collision_y_down;
 
 	if ((char_pos.y + char_box.y) >= (pos.y + box.y) && (char_pos.y - char_box.y) <= (pos.y - box.y))
-		return collision_x_right || collision_x_left || inside;
+		return collision_x_right || collision_x_left;
 
 	return (collision_x_right || collision_x_left) && (collision_y_top || collision_y_down);
 }
 
-bool Char::is_colliding(const Spotter &spotter)
+// TODO
+bool Char::is_colliding(Bullets &b)
 {
-	vec2 pos = spotter.get_position();
-	vec2 box = spotter.get_bounding_box();
-	return collision(pos, box);
-}
+	vec2 char_pos = motion.position;
+	vec2 char_box = get_bounding_box();
 
-bool Char::is_colliding(Bullets &bullets)
-{
-	for (auto &bullet : bullets.m_bullets)
+	for (auto &bullet : b.m_bullets)
 	{
 		vec2 pos = bullet.position;
 		vec2 box = {bullet.radius, bullet.radius};
-		if (collision(pos, box))
+
+		// bullet collision
+		if (char_pos.y - char_box.y < pos.y &&
+			char_pos.y + char_box.y > pos.y &&
+			char_pos.x - char_box.x < pos.x &&
+			char_pos.x + char_box.x > pos.x)
 		{
 			bullet.life = 0.f;
 			return true;
@@ -309,10 +298,24 @@ bool Char::is_colliding(Bullets &bullets)
 	return false;
 }
 
-bool Char::is_colliding(const Wanderer &wanderer)
+bool Char::is_colliding(const Shooter &s)
 {
-	vec2 pos = wanderer.get_position();
-	vec2 box = wanderer.get_bounding_box();
+	vec2 pos = s.get_position();
+	vec2 box = s.get_bounding_box();
+	return collision(pos, box);
+}
+
+bool Char::is_colliding(const Spotter &s)
+{
+	vec2 pos = s.get_position();
+	vec2 box = s.get_bounding_box();
+	return collision(pos, box);
+}
+
+bool Char::is_colliding(const Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
 	return collision(pos, box);
 }
 

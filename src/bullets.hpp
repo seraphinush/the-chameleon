@@ -4,11 +4,8 @@
 
 // internal
 #include "common.hpp"
-#include "char.hpp"
 
 using namespace std;
-
-class Char;
 
 class Bullets : public Entity
 {
@@ -19,10 +16,10 @@ private:
 public:
 	struct Bullet
 	{
-		float life = 0.0f;
+		float life;
 		vec2 position;
-		vec2 velocity;
 		float radius;
+		vec2 velocity;
 	};
 
 	bool init();

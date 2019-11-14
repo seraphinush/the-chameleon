@@ -637,7 +637,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-wanderer
-		for (const auto &wanderer : m_wanderers)
+		for (auto &wanderer : m_wanderers)
 		{
 			if (m_char.is_colliding(wanderer) && is_char_detectable(m_map))
 			{
@@ -654,7 +654,7 @@ bool World::update(float elapsed_ms)
 		// proximity, char-shooter
 		for (auto &shooter : m_shooters)
 		{
-			if ((shooter.collision_with(m_char)) && is_char_detectable(m_map))
+			if (m_char.is_colliding(shooter) && is_char_detectable(m_map))
 			{
 				if (m_char.is_alive())
 				{

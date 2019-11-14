@@ -80,17 +80,7 @@ void Shooter::destroy()
 
 void Shooter::update(float ms)
 {
-	/*if (shooter_sprite_countdown > 0.f)
-		shooter_sprite_countdown -= ms;
-
-	if (shooter_sprite_switch < 4) {
-		shooter_sprite_switch++;
-	}
-	else {
-		shooter_sprite_switch = 1;
-	}*/
-
-	// SHOOTER AI
+	//
 }
 
 void Shooter::draw(const mat3 &projection)
@@ -141,7 +131,7 @@ void Shooter::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// sprite change
-	if (shooter_sprite_countdown < 0) {
+	/* if (shooter_sprite_countdown < 0) {
 		string temp_str = "data/textures/shooters/" + to_string(shooter_sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
@@ -150,7 +140,7 @@ void Shooter::draw(const mat3 &projection)
 		shooter_texture.~Texture();
 		shooter_texture.load_from_file(path);
 		shooter_sprite_countdown = 1500.f;
-	}
+	} */
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -176,18 +166,4 @@ void Shooter::set_rotation(float radians)
 vec2 Shooter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * shooter_texture.width * 0.5f, std::fabs(physics.scale.y) * shooter_texture.height * 0.5f };
-}
-
-bool Shooter::collision_with(Char m_char) 
-{
-	// using euclidean distance rn - FIX LATER
-	float difference_in_x = m_char.get_position().x - motion.position.x;
-	float difference_in_y = m_char.get_position().y - motion.position.y;
-
-	if ((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) {
-		return true;
-	}
-	else {
-		return false;
-	}
 }

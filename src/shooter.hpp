@@ -39,8 +39,6 @@ public:
 	// collision
 	vec2 get_bounding_box() const;
 
-	bool collision_with(Char m_char);
-
 	bool is_shooting;
 
 	bool alert_mode;
