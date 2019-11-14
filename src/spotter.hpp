@@ -22,7 +22,7 @@ private:
 
 	// AI stuff
 	float check_sgn(float value);
-	float radius = 20.f;
+	float radius = 70.f;
 
 public:
 	bool init();
