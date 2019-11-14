@@ -1057,8 +1057,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1080,8 +1080,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1111,8 +1111,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D);
 		m_overlay.draw(projection_2D);
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
