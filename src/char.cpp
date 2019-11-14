@@ -203,8 +203,11 @@ void Char::draw(const mat3 &projection)
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
 	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, char_texture.id);
+	if (char_texture.id != 0)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, char_texture.id);
+	}
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
@@ -216,6 +219,7 @@ void Char::draw(const mat3 &projection)
 		s += temp_str;
 		const char *path = s.c_str();
 
+		char_texture.~Texture();
 		char_texture.load_from_file(path);
 		sprite_countdown = 200.f;
 	}

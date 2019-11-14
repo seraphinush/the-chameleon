@@ -400,21 +400,25 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		s += temp_str;
 		const char *path = s.c_str();
 
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
 
 		if (dialogue_counter == 4)
 		{
+			left_dialogue_texture.~Texture();
 			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 			left_scale = {0.1f, 1.f};
 		}
 
 		if (dialogue_counter == 4)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("agent_roger.png"));
 			right_scale = {-0.2f, 1.25f};
 		}
 		else if (dialogue_counter == 14)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
 		}
@@ -429,13 +433,16 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		s += temp_str;
 		const char *path = s.c_str();
 
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.7f};
 
 		if (dialogue_counter == 28)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
+			left_dialogue_texture.~Texture();
 			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 			left_scale = {0.1f, 1.f};
 		}
@@ -450,15 +457,19 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		s += temp_str;
 		const char *path = s.c_str();
 
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.8f};
 
 		if (dialogue_counter == 28)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
+			left_dialogue_texture.~Texture();
 			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 			left_scale = {0.1f, 1.f};
+			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("wanderers/1.png"));
 			enemy_scale = {0.08f, 0.8f};
 		}
@@ -472,16 +483,20 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
-
+		
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.7f};
 
 		if (dialogue_counter == 28)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
+			left_dialogue_texture.~Texture();
 			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 			left_scale = {0.1f, 1.f};
+			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("spotters/1.png"));
 			enemy_scale = {0.08f, 0.7f};
 		}
@@ -501,10 +516,13 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 
 		if (dialogue_counter == 28)
 		{
+			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
 			right_scale = {0.1f, 0.8f};
+			left_dialogue_texture.~Texture();
 			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 			left_scale = {0.1f, 1.f};
+			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("survivor-idle_shotgun_0.png"));
 			enemy_scale = {-0.09f, 0.9f};
 		}
@@ -521,18 +539,24 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 
 	if (cutscene_state == 4 && counter_value == 1)
 	{
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png"));
+		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("spotters/3.png"));
+		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("wanderers/1.png"));
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
 	else if (cutscene_state == 6000 && counter_value == 28)
 	{
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
 		physics.scale = {0.8f, 0.7f};
+		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
+		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
 		left_texture_position = {200.f, 740.f};
@@ -540,40 +564,52 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	}
 	else if (cutscene_state == 1500 && counter_value == 50)
 	{
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level1/50.png"));
 		physics.scale = {0.8f, 0.8f};
+		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
+		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
+		enemy_texture.~Texture();
 		enemy_texture.load_from_file(textures_path("wanderers/1.png"));
 		enemy_scale = {0.08f, 0.8f};
 	}
 	else if (cutscene_state == 2500 && counter_value == 70)
 	{
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level2/70.png"));
 		physics.scale = {0.8f, 0.7f};
+		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
+		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
+		enemy_texture.~Texture();
 		enemy_texture.load_from_file(textures_path("spotters/1.png"));
 		enemy_scale = {0.08f, 0.7f};
 	}
 	else if (cutscene_state == 3500 && counter_value == 81)
 	{
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level3/81.png"));
 		physics.scale = {0.8f, 0.7f};
+		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
+		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
+		enemy_texture.~Texture();
 		enemy_texture.load_from_file(textures_path("survivor-idle_shotgun_0.png"));
 		enemy_scale = {-0.09f, 0.9f};
 	}

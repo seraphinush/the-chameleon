@@ -90,6 +90,8 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 // release all graphics resources
 void Wanderer::destroy()
 {
+	glDeleteTextures(1, &wanderer_texture.id);
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
@@ -185,7 +187,7 @@ void Wanderer::draw(const mat3& projection)
 		s += temp_str;
 		const char* path = s.c_str();
 
-		glDeleteTextures(1, &wanderer_texture.id);
+		wanderer_texture.~Texture();
 		wanderer_texture.load_from_file(path);
 		sprite_countdown = 200.f;
 	}

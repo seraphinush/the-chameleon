@@ -147,6 +147,7 @@ void Shooter::draw(const mat3 &projection)
 		s += temp_str;
 		const char* path = s.c_str();
 
+		shooter_texture.~Texture();
 		shooter_texture.load_from_file(path);
 		shooter_sprite_countdown = 1500.f;
 	}

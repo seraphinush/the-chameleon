@@ -148,12 +148,10 @@ void Spotter::draw(const mat3 &projection)
 		s += temp_str;
 		const char* path = s.c_str();
 
+		spotter_texture.~Texture();
 		spotter_texture.load_from_file(path);
-		
 		direction = directions[spotter_sprite_switch - 1];
-
 		spotter_sprite_countdown = 1500.f;
-
 	}
 
 	// draw
