@@ -90,8 +90,6 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 // release all graphics resources
 void Wanderer::destroy()
 {
-	glDeleteTextures(1, &wanderer_texture.id);
-
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
@@ -140,7 +138,7 @@ void Wanderer::update(float ms)
 	if (sprite_countdown > 0.f)
 		sprite_countdown -= ms;
 
-	sprite_switch < 6 ? sprite_switch++ : sprite_switch = 1;
+	sprite_switch >= 5 ? sprite_switch = 1 : sprite_switch++;
 }
 
 void Wanderer::draw(const mat3& projection)

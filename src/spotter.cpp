@@ -84,13 +84,7 @@ void Spotter::update(float ms)
 	if (spotter_sprite_countdown > 0.f)
 		spotter_sprite_countdown -= ms/2;
 
-	if (spotter_sprite_switch < 4) {
-		spotter_sprite_switch++;
-	}
-	else {
-		spotter_sprite_switch = 1;
-
-	}
+	spotter_sprite_switch >= 3 ? spotter_sprite_switch = 1 : spotter_sprite_switch++;
 }
 
 void Spotter::draw(const mat3 &projection)

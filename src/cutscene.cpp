@@ -511,6 +511,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		s += temp_str;
 		const char *path = s.c_str();
 
+		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.7f};
 
