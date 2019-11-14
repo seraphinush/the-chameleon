@@ -628,7 +628,6 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					printf("test");
 					alert_mode = true;
 					spotter.alert_mode = true;
 					alert_mode_cooldown = 0;
