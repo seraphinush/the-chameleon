@@ -4,13 +4,18 @@
 #include "char.hpp"
 #include "common.hpp"
 #include "spotter.hpp"
+#include "map.hpp"
 #include "wanderer.hpp"
 #include "start_screen.hpp"
 #include "control_screen.hpp"
-#include "story_screen.hpp"
 #include "complete_screen.hpp"
-#include "map.hpp"
 #include "trophy.hpp"
+#include "cutscene.hpp"
+#include "hud.hpp"
+#include "particles.hpp"
+#include "shooter.hpp"
+#include "overlay.hpp"
+#include "level_screen.hpp"
 
 // stlib
 #include <vector>
@@ -24,6 +29,8 @@
 // game state
 #define START_SCREEN 0
 #define CONTROL_SCREEN 1
+#define LEVEL_SCREEN 2
+#define QUIT 3
 #define STORY_SCREEN 4
 #define WIN_SCREEN 5
 #define LEVEL_1 1000
@@ -31,6 +38,12 @@
 #define LEVEL_3 3000
 #define LEVEL_4 4000
 #define LEVEL_5 5000
+#define LEVEL_TUTORIAL 6000
+#define LEVEL_1_CUTSCENE 1500
+#define LEVEL_2_CUTSCENE 2500
+#define LEVEL_3_CUTSCENE 3500
+#define LEVEL_4_CUTSCENE 4500
+#define LEVEL_5_CUTSCENE 5500
 
 class World
 {
@@ -46,14 +59,17 @@ private:
 	// screens
 	StartScreen m_start_screen;
 	ControlScreen m_control_screen;
-	StoryScreen m_story_screen;
 	CompleteScreen m_complete_screen;
+	LevelScreen m_level_screen;
+	Cutscene m_cutscene;
+	Hud m_hud;
 
 	// TO REMOVE -- need to fix bug where story screen shrinks upon winning
 	// story screen handle
 	bool m_show_story_screen;
 
 	Map m_map;
+	Overlay m_overlay;
 
 	// movement control
 	unsigned int m_control; // 0: wasd, 1: arrow keys
@@ -64,15 +80,19 @@ private:
 	// current game state
 	unsigned int m_current_game_state;
 
+	// current level state
+	unsigned int m_current_level_state;
+
 	// entities
 	Char m_char;
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
+	std::vector<Shooter> m_shooters;
 	Trophy m_trophy;
+	Particles m_particles_emitter;
 
 	// variables
 	float m_current_speed;
-	float m_next_wanderer_spawn;
 
 	// sound
 	Mix_Music *m_background_music;
@@ -86,6 +106,31 @@ private:
 
 	bool recent_dash = false;
 
+	vector<vector<vec2>> wanderer_paths =
+	{ {{6,6}, {6,2}, {1,2}, {1,6}},
+	{{8,6}, {8,2}, {16,2}, {16,6}},
+	{{6,11}, {1,11}, {1,9}, {6,9}},
+	{{8,11}, {8,9}, {13,9}, {13,11}},
+	{{1,14}, {16,14}},
+	{{1,17}, {12,18}},
+	{{20,18}, {31,25}, {41,16}, {32,25}},
+	{{18,22}, {31,28}, {34,28}, {42,20}, {34,28}, {30,28}},
+	{{19,38}, {19,27}, {11,27}, {11,38}},
+	{{22,38}, {58,37}},
+	{{45,26}, {45,18}, {52,18}, {52,26}},
+	{{19,2}, {19,15}},
+	{{23,2}, {48,3}},
+	{{39,15}, {39,7}, {51,7}, {51,15}},
+	{{35,12}, {23,12}, {23,15}, {29,20}, {33,20}, {36,15}} };
+
+	vector<vector<vec2>> wanderer_paths_2 =
+	{};
+
+	vector<vector<vec2>> wanderer_paths_3 =
+	{ { {1, 6}, { 12,7 }},
+	{{1,10}, {10,11}, {11,17}, {10,11}},
+	{{1,18}, {1,23}, {8,23}, {8,18}},
+	};
 public:
 	World();
 	~World();
@@ -96,16 +141,22 @@ public:
 	void draw();
 	bool is_over() const;
 
-private:
-	mat3 calculateProjectionMatrix(int width, int height);
+	bool alert_mode;
 
+private:
 	bool spawn_spotter();
-	bool spawn_wanderer();
+	bool spawn_shooter();
+
+	bool spawn_wanderer(std::vector<vec2> path);
+
+	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
 
 	bool is_char_detectable(Map m_map);
+
+	mat3 calculateProjectionMatrix(int width, int height);
 
 	// reset
 	void reset_game();

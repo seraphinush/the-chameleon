@@ -21,6 +21,7 @@ bool Spotter::init()
 		}
 	}
 
+	direction = vec2({ 0.f, -1.f });
 	// the position corresponds to the center of the texture
 	float wr = spotter_texture.width * 0.5f;
 	float hr = spotter_texture.height * 0.5f;
@@ -73,25 +74,17 @@ void Spotter::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
+	glDeleteVertexArrays(1, &mesh.vao);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 }
 
 void Spotter::update(float ms)
 {
 	if (spotter_sprite_countdown > 0.f)
-		spotter_sprite_countdown -= ms;
+		spotter_sprite_countdown -= ms/2;
 
-	if (spotter_sprite_switch < 4) {
-		spotter_sprite_switch++;
-	}
-	else {
-		spotter_sprite_switch = 1;
-
-	}
+	spotter_sprite_switch >= 3 ? spotter_sprite_switch = 1 : spotter_sprite_switch++;
 }
 
 void Spotter::draw(const mat3 &projection)
@@ -141,6 +134,7 @@ void Spotter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
+	vec2 directions[3] =  {{0.f, -1.f}, {1.f, 0.f}, {-1.f, 0.f} };
 	// sprite change
 	if (spotter_sprite_countdown < 0) {
 		string temp_str = "data/textures/spotters/" + to_string(spotter_sprite_switch) + ".png";
@@ -148,7 +142,9 @@ void Spotter::draw(const mat3 &projection)
 		s += temp_str;
 		const char* path = s.c_str();
 
+		spotter_texture.~Texture();
 		spotter_texture.load_from_file(path);
+		direction = directions[spotter_sprite_switch - 1];
 		spotter_sprite_countdown = 1500.f;
 	}
 
@@ -171,4 +167,38 @@ vec2 Spotter::get_position() const
 vec2 Spotter::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
+}
+
+bool Spotter::collision_with(Char m_char)
+{
+	// using euclidean distance rn - FIX LATER
+
+	float difference_in_x = motion.position.x - m_char.get_position().x;
+	float difference_in_y = motion.position.y - m_char.get_position().y;
+
+	bool in_direction = ((check_sgn(difference_in_x) == direction.x) && (check_sgn(difference_in_y) == direction.y));
+
+
+
+	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && in_direction) {
+		return true;
+	}
+	else {
+		//printf("difference: %f\n", check_sgn(difference_in_x));
+		//printf("direction: %f\n", direction.x);
+		return false;
+	}
+}
+
+// a threshold to allow for some more fov collisions to happen
+float Spotter::check_sgn(float value) 
+{
+	if (value >= 10.f) return 1.0f;
+	if (value <= -10.f) return -1.0f;
+	else return 0.f;
+}
+
+void Spotter::reset_direction() 
+{
+	direction = vec2({0.f, 1.f});
 }

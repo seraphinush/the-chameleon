@@ -7,6 +7,7 @@
 
 Texture Map::wall_texture;
 Texture Map::corridor_texture;
+Texture Map::wall_light_texture;
 
 Texture Map::corridor_texture_red;
 Texture Map::corridor_texture_blue;
@@ -14,8 +15,9 @@ Texture Map::corridor_texture_green;
 Texture Map::corridor_texture_yellow;
 
 // 800 * 1200 Map of Level 1
-// 31 for the \n of all chars
-char level_1[40][61] = {
+// 61 for the \n of all chars
+// W = Wall, S = Wall_Shadow, R = Red Tile, G = Green tile, B = Blue Tile, Y = Yellow Tile, C = Plain_Corridor
+char level_test[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
@@ -54,8 +56,181 @@ char level_1[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
+
+
+char level_tutorial[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCACW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
+	"WCCCCCRRRRRRRRRRRRRRRRRRRRRRRRRRRCCBBBBBCCGGGGGCCYYYYYCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+
+char level_1[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WSSSSSSWSSSSSSSSSWSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSWSSSSSSSSW",
+	"WBBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
+	"WBBBBBBSYYYYYYYYYSRRRSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
+	"WBBBBBBBYYYYYYYYYRRRRRRRWWWWWWWWWWBWWWWWWWBBWWWWBBSWCCCCCCCW",
+	"WBBBBBBBYYYYYYYYYRRRRRRRSSSSSSSWSSBSSWSSSSBBSSSWBBBWCCCCCCCW",
+	"WBBBBBBWYYYYYYYYYWRRRRRRRRRRRRRWGGGGGWCCCCCCCCCSBBBSWCCCCCCW",
+	"WWWBBWWWWWWWWWWYYWRRRWWWWWWWWRRWGGGGGWCCCCCCCCCCCCCCSCCCCCCW",
+	"WSSBBSSSSSSSSSSYYWRRRWSSSSSSSRRWGGGGGWCCCCCCCCCCCCCCCCCCCCCW",
+	"WRRRRRRRYYYYYYBBBWRRRWGGGGGGGGGWGGGGGWCCCCCCCCCCCCCCCCWCCCCW",
+	"WRRRRRRWYYYYYYWBBWRRRWGGWWWWWWWWGGGGGWCCCCCCCCCCCCCCCCSWWCCW",
+	"WRRRRRRWYYYYYYWBBWRRRSGGSSSSSSSSGGGGGSCCCCCCCCCCCCCCCCCSSWWW",
+	"WRRWWWWWWWWWWWWWWWRRRBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCSSW",
+	"WRRSSSSSSSSSSSSSSWRRRWBBWWWWWWWWWWWBBWCCCCCCCCCCCCCCCCCCCCCW",
+	"WGGGGGGGGGGGGGGGGWRRRWBBSSSWSSSSSSSBBWCCCCCCCCCCCCCCCCCCCCCW",
+	"WWWWWWWWWWWGGWYYYWRRRWRRRRRSWYYYYYYYYSWCCCCCCCCCCCCCCCCCCCCW",
+	"WSSSSSSSSSSGGWYYYWRRWWWWWRRRSWYYYYYYYYSWGGGWWWWWWWWWWWWRRRWW",
+	"WBBBBBBBBBBBBWYYYSRRSSSSSWRRRSWYYYYYYYWSGGWSSSSSSSSSSWSRRRSW",
+	"WBBBBBBBBBBBBWYYYYYYBBBBBSWRRRSWYYYYYWSGGWSRRGGGGGGGGWRRRRRW",
+	"WWWWWWBBWWWWWWYYYYYYBBBBBBSWRRRSYYYYWSGGWSRRWGGGGGGGGWRRRRRW",
+	"WSSSSSBBSSSSSWYYYWWWWWWWWBBSWRRRYYYWSGGWWRRWWGGWWWWGGWWWRWWW",
+	"WCCCCCCCCCCCCWYYYWSSSSSSSWBBSWRRYYWSGGWSSRRSSGGSSSSGGSSSRSSW",
+	"WCCCCCCCCCCCCWYYYWYYYYYYYSWBBSWWWWSGGWSRRRRRRGGGGGGGGBBBBBBW",
+	"WCCCCCCCCCCCCWYYYWYYYYYYYYSWBBSSSSGGWSRRRWWWWGGWWWWGGWWWWWWW",
+	"WCCCCCCCCCCCWSYYYSWYYYYYYYYSWBBBGGGWSRRRWSSSSGGSSSSGGSSSSSSW",
+	"WCCCCCCCCCCWSCCCCCSWYYYYYYYYWBBBGGGWRRRWSYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCCWSCCCCCCCSWYYYYYYYSWWBGWWSRRWSYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCCWCCCCCCCCCSYYYYYYYYSSBGSSRRRWYYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCWSCCCCCCCCCCWYYYYYYYYYYRRRRRWSYYYYYYYYYYYYYYYYYYYYW",
+	"WCCCCCCCCWCCCCCCCCCCCWWWWWYYWWWWWWWWWWYYWWWWBBWWWWWGGWWWRRWW",
+	"WCCCCCCCWSCCWWWWWWWCCSWSSSYYSSSWSSSSSWYYWSSSBBSSSWSGGSWSRRSW",
+	"WCCCCCCCWCCCSSSSSSSCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
+	"WCCCCCCCWCCCCCCCCCCCCCSBBBBBBBBSRRRRRSYYSBBBBBBBBSGGGGSRRRRW",
+	"WCCCCCCCWCCCCCCCCCCCCCBBBBBBBBBBRRRRRRYYBBBBBBBBBBGGGGGRRRRW",
+	"WCCCCCCCWCCCWWWWWWWCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
+	"WCCCCCCCWCCCSSSSSSSCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRWW",
+	"WCCCCCCCWCCCCCCCCCCCCCSSSSBBSSSSRRSSSSYYSSSSBBSSSSSGGSSSRRSW",
+	"WCCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WCCACCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
+
+char level_2[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WSSSSSSSSSSWSSSSSSSSSSSWSSSSSSSSSSSSSWSSSSSSSSSWSSSSSSSSSSSW",
+	"WGGGGGGGGGGWYYYYYYYYYYYWRRYYYYYYYYYYYWBBBBBBBBBWWBBBBBBBBBBW",
+	"WGGGWWWWGGGSYYYYYYYYYYYWRRWWWWWWWWYYYWWWWWWWBBBSWWBBBBBBBBBW",
+	"WGGGSSSSGGGYYYYYYYYYYYYWRWWSSSSSSSYYYWSSSSSWWBBBSWWWWWWWWBBW",
+	"WGGGRRRRGGGWYYYYYYYYYYYWRWSYYYYYYYYYYWGGGGGSWBBBGSSSSSSSWBBW",
+	"WWWWWRRWWWWWYYYYYYYYYYYWRWRRRRRRRRRYYWGGGGGGWWBBGGGGGGGBWWBW",
+	"WSSSSRRSSSSWBWWWWWWWWWWWRWRRRRRRRRRYYWGGGGGGSWBBWGGGWWWBBWBW",
+	"WCCCCRRCCCCWBSSSSSSSSSSWRWRRRRRRRRRRRWGYGWGGGWBBWWWGSSSBBWBW",
+	"WWWWWRRWWWWWBBBBBBBBBBBWRWRRRWWWWWRRRWGYWWGGGWBBSSWGGBBBWSBW",
+	"WSSSSRRSSSSWWWWWWWWWWWBWRWWRWSSSSSWRRWGYWSGRGWBBRBWRGBWWWBBW",
+	"WCCCCRRCCCCWSSSSSSSSSSBWRSWRSBBBBBWWRWGYWGGRGWGGRBWRGBSSSBBW",
+	"WWWWWRRWWWWWGGGGGGGGGGGWRRWRBBBBBBSWRWYYWGGRGWGGRBSWGGBBBBBW",
+	"WSSSSRRSSSSWGWWWWWWWWWWWRRWBBBBBBBBSRWYYWWGRGWWGRRBWRRGGWWBW",
+	"WCCCCRRCCCCWGSSSSSSSSSSWRRWBBBBBWBBBRWYYSWGRRSWGGRBWRRRRSWBW",
+	"WWWWWRRWWWWWRRRRRRRRRRRWRRWBBBWWSWBBRWYYYWWRRRWGGRBWRRRRRWBW",
+	"WSSSSRRSSSSWWWWWWWWWWWRWRRSBBBSSYWWBRWYYYSWRRRWWGRBSWWRRWWBW",
+	"WCCCCRRCCCCWSSSSSSSSSSRWGGGGGGGGYSWWRSYYYYWWRRSWGGRBSWWWWSBW",
+	"WWWWWRRWWWWWYYYYYYYYYYYWGGWWWWGGYYSWRRYYYYSWRRBWWGGBBSSWSGGW",
+	"WSSSSRRSSSSWYWWWWWWWWWWWGGWSSWWGGYYWRRRYWBBWWRBSWWGBBBBSGGGW",
+	"WCCCCRRCCCCWYSSSSSSSSSSWGWSBBSWGGYYSRRRWSGBSWBBRSWWBGGGGGGGW",
+	"WWWWWRRWWWWWBBBBBBBBBBBWGWBBBBWWGYYRRRRWGGBGWWBRRSWBGWWGGGGW",
+	"WSSSSRRSSSSWWWWWWWWWWWBWGSBBBBSSGYYRRRRWGGGBSWBRRRWWGSWWGGGW",
+	"WCCCCRRCCCCWSSSSSSSSSSBWBBBBBBBGGYYRRRRWGGGBGWBRRRSWGRSWWGYW",
+	"WWWWWRRWWWWWGGGGGGGGGGGWBBBBBBBGGYYRRWRWGGGBWWBRRRRWGRYSWYYW",
+	"WSSSSRRSSSSWGWWWWWWWWWWWRRWWWBBGGYYRRWRWGGGBWSBRGGGWGRYYWWYW",
+	"WCCCCRRCCCCWGSSSSSSSSSSWRWWSSBBGGYYYYWRWGGBBWBBRRRGWWRYYSWYW",
+	"WWWWWRRWWWWWRRRRRRRRRRRWRWSGGBBWWWYYYWRWGBBWSBBWWWGSWRYYYWYW",
+	"WSSSSRRSSSSWWWWWWWWWWWRWRWWGGBWWSSYYYWRWBBGWBBWWSSGGWRYYYWYW",
+	"WCCCCRRCCCCWSSSSSSSSSSRWRSWWGBWSYYYWBWRWBGGWBBSWGGGGWRYYWWYW",
+	"WWWWWRRWWWWWYYYYYYYYYYYWRRSWGBWYYYWWBWGWBGGWBBBWGGGGWRYWWSYW",
+	"WSSSSRRSSSSWYWWWWWWWWWWWRRRWGBWYYWWSBWGWBGGWBBBSGGGGWRWWSYYW",
+	"WCCCCRRCCCCWYSSSSSSSSSSWRRWWGWWYYWSBBWGWBGGWWBBBGGGGWRWSYYYW",
+	"WWWWWRRWWWWWBBBBBBBBBBBWRWWSGWSYYWBBBWGSWBBSSWWWGGGGWRWYYYYW",
+	"WSSSSRRSSSSWWWWWWWWWWWBWRWSGGWYYYWWBBWGGWWBBBSSSWWWWWRWWYYYW",
+	"WCCCCRRCCCCWSSSSSSSSSSBSRWWGGWYYYSWBBWGGSWBBBYYYSSSSSRSWYYYW",
+	"WWWWWRRWWWWWYYYYYYYYYYYYRSWGGSYYWWWBBWGGGWWWBBYYYYYRRRRWWWYW",
+	"WSSSSRRSSSSWYYYYYYYYYYYYRRSGGGYYSSSBBWGGGSSSGRRRRRYYYYRSSSYW",
+	"WCACCRRCCCCWYYYYYYYYYYYYGGGGGGBBBBBBBWGGGGGGGRRRRRRRRRYYYYYW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
+
+char level_3[40][61] = {
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+	"WSSSSSSSSSSSSWSSSSSWSSSSSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSSW",
+	"WBBBBBBBBBBBBWCCCCCWBBGGGGGGGWGGGGGGGGGGGGGGBBBBBBBBBBBBBYYW",
+	"WBBBBBBBBBBBBWCCCCCWBBGGGGGGGWGGGGGGGGGGGGGGBBBBBBBBBBBBBYYW",
+	"WBBWWWWWWWWWWWCCCCCWBBWWWWWWWWGGWWWWWWWWWWWWWWWWWWWWWWWWWYYW",
+	"WBBSSSSSSSSSSSCCCCCWBBWSSSSSSSGGSSSSSSSWSSSSSSSSSSSSSSSSSYYW",
+	"WRRRRRRRRRRRRCCCCCCWBBWCCCCCCCCCCCCCCCCWRRRRRRRRRRRRRRRRRRRW",
+	"WRRRRRRRRRRRRCCCCCCWBBWCCCCCCCCCCCCCCCCWRRRRRRRRRRRRRRRRRRRW",
+	"WRRWWWWWWWWWWCCCCCCSBBWCCCCCCCCCCCCCCCCWRRWWWWWWWWWWWWWWWYYW",
+	"WRRSSSSSSSSSWCCCCCCBBBWCCCCCCCCCCCCCCCCWRRWSSSSSSSSSSSSSWYYW",
+	"WGGGGGGGGGGGWCCCCCCBBBWCCCCCCCCCCCCCCCCWRRWCCCCCCCCCCCCCWYYW",
+	"WGGGGGGGGGGGWWWWWWWWWWWWWWWWWWWWWWWWWWWWRRWCCCCCCCCCCCCCWYYW",
+	"WWWWWWWWWWGGWSSSSSSSSSSSSSSSSSSSSSSSSSSWRRSWCCCCCCCCCCCCWYYW",
+	"WSSSSSSSSSGGWBBBBBBBBBBBBBBBBBBBBBBBBBBWRRRSWWWWWWWCCWWWWWWW",
+	"WBBBBBBBBBGGWBBBBBBBBBBBBBBBBBBBBBBBBBBWRRRRSSSSSSSCCSSSSSSW",
+	"WBBBBBBBBBGGWRRWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBBBBBBBBBBBYYW",
+	"WWWWWWWBBWGGWRRWSSSSSSSSSSSSSSSSWSSWSSWSSWBBBBBBBBBBBBBBBYYW",
+	"WSSSSSSBBWGGSRRWYYYYYYYYYYYYYYYYWGGWBBWRRWWWWWWWWWWWWWWWWYYW",
+	"WCCCCCCCCWRRRRRWYYYYYYYYYYYYYYYYWGGWBBWRRWSSSSSSSSSSSSWSSYYW",
+	"WCCCCCCCCWRRRRRWYYWWWWWWWWWYYWWWWGGWBBWRRWYYYYYYYYYYYYWCCCCW",
+	"WCCCCCCCCWRRWWWWYYWSSSSSSSSYYSSSSGGWBBWRRSYYYYYYYYYYYYWCCCCW",
+	"WCCCCCCCCWRRWSSWYYWGGGGGGGGGGGGGGGGWBBWRRRRRWWWWWWWWYYWCCCCW",
+	"WCCCCCCCCWRRWBBWYYWGGGGGGGGGGGGGGGGWBBWRRRRRWSSSSSSSYYWCCCCW",
+	"WCCCCCCCCWRRWBBWYYWGGWWWWWWWWWWWWWWWBBWRRWWWWBBBBBBBYYWCCCCW",
+	"WRRWWWWWWWBBSBBSYYSGGSSWSSSSSSSSSSSSBBWRRWSSWBBBBBBBYYWCCCCW",
+	"WRRSSSSSSWBBBBBCCCCCCCCWRRRRRRRRRRRRBBWRRWRRWWWWWWWWWWWCCCCW",
+	"WRRRRRRRRWBBBBBCCCCCCCCWRRRRRRRRRRRRBBWRRWRRSSSSSSWSSSSCCCCW",
+	"WRRRRRRRRWWWWWWCCCCCCCCWWWWWWWWWWWWWBBWRRWRRRRRRRRWGGYYCCCCW",
+	"WWWWWWWRRWSSSSWCCCCCCCCWSSSSSSSSSSSSBBSRRSRRRRRRRRWGGYYCCCCW",
+	"WSSSSSWRRWGGGGWCCCCCCCCWGGGGGGGGGGGGGGGGGGRRRRRRRRWGGWWWWWWW",
+	"WYYYYYWRRWGGGGWWWWWWWBBWGGGGGGGGGGGGGGGGGGRRRRRRRRWGGSSSSSSW",
+	"WYYYYYWRRWWWRRWSSSSSWBBWRRWWWWWWWWWWWWWBBWWWWWWWRRWGGGGGGGGW",
+	"WCCWRRSRRSSSRRWGGGGGWBBSRRWSSSSSSSSSSSWBBWSSSSSWRRWGGGGGGGGW",
+	"WCCWRRRRRRRRRRWGGGGGWBBBRRWBBBBBBBBBBBWBBWYYYYYWRRWWWWWWWGGW",
+	"WCCWRRRRRRRRRRWGGWBBWBBBRRWBBBBBBBBBBBWBBWYYYYYWRRWSSSSSSBBW",
+	"WCCWGGWWWWWWWWWGGWBBWWWWRRWBBWWWWWWWWWWBBWYYWBBWWWWBBBBBBBBW",
+	"WCCWGGSSSSSSSSSGGWBBSSSWRRWBBSSSSSSSSSSBBSYYWBBSSSSBBBBBBBBW",
+	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
+	"WACWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 bool Map::init()
 {
@@ -65,6 +240,15 @@ bool Map::init()
 	if (!wall_texture.is_valid())
 	{
 		if (!wall_texture.load_from_file(textures_path("wall_tile.png")))
+		{
+			fprintf(stderr, "Failed to load wall texture!");
+			return false;
+		}
+	}
+
+	if (!wall_light_texture.is_valid())
+	{
+		if (!wall_light_texture.load_from_file(textures_path("wall_tile_light.png")))
 		{
 			fprintf(stderr, "Failed to load wall texture!");
 			return false;
@@ -158,6 +342,14 @@ bool Map::init()
 
 	physics.scale = {1.0f, 1.0f};
 
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 61; j++)
+		{
+			current_level[i][j] = level_tutorial[i][j];
+		}
+	}
+
 	return true;
 }
 
@@ -166,12 +358,11 @@ void Map::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
+	glDeleteVertexArrays(1, &mesh.vao);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 }
+
 
 void Map::draw(const mat3 &projection)
 {
@@ -183,32 +374,37 @@ void Map::draw(const mat3 &projection)
 		// Increment the row
 		for (int j = 0; j < 61; j++)
 		{
-			if (level_1[i][j] == 'W')
+			if (current_level[i][j] == 'W')
 			{
 				// Draw a Wall
 				draw_element(projection, wall_texture);
 			}
-			else if (level_1[i][j] == 'C')
+			else if (current_level[i][j] == 'S')
+			{
+				// Draw a Shadow Wall
+				draw_element(projection, wall_light_texture);
+			}
+			else if ((current_level[i][j] == 'C') || (current_level[i][j] == 'A'))
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (level_1[i][j] == 'R')
+			else if (current_level[i][j] == 'R')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_red);
 			}
-			else if (level_1[i][j] == 'B')
+			else if (current_level[i][j] == 'B')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_blue);
 			}
-			else if (level_1[i][j] == 'G')
+			else if (current_level[i][j] == 'G')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_green);
 			}
-			else if (level_1[i][j] == 'Y')
+			else if (current_level[i][j] == 'Y')
 			{
 				// Draw a Corridor
 				draw_element(projection, corridor_texture_yellow);
@@ -220,6 +416,7 @@ void Map::draw(const mat3 &projection)
 		translation_tile.y += 20.0;
 	}
 }
+
 
 void Map::draw_element(const mat3 &projection, const Texture &texture)
 {
@@ -269,7 +466,7 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 20.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -285,61 +482,124 @@ void Map::set_position(vec2 position)
 	motion.position = position;
 }
 
-void Map::is_wall_collision(Char &character)
+void Map::check_wall(Char &ch, const float ms)
 {
-	vec2 pos = character.get_position();
-	vec2 box = character.get_bounding_box();
+	if (!ch.is_moving())
+	{
+		ch.set_wall_collision('U', false);
+		ch.set_wall_collision('D', false);
+		ch.set_wall_collision('L', false);
+		ch.set_wall_collision('R', false);
+		return;
+	}
+	
+	// ch info
+	vec2 pos = ch.get_position();
+	vec2 box = ch.get_bounding_box();
+	vec2 dir = ch.get_velocity();
+	float step = ch.is_dashing() ? 2 * ch.get_speed() * (ms / 1000) : ch.get_speed() * (ms / 1000);
 
-	// get 4 corners of char: top left, top right, bottom left, bottom right
+	// get 4 corners of char
 	vec2 pos_top_left = {pos.x - box.x, pos.y - box.y};
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
+	
+	// initialize
+	int tile_x_top_left = 0;
+	int tile_y_top_left = 0;
+	int tile_x_top_right = 0;
+	int tile_y_top_right = 0;
+	int tile_x_bottom_left = 0;
+	int tile_y_bottom_left = 0;
+	int tile_x_bottom_right = 0;
+	int tile_y_bottom_right = 0;
 
-	// top left
-	int tile_x_top_left = (int)pos_top_left.x / 20;
-	int tile_y_top_left = (int)pos_top_left.y / 20;
-	int tile_x_top_right = (int)pos_top_right.x / 20;
-	int tile_y_top_right = (int)pos_top_right.y / 20;
-	int tile_x_bottom_left = (int)pos_bottom_left.x / 20;
-	int tile_y_bottom_left = (int)pos_bottom_left.y / 20;
-	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
-	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+	// correction
+	float d = 0.f;
 
-	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
+	// blue color
+	if (ch.get_color() == 3)
 	{
-		character.set_wall_collision('U', true);
-	}
-	else
-	{
-		character.set_wall_collision('U', false);
-	}
-
-	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
-	{
-		character.set_wall_collision('R', true);
-	}
-	else
-	{
-		character.set_wall_collision('R', false);
+		dir.x = -dir.x;
+		dir.y = -dir.y;
 	}
 
-	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	// up
+	if (dir.y < 0)
 	{
-		character.set_wall_collision('D', true);
+		tile_x_top_left = (int)pos_top_left.x / 20;
+		tile_y_top_left = (int)(pos_top_left.y - step) / 20;
+		tile_x_top_right = (int)pos_top_right.x / 20;
+		tile_y_top_right = (int)(pos_top_right.y - step) / 20;
+		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
+			current_level[tile_y_top_right][tile_x_top_right] == 'W' ||	current_level[tile_y_top_right][tile_x_top_right] == 'S')
+		{
+			d = 20 - (pos_top_left.y - (tile_y_top_left * 20));
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('U', true);
+		}
+		else
+		{
+			ch.set_wall_collision('U', false);
+		}
 	}
-	else
+	// down
+	else if (dir.y > 0)
 	{
-		character.set_wall_collision('D', false);
+		tile_x_bottom_left = (int)pos_bottom_left.x / 20;
+		tile_y_bottom_left = (int)(pos_bottom_left.y + step) / 20;
+		tile_x_bottom_right = (int)pos_bottom_right.x / 20;
+		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / 20;
+		if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' || current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			d = (tile_y_bottom_left * 20) - pos_bottom_left.y - 0.001f;
+			ch.change_position({0.f, d});
+			ch.set_wall_collision('D', true);
+		}
+		else
+		{
+			ch.set_wall_collision('D', false);
+		}
 	}
-
-	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	// left
+	if (dir.x < 0)
 	{
-		character.set_wall_collision('L', true);
+		tile_x_top_left = (int)(pos_top_left.x - step) / 20;
+		tile_y_top_left = (int)pos_top_left.y / 20;
+		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / 20;
+		tile_y_bottom_left = (int)pos_bottom_left.y / 20;
+		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
+			current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S')
+		{
+			d = 20 - (pos_top_left.x - (tile_x_top_left * 20));
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('L', true);
+		}
+		else
+		{
+			ch.set_wall_collision('L', false);
+		}
 	}
-	else
+	// right
+	else if (dir.x > 0)
 	{
-		character.set_wall_collision('L', false);
+		tile_x_top_right = (int)(pos_top_right.x + step) / 20;
+		tile_y_top_right = (int)pos_top_right.y / 20;
+		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / 20;
+		tile_y_bottom_right = (int)pos_bottom_right.y / 20;
+		if (current_level[tile_y_top_right][tile_x_top_right] == 'W' || current_level[tile_y_top_right][tile_x_top_right] == 'S' ||
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+		{
+			d = (tile_x_top_right * 20) - pos_top_right.x - 0.001f;
+			ch.change_position({d, 0.f});
+			ch.set_wall_collision('R', true);
+		}
+		else
+		{
+			ch.set_wall_collision('R', false);
+		}
 	}
 }
 
@@ -368,7 +628,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 	int tile_x_bottom_right = (int)pos_bottom_right.x / 20;
 	int tile_y_bottom_right = (int)pos_bottom_right.y / 20;
 
-	if (level_1[tile_y_top_left][tile_x_top_left] == 'W' && level_1[tile_y_top_right][tile_x_top_right] == 'W')
+	if (current_level[tile_y_top_left][tile_x_top_left] == 'W' && current_level[tile_y_top_right][tile_x_top_right] == 'W')
 	{
 		wanderer.set_wall_collision('U', true);
 	}
@@ -377,7 +637,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('U', false);
 	}
 
-	if (level_1[tile_y_top_right][tile_x_top_right] == 'W' && level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W')
+	if (current_level[tile_y_top_right][tile_x_top_right] == 'W' && current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W')
 	{
 		wanderer.set_wall_collision('R', true);
 	}
@@ -386,7 +646,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('R', false);
 	}
 
-	if (level_1[tile_y_bottom_right][tile_x_bottom_right] == 'W' && level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W')
+	if (current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' && current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W')
 	{
 		wanderer.set_wall_collision('D', true);
 	}
@@ -395,7 +655,7 @@ void Map::is_wall_collision(Wanderer &wanderer)
 		wanderer.set_wall_collision('D', false);
 	}
 
-	if (level_1[tile_y_bottom_left][tile_x_bottom_left] == 'W' && level_1[tile_y_top_left][tile_x_top_left] == 'W')
+	if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' && current_level[tile_y_top_left][tile_x_top_left] == 'W')
 	{
 		wanderer.set_wall_collision('L', true);
 	}
@@ -411,13 +671,22 @@ int Map::get_tile(Char character)
 	int x = (int)pos.x / 20;
 	int y = (int)pos.y / 20;
 
-	if (level_1[y][x] == 'W') return 1;
-	else if (level_1[y][x] == 'C') return 6;
-	else if (level_1[y][x] == 'R') return 2;
-	else if (level_1[y][x] == 'G') return 3;
-	else if (level_1[y][x] == 'B') return 4;
-	else if (level_1[y][x] == 'Y') return 5;
-	else return 0;
+	if (current_level[y][x] == 'W')
+		return 1;
+	else if (current_level[y][x] == 'C')
+		return 6;
+	else if (current_level[y][x] == 'A')
+		return 6;
+	else if (current_level[y][x] == 'R')
+		return 2;
+	else if (current_level[y][x] == 'G')
+		return 3;
+	else if (current_level[y][x] == 'B')
+		return 4;
+	else if (current_level[y][x] == 'Y')
+		return 5;
+	else
+		return 0;
 }
 
 void Map::set_char_dead()
@@ -441,6 +710,11 @@ void Map::set_flash(int value)
 	m_flash_time = glfwGetTime();
 }
 
+int Map::get_flash()
+{
+	return flash_map;
+}
+
 void Map::reset_flash_time()
 {
 	m_flash_time = glfwGetTime();
@@ -449,4 +723,84 @@ void Map::reset_flash_time()
 float Map::get_flash_time() const
 {
 	return glfwGetTime() - m_flash_time;
+}
+
+vec2 Map::get_tile_center_coords(vec2 tile_indices)
+{
+	return vec2{ (tile_indices.x * 20) + 10, (tile_indices.y * 20) + 10 };
+}
+
+vec2 Map::get_grid_coords(vec2 position)
+{
+	int truncated_x = (int)position.x / 20;
+	int truncated_y = (int)position.y / 20;
+	return vec2{ (float)truncated_x, (float)truncated_y };
+}
+
+bool Map::is_wall(vec2 grid_coords)
+{
+	int x = grid_coords.x;
+	int y = grid_coords.y;
+	return current_level[y][x] == 'W' || current_level[y][x] == 'S';
+}
+
+vec2 Map::get_spawn() {
+
+	vec2 res = vec2({ 0.f, 0.f });
+
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 61; j++)
+		{
+			if (current_level[i][j] == 'A')
+			{
+				res.x = j * 20 + 10;
+				res.y = i * 20 + 10;
+				return res;
+			}
+		}
+	}
+}
+
+void Map::set_current_map(int level)
+{
+	switch (level)
+	{
+	case 6000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_tutorial[i][j];
+			}
+		}
+		break;
+	case 1000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_1[i][j];
+			}
+		}
+		break;
+	case 2000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_2[i][j];
+			}
+		}
+		break;
+	case 3000:
+		for (int i = 0; i < 40; i++)
+		{
+			for (int j = 0; j < 61; j++)
+			{
+				current_level[i][j] = level_3[i][j];
+			}
+		}
+		break;
+	}
 }

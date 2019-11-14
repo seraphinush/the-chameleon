@@ -14,6 +14,7 @@ class Map : public Entity
 	// shared texture
 	static Texture wall_texture;
 	static Texture corridor_texture;
+	static Texture wall_light_texture;
 
 	static Texture corridor_texture_red;
 	static Texture corridor_texture_blue;
@@ -25,6 +26,7 @@ private:
 	float m_dead_time;
 	float m_flash_time;
 	int flash_map;
+	char current_level[40][61];
 
 public:
 	bool init();
@@ -40,7 +42,7 @@ public:
 	int get_tile(Char character);
 
 	// wall collision
-	void is_wall_collision(Char &character);
+	void check_wall(Char &ch, const float ms);
 	
 	// TO REMOVE - placeholder for randomize path wall collision
 	void is_wall_collision(Wanderer &wanderer);
@@ -53,8 +55,17 @@ public:
 	float get_char_dead_time() const;
 
 	void set_flash(int value);
+	int get_flash();
 
 	void reset_flash_time();
 
 	float get_flash_time() const;
+
+	// Pathing helper functions
+	vec2 get_tile_center_coords(vec2 tile_indices);
+	vec2 get_grid_coords(vec2 position);
+	bool is_wall(vec2 grid_coords);
+
+	vec2 get_spawn();
+	void set_current_map(int level);
 };
