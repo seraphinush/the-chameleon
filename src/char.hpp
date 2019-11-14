@@ -4,7 +4,6 @@
 #include "common.hpp"
 #include "map.hpp"
 #include "spotter.hpp"
-#include "trophy.hpp"
 #include "wanderer.hpp"
 #include "bullets.hpp"
 
@@ -13,7 +12,6 @@
 
 class Spotter;
 class Wanderer;
-class Trophy;
 class Bullets;
 
 class Char : public Entity
@@ -65,7 +63,6 @@ public:
 	bool collision(vec2 pos, vec2 box);
 	bool is_colliding(const Spotter &spotter);
 	bool is_colliding(const Wanderer &wanderer);
-	bool is_colliding(const Trophy &trophy);
 	bool is_colliding(Bullets &bullets);
 	vec2 get_bounding_box() const;
 
