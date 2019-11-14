@@ -101,9 +101,14 @@ void Wanderer::destroy()
 
 void Wanderer::update(float ms)
 {
+	if (!m_player->is_alive())
+	{
+		return;
+	}
 	if (alert_mode) {
 		chase_refresh_timer -= ms;
-		if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])))
+		if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]))
+		&& !check_goal_arrival(m_map->get_grid_coords(m_player->get_position())))
 		{
 			current_immediate_goal_index++;
 		}
@@ -111,7 +116,7 @@ void Wanderer::update(float ms)
 		{
 			chase_refresh_timer = CHASE_REFRESH_MS;
 			calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
-			current_immediate_goal_index = 1;
+			current_immediate_goal_index = 0;
 		}
 	}
 	else {
@@ -126,8 +131,11 @@ void Wanderer::update(float ms)
 			current_immediate_goal_index++;
 		}
 	}
-	move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);
-
+	if (current_immediate_goal_index < immediate_path.size())
+	{
+		move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);
+	}
+	
 	// sprite change
 	if (sprite_countdown > 0.f)
 		sprite_countdown -= ms;
