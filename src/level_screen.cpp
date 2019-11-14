@@ -57,20 +57,8 @@ bool LevelScreen::init()
 	}
 
 	// the position corresponds to the center of the texture
-	float tutorial_wr = tutorial.width;
-	float tutorial_hr = tutorial.height;
-
-	float pointer_wr = pointer.width * 0.5f;
-	float pointer_hr = pointer.height * 0.5f;
-
-	float level1_wr = level1.width * 0.5f;
-	float level1_hr = level1.height * 0.5f;
-
-	float level2_wr = level2.width * 0.5f;
-	float level2_hr = level2.height * 0.5f;
-
-	float level3_wr = level3.width * 0.5f;
-	float level3_hr = level3.height * 0.5f;
+	float tutorial_wr = tutorial.width * 0.5f;
+	float tutorial_hr = tutorial.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = {-tutorial_wr, +tutorial_wr, -0.0f};
@@ -106,15 +94,11 @@ bool LevelScreen::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 200.f;
-
+	// TODO -- position relative to the screen size, need to edit init() to take argument to do so
 	motion.position.x = 605.0f;
 	motion.position.y = 150.0f;
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = {0.5f, 0.5f};
+	physics.scale = {1.0f, 1.0f};
 
 	return true;
 }
@@ -154,8 +138,7 @@ void LevelScreen::draw(const mat3 &projection)
 	// transformation
 	transform.begin();
 	transform.translate(pointer_position);
-	transform.rotate(3.14f / 2.0f);
-	transform.scale({0.07f, 0.06f});
+	transform.scale(mul(physics.scale, 0.10f));
 	transform.end();
 
 	// set shaders
@@ -199,11 +182,10 @@ void LevelScreen::draw(const mat3 &projection)
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
-	// tutroial
+	// tutorial
 	// transformation
 	transform.begin();
 	transform.translate({motion.position.x, 150.f});
-	transform.rotate(motion.radians);
 	transform.scale({0.5f, 0.1f});
 	transform.end();
 
@@ -251,7 +233,6 @@ void LevelScreen::draw(const mat3 &projection)
 	// transformation
 	transform.begin();
 	transform.translate(vec2({motion.position.x, 325.f}));
-	transform.rotate(motion.radians);
 	transform.scale({0.4f, 0.09f});
 	transform.end();
 

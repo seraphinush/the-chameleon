@@ -3,7 +3,7 @@
 // internal
 #include "common.hpp"
 
-// start screen
+// level screen
 class LevelScreen : public Entity
 {
 	// shared texture
