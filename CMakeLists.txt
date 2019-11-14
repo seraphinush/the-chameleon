@@ -41,7 +41,6 @@ set(SOURCE_FILES
   src/start_screen.cpp
   src/control_screen.cpp  
   src/complete_screen.cpp
-  src/trophy.cpp
   src/hud.cpp       
   src/cutscene.cpp    
   src/shooter.cpp
@@ -60,7 +59,6 @@ set(SOURCE_FILES
   src/complete_screen.hpp
   src/char.hpp
 	src/map.hpp
-	src/trophy.hpp
   src/hud.hpp      
   src/cutscene.hpp  
   src/particles.hpp

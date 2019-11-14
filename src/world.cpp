@@ -162,7 +162,6 @@ bool World::init(vec2 screen)
 		   m_hud.init() &&
 		   m_map.init() &&
 		   m_char.init(m_map.get_spawn()) &&
-		   m_trophy.init() &&
 		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init();
@@ -190,7 +189,6 @@ void World::destroy()
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_spotters.clear();
-	m_trophy.destroy();
 	m_char.destroy();
 	m_particles_emitter.destroy();
 	m_map.destroy();
@@ -298,8 +296,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-trophy
-		if (m_char.is_colliding(m_trophy))
-		{
+		if (m_map.get_tile(m_char) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -461,7 +458,6 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					printf("test");
 					alert_mode = true;
 					spotter.alert_mode = true;
 					alert_mode_cooldown = 0;
@@ -470,8 +466,7 @@ bool World::update(float elapsed_ms)
 			}
 		}
 		// collision, char-trophy
-		if (m_char.is_colliding(m_trophy))
-		{
+		if (m_map.get_tile(m_char) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -633,7 +628,6 @@ bool World::update(float elapsed_ms)
 			{
 				if (m_char.is_alive())
 				{
-					printf("test");
 					alert_mode = true;
 					spotter.alert_mode = true;
 					alert_mode_cooldown = 0;
@@ -696,8 +690,7 @@ bool World::update(float elapsed_ms)
 		}
 
 		// collision, char-trophy
-		if (m_char.is_colliding(m_trophy))
-		{
+		if (m_map.get_tile(m_char) == 100) {
 			if (m_char.is_alive())
 			{
 				Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -1052,7 +1045,6 @@ void World::draw()
 			// draw entities
 			for (auto &wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
-			m_trophy.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
@@ -1075,7 +1067,6 @@ void World::draw()
 				spotter.draw(projection_2D);
 			for (auto &wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
-			m_trophy.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
@@ -1106,7 +1097,6 @@ void World::draw()
 					shooter.bullets.draw(projection_2D);
 				}
 			}
-			m_trophy.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
@@ -1579,9 +1569,7 @@ bool World::is_char_detectable(Map m_map)
 void World::reset_game()
 {
 	m_char.destroy();
-	m_trophy.destroy();
 	m_char.init(m_map.get_spawn());
-	m_trophy.init();
 	m_spotters.clear();
 	m_wanderers.clear();
 	m_shooters.clear();
