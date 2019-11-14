@@ -164,7 +164,7 @@ bool World::init(vec2 screen)
 		   m_char.init(m_map.get_spawn()) &&
 		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
-		   m_complete_screen.init();
+		   m_complete_screen.init(screen);
 }
 
 // release all the associated resources
@@ -214,7 +214,6 @@ bool World::update(float elapsed_ms)
 	m_control_screen.update(m_current_game_state);
 	m_level_screen.update(m_current_level_state);
 	m_cutscene.update(m_current_game_state);
-	m_complete_screen.update(m_current_game_state);
 
 	//////////////////////
 	// COOLDOWN

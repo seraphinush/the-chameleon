@@ -7,17 +7,10 @@
 class CompleteScreen : public Entity
 {
 	// shared texture
-	static Texture pointer;
-	static Texture complete_game;
-	static Texture controls;
-	static Texture quit;
-	static Texture game_title;
-
-	vec2 pointer_position;
+	static Texture complete_screen;
 
 public:
-	bool init();
+	bool init(vec2 screen);
 	void destroy();
-	void update(unsigned int game_state);
 	void draw(const mat3 &projection) override;
 };
