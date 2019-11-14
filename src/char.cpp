@@ -316,13 +316,6 @@ bool Char::is_colliding(const Wanderer &wanderer)
 	return collision(pos, box);
 }
 
-bool Char::is_colliding(const Trophy &trophy)
-{
-	vec2 pos = trophy.get_position();
-	vec2 box = trophy.get_bounding_box();
-	return collision(pos, box);
-}
-
 vec2 Char::get_bounding_box() const
 {
 	return {std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f};

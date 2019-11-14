@@ -21,6 +21,8 @@ class Map : public Entity
 	static Texture corridor_texture_green;
 	static Texture corridor_texture_yellow;
 
+	static Texture trophy_texture;
+
 private:
 	vec2 translation_tile;
 	float m_dead_time;

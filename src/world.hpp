@@ -9,7 +9,6 @@
 #include "start_screen.hpp"
 #include "control_screen.hpp"
 #include "complete_screen.hpp"
-#include "trophy.hpp"
 #include "cutscene.hpp"
 #include "hud.hpp"
 #include "particles.hpp"
@@ -88,7 +87,6 @@ private:
 	std::vector<Spotter> m_spotters;
 	std::vector<Wanderer> m_wanderers;
 	std::vector<Shooter> m_shooters;
-	Trophy m_trophy;
 	Particles m_particles_emitter;
 
 	// variables
@@ -160,8 +158,6 @@ private:
 	bool spawn_shooter();
 
 	bool spawn_wanderer(std::vector<vec2> path);
-
-	bool spawn_trophy();
 
 	void on_key(GLFWwindow *, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow *window, double xpos, double ypos);
