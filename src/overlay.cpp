@@ -1,8 +1,11 @@
+// header
 #include "overlay.hpp"
 
+// stdlib
 #include <iostream>
 
-bool Overlay::init(bool in_alert_mode,  int max_cooldown) {
+bool Overlay::init(bool in_alert_mode,  int cd)
+{
 	m_dead_time = -1;
 	glGetIntegerv(GL_VIEWPORT, view_port);
 	// Since we are not going to apply transformation to this screen geometry
@@ -17,10 +20,10 @@ bool Overlay::init(bool in_alert_mode,  int max_cooldown) {
 		1.05f,  1.05f, 0.0f,
 	};
 
-	// Clearing errors
+	// clear errors
 	gl_flush_errors();
 
-	// Vertex Buffer creation
+	// vertex buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer_data), screen_vertex_buffer_data, GL_STATIC_DRAW);
@@ -28,27 +31,25 @@ bool Overlay::init(bool in_alert_mode,  int max_cooldown) {
 	if (gl_has_errors())
 		return false;
 
-	// Loading shaders
+	// load shaders
 	if (!effect.load_from_file(shader_path("overlay.vs.glsl"), shader_path("overlay.fs.glsl")))
 		return false;
 
-	alert_mode = in_alert_mode;
-	oscillation_value = 0.f;
-	cooldown = 0;
-	MAX_COOLDOWN = max_cooldown;
+	m_alert_mode = in_alert_mode;
+	m_oscillation_value = 0.f;
+
+	m_cooldown = 0;
+	m_max_cooldown = cd;
 
 	return true;
 }
 
-// Releases all graphics resources
-void Overlay::destroy() {
+// release all graphics resources
+void Overlay::destroy()
+{
 	glDeleteBuffers(1, &mesh.vbo);
 
 	effect.release();
-}
-
-void Overlay::update_alert_mode(bool in_alert_mode) {
-	alert_mode = in_alert_mode;
 }
 
 void Overlay::draw(const mat3& projection) {
@@ -64,20 +65,20 @@ void Overlay::draw(const mat3& projection) {
 	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
 	GLuint time_uloc = glGetUniformLocation(effect.program, "time");
 	GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
-	GLuint alert_mode_uloc = glGetUniformLocation(effect.program, "alert_mode");
-	GLuint oscillation_value_uloc = glGetUniformLocation(effect.program, "oscillation_value");
-	GLuint cooldown_value_uloc = glGetUniformLocation(effect.program, "cooldown");
-	GLuint max_cooldown_value_uloc = glGetUniformLocation(effect.program, "MAX_COOLDOWN");
+	GLuint alert_mode_uloc = glGetUniformLocation(effect.program, "m_alert_mode");
+	GLuint oscillation_value_uloc = glGetUniformLocation(effect.program, "m_oscillation_value");
+	GLuint cooldown_value_uloc = glGetUniformLocation(effect.program, "m_cooldown");
+	GLuint max_cooldown_value_uloc = glGetUniformLocation(effect.program, "m_max_cooldown");
 
 	GLuint window_width_uloc = glGetUniformLocation(effect.program, "window_width");
 	GLuint window_height_uloc = glGetUniformLocation(effect.program, "window_height");
 
 	glUniform1i(screen_text_uloc, 0);
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-	glUniform1f(alert_mode_uloc, (alert_mode) ? 1.f : 0.f);
-	glUniform1f(oscillation_value_uloc, oscillation_value);
-	glUniform1i(cooldown_value_uloc, cooldown);
-	glUniform1i(max_cooldown_value_uloc, MAX_COOLDOWN);
+	glUniform1f(alert_mode_uloc, (m_alert_mode) ? 1.f : 0.f);
+	glUniform1f(oscillation_value_uloc, m_oscillation_value);
+	glUniform1i(cooldown_value_uloc, m_cooldown);
+	glUniform1i(max_cooldown_value_uloc, m_max_cooldown);
 	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
 	glUniform1i(window_width_uloc, view_port[2]);
 	glUniform1i(window_height_uloc, view_port[3]);
@@ -94,14 +95,21 @@ void Overlay::draw(const mat3& projection) {
 	glDisableVertexAttribArray(0);
 }
 
-void Overlay::oscillation() {
-	if (oscillation_value > 0.8f) {
-		oscillation_value = 0.f;
+void Overlay::oscillation()
+{
+	if (m_oscillation_value > 0.8f) {
+		m_oscillation_value = 0.f;
 	}
-	oscillation_value += 0.05f;
+	m_oscillation_value += 0.05f;
 }
 
-void Overlay::set_cooldown(int value) {
+void Overlay::set_cooldown(int val)
+{
 	
-	cooldown = value;
+	m_cooldown = val;
+}
+
+void Overlay::update_alert_mode(bool val)
+{
+	m_alert_mode = val;
 }
