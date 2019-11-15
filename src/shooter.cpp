@@ -152,7 +152,7 @@ void Shooter::set_rotation(float rad)
 }
 
 // alert
-void Shooter::set_alert(bool val)
+void Shooter::set_alert_mode(bool val)
 {
 	m_alert_mode = val;
 }

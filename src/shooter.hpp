@@ -34,7 +34,7 @@ public:
 	void set_rotation(float rad);
 
 	// alert
-	void set_alert(bool val);
+	void set_alert_mode(bool val);
 
 	// combat
 	void set_in_combat(bool val);

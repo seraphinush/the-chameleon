@@ -226,7 +226,7 @@ bool World::update(float elapsed_ms)
 
 		// unalert shooters
 		for (auto &shooter : m_shooters)
-			shooter.set_alert(false);
+			shooter.set_alert_mode(false);
 
 		// unalert spotters
 		for (auto &spotter : m_spotters)
@@ -690,7 +690,7 @@ bool World::update(float elapsed_ms)
 		for (auto &shooter : m_shooters)
 		{
 			// TODO -- wrong location for proper code flow
-			shooter.set_alert(alert_mode);
+			shooter.set_alert_mode(alert_mode);
 
 			// TODO
 			shooter.update(elapsed_ms * m_current_speed);
