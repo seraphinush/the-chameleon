@@ -11,12 +11,10 @@ namespace
 {
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_SHOOTERS = 5;
-const size_t SPOTTER_DELAY_MS = 800;
 // Cooldown
 const int MAX_COOLDOWN = 50;
 int cooldown = MAX_COOLDOWN;
 // Particles
-const size_t MAX_PARTICLES = 5;
 bool spawn_particles = false;
 
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
@@ -25,9 +23,9 @@ int alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
 // fade/flash
 const float FADE_TIME = 0.7;
 const float FLASH_TIME = 0.5;
+
 // TODO
 vec2 spotter_loc[5];
-
 vec2 shooter_loc[5];
 
 namespace
@@ -56,7 +54,7 @@ World::~World()
 // initialization
 bool World::init(vec2 screen)
 {
-	// TODO
+	// TODO -- need static spawn of spotters per level
 	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
 	spotter_loc[0] = {100, 100};
 	spotter_loc[1] = {screen.x - 100, 100};
@@ -218,37 +216,25 @@ bool World::update(float elapsed_ms)
 	// COOLDOWN
 	//////////////////////
 
-	if (!(alert_mode_cooldown >= MAX_ALERT_MODE_COOLDOWN))
+	if (alert_mode_cooldown < MAX_ALERT_MODE_COOLDOWN)
 	{
 		alert_mode_cooldown++;
 	}
 	else
 	{
 		alert_mode = false;
-		// update spotters
-		for (auto &spotter : m_spotters)
-		{
-			if (alert_mode)
-			{
-				spotter.alert_mode = true;
-			}
-		}
 
-		// update wanderers
-		for (auto &wanderer : m_wanderers)
-		{
-			wanderer.update(elapsed_ms * m_current_speed);
-			wanderer.alert_wanderer_status(false);
-		}
-
-		// update shooters
+		// unalert shooters
 		for (auto &shooter : m_shooters)
-		{
-			if (alert_mode)
-			{
-				shooter.set_alert(false);
-			}
-		}
+			shooter.set_alert(false);
+
+		// unalert spotters
+		for (auto &spotter : m_spotters)
+			spotter.set_alert_mode(false);
+
+		// unalert wanderers
+		for (auto &wanderer : m_wanderers)
+			wanderer.alert_wanderer_status(false);
 	}
 
 	// IF ALERT MODE OVERLAY
@@ -441,19 +427,6 @@ bool World::update(float elapsed_ms)
 			}
 		}
 
-		// proximity, spotter
-		for (auto& spotter : m_spotters) {
-			if (spotter.collision_with(m_char) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					spotter.alert_mode = true;
-					alert_mode_cooldown = 0;
-				}
-				break;
-			}
-		}
 		// collision, char-trophy
 		if (m_map.get_tile_type(m_char.get_position()) == 100) {
 			if (m_char.is_alive())
@@ -465,6 +438,21 @@ bool World::update(float elapsed_ms)
 				return true;
 			}
 			m_char.kill();
+		}
+
+		// proximity, spotter
+		for (auto& spotter : m_spotters)
+		{
+			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+			{
+				if (m_char.is_alive())
+				{
+					alert_mode = true;
+					spotter.set_alert_mode(alert_mode);
+					alert_mode_cooldown = 0;
+				}
+				break;
+			}
 		}
 
 		//////////////////////
@@ -491,6 +479,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// spawn spotter
+		// TODO -- need static spawns of spotters
 		if (m_spotters.size() < MAX_SPOTTERS)
 		{
 			if (!spawn_spotter())
@@ -595,6 +584,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-spotter
 		for (const auto& spotter : m_spotters)
+		{
 			if (m_char.is_colliding(spotter) && is_char_detectable())
 			{
 				if (m_char.is_alive())
@@ -603,19 +593,6 @@ bool World::update(float elapsed_ms)
 					m_map.set_char_dead();
 				}
 				m_char.kill();
-				break;
-			}
-
-		// proximity, spotter
-		for (auto& spotter : m_spotters) {
-			if (spotter.collision_with(m_char) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					spotter.alert_mode = true;
-					alert_mode_cooldown = 0;
-				}
 				break;
 			}
 		}
@@ -672,6 +649,21 @@ bool World::update(float elapsed_ms)
 				break;
 			}
 		}
+		
+		// proximity, spotter
+		for (auto& spotter : m_spotters)
+		{
+			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+			{
+				if (m_char.is_alive())
+				{
+					alert_mode = true;
+					spotter.set_alert_mode(alert_mode);
+					alert_mode_cooldown = 0;
+				}
+				break;
+			}
+		}
 
 		//////////////////////
 		// UPDATE
@@ -684,10 +676,6 @@ bool World::update(float elapsed_ms)
 		// update spotters
 		for (auto &spotter : m_spotters)
 		{
-			if (alert_mode)
-			{
-				spotter.alert_mode = true;
-			}
 			spotter.update(elapsed_ms * m_current_speed);
 		}
 
@@ -729,6 +717,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// spawn spotter
+		// TODO -- need static spawn of spotters per level
 		if (m_spotters.size() < MAX_SPOTTERS)
 		{
 			if (!spawn_spotter())

@@ -169,25 +169,27 @@ vec2 Spotter::get_bounding_box() const
 	return { std::fabs(physics.scale.x) * spotter_texture.width * 0.5f, std::fabs(physics.scale.y) * spotter_texture.height * 0.5f };
 }
 
-bool Spotter::collision_with(Char m_char)
+// detection
+// TODO
+bool Spotter::is_in_sight(vec2 pos)
 {
-	// using euclidean distance rn - FIX LATER
+	float dx = motion.position.x - pos.x;
+	float dy = motion.position.y - pos.y;
 
-	float difference_in_x = motion.position.x - m_char.get_position().x;
-	float difference_in_y = motion.position.y - m_char.get_position().y;
+	bool in_direction = ((check_sgn(dx) == direction.x) && (check_sgn(dy) == direction.y));
 
-	bool in_direction = ((check_sgn(difference_in_x) == direction.x) && (check_sgn(difference_in_y) == direction.y));
+	return ((sqrt(pow(dx, 2) + pow(dy, 2))) <= radius) && in_direction;
+}
 
+// alert
+void Spotter::set_alert_mode(bool val)
+{
+	m_alert_mode = val;
+}
 
-
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && in_direction) {
-		return true;
-	}
-	else {
-		//printf("difference: %f\n", check_sgn(difference_in_x));
-		//printf("direction: %f\n", direction.x);
-		return false;
-	}
+void Spotter::reset_direction() 
+{
+	direction = vec2({0.f, 1.f});
 }
 
 // a threshold to allow for some more fov collisions to happen
@@ -196,9 +198,4 @@ float Spotter::check_sgn(float value)
 	if (value >= 10.f) return 1.0f;
 	if (value <= -10.f) return -1.0f;
 	else return 0.f;
-}
-
-void Spotter::reset_direction() 
-{
-	direction = vec2({0.f, 1.f});
 }

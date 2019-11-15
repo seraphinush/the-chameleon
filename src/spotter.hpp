@@ -2,9 +2,6 @@
 
 // internal
 #include "common.hpp"
-#include "char.hpp"
-
-class Char;
 
 // guard type 2 : spotter
 class Spotter : public Entity
@@ -20,29 +17,35 @@ private:
 	int spotter_sprite_switch = 1;
 	float spotter_sprite_countdown = 1500.f;
 
-	// AI stuff
-	float check_sgn(float value);
+	// detection
 	float radius = 70.f;
+
+	// alert
+	bool m_alert_mode;
 
 public:
 	bool init();
 	void destroy();
 	void update(float ms);
 	void draw(const mat3& projection) override;
-	bool collision_with(Char m_char);
 
 	// movement
-	void set_position(vec2 position);
+	void set_position(vec2 pos);
 	vec2 get_position() const;
-
-
 
 	// collision
 	vec2 get_bounding_box() const;
 
-	bool alert_mode;
+	// detection
+	bool is_in_sight(vec2 pos);
 
-	vec2 direction = vec2({ 0, -1 });
+	// alert
+	void set_alert_mode(bool val);
+
+	vec2 direction;
 	
 	void reset_direction();
+
+private:
+	float check_sgn(float value);
 };
