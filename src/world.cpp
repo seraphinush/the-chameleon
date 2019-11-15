@@ -217,6 +217,7 @@ bool World::update(float elapsed_ms)
 	//////////////////////
 	// COOLDOWN
 	//////////////////////
+
 	if (!(alert_mode_cooldown >= MAX_ALERT_MODE_COOLDOWN))
 	{
 		alert_mode_cooldown++;
@@ -245,7 +246,7 @@ bool World::update(float elapsed_ms)
 		{
 			if (alert_mode)
 			{
-				shooter.alert_mode = false;
+				shooter.set_alert(false);
 			}
 		}
 	}
@@ -276,7 +277,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable(m_map))
+			if (m_char.is_colliding(wanderer) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -414,7 +415,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
-			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
+			if (m_char.is_colliding(spotter) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -428,7 +429,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
 		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable(m_map))
+			if (m_char.is_colliding(wanderer) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -442,7 +443,7 @@ bool World::update(float elapsed_ms)
 
 		// proximity, spotter
 		for (auto& spotter : m_spotters) {
-			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			if (spotter.collision_with(m_char) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -594,7 +595,7 @@ bool World::update(float elapsed_ms)
 
 		// collision, char-spotter
 		for (const auto& spotter : m_spotters)
-			if (m_char.is_colliding(spotter) && is_char_detectable(m_map))
+			if (m_char.is_colliding(spotter) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -607,7 +608,7 @@ bool World::update(float elapsed_ms)
 
 		// proximity, spotter
 		for (auto& spotter : m_spotters) {
-			if (spotter.collision_with(m_char) && is_char_detectable(m_map))
+			if (spotter.collision_with(m_char) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -622,7 +623,7 @@ bool World::update(float elapsed_ms)
 		// collision, char-wanderer
 		for (auto &wanderer : m_wanderers)
 		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable(m_map))
+			if (m_char.is_colliding(wanderer) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -630,44 +631,6 @@ bool World::update(float elapsed_ms)
 					m_map.set_char_dead();
 				}
 				m_char.kill();
-				break;
-			}
-		}
-
-		// proximity, char-shooter
-		for (auto &shooter : m_shooters)
-		{
-			if (m_char.is_colliding(shooter) && is_char_detectable(m_map))
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					alert_mode_cooldown = 0;
-					// ROTATE SHOOTER TO POINT AT M_CHAR
-					float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
-					if (angle_to_char < 0)
-					{
-						if (m_char.get_position().y > shooter.get_position().y)
-						{
-							angle_to_char += 3.14;
-						}
-					}
-
-					else if (m_char.get_position().x < shooter.get_position().x)
-					{
-						angle_to_char += 3.14;
-					}
-					shooter.set_rotation(angle_to_char);
-
-					// SHOOTING AND COOLDOWN
-					shooter.is_shooting = true;
-					shooter.bullets.cooldown -= 15.f;
-					if (shooter.bullets.cooldown < 0.f)
-					{
-						shooter.bullets.spawn_bullet(shooter.get_position(), angle_to_char);
-						shooter.bullets.cooldown = 1500.f;
-					}
-				}
 				break;
 			}
 		}
@@ -681,6 +644,33 @@ bool World::update(float elapsed_ms)
 				m_game_state = WIN_SCREEN;
 			}
 			m_char.kill();
+		}
+
+		// proximity, char-shooter
+		for (auto &shooter : m_shooters)
+		{
+			if (m_char.is_colliding(shooter) && is_char_detectable())
+			{
+				if (m_char.is_alive())
+				{
+					alert_mode = true;
+					alert_mode_cooldown = 0;
+
+					// rotate to char
+					float angle = atan2((m_char.get_position().y - shooter.get_position().y), (m_char.get_position().x - shooter.get_position().x));
+					shooter.set_rotation(angle);
+
+					// SHOOTING AND COOLDOWN
+					shooter.set_in_combat(true);
+					shooter.bullets.cooldown -= 15.f;
+					if (shooter.bullets.cooldown < 0.f)
+					{
+						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
+						shooter.bullets.cooldown = 1500.f;
+					}
+				}
+				break;
+			}
 		}
 
 		//////////////////////
@@ -711,35 +701,25 @@ bool World::update(float elapsed_ms)
 		// update shooter
 		for (auto &shooter : m_shooters)
 		{
+			// TODO -- wrong location for proper code flow
+			shooter.set_alert(alert_mode);
 
-			if (alert_mode)
-			{
-				shooter.alert_mode = true;
-			}
-
+			// TODO
 			shooter.update(elapsed_ms * m_current_speed);
 			// angle to shooter, alternative solution to save bullet angle as part of bullet struct
-			float angle_to_char = atan((m_char.get_position().y - shooter.get_position().y) / (m_char.get_position().x - shooter.get_position().x));
-			if (angle_to_char < 0)
-			{
-				if (m_char.get_position().y > shooter.get_position().y)
-				{
-					angle_to_char += 3.14;
-				}
-			}
 
-			else if (m_char.get_position().x < shooter.get_position().x)
-			{
-				angle_to_char += 3.14;
-			}
-			if (shooter.is_shooting)
+			// TODO
+			float angle = atan2((m_char.get_position().y - shooter.get_position().y) , (m_char.get_position().x - shooter.get_position().x));
+
+			// TODO -- wrong location for collision and code flow
+			if (shooter.is_in_combat())
 			{
 				shooter.bullets.update(elapsed_ms * m_current_speed);
 				if (m_char.is_colliding(shooter.bullets))
 				{
 					m_char.set_color(0);
 					cooldown = 0;
-					m_char.change_position({25.f * cos(angle_to_char), 25.f * sin(angle_to_char)});
+					m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
 				}
 			}
 		}
@@ -1075,7 +1055,7 @@ void World::draw()
 			for (auto &shooter : m_shooters)
 			{
 				shooter.draw(projection_2D);
-				if (shooter.is_shooting)
+				if (shooter.is_in_combat())
 				{
 					shooter.bullets.draw(projection_2D);
 				}
@@ -1545,7 +1525,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 	}
 }
 
-bool World::is_char_detectable(Map m_map)
+bool World::is_char_detectable()
 {
 	return m_char.is_moving() || (m_map.get_tile_type(m_char.get_position()) != m_char.get_color() + 1);
 }

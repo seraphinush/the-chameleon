@@ -13,14 +13,13 @@ class Shooter : public Entity
 
 private:
 	// config
-	const float config_scale = 0.075;
+	const float config_scale = 0.075f;
 
-	// animation
-	int shooter_sprite_switch = 1;
-	float shooter_sprite_countdown = 1500.f;
+	// ai
+	float m_radius = 50.f;
+	bool m_in_combat;
 
-	// AI stuff
-	float radius = 50.f;
+	bool m_alert_mode;
 
 public:
 	bool init();
@@ -29,20 +28,20 @@ public:
 	void draw(const mat3& projection) override;
 
 	// movement
-	void set_position(vec2 position);
+	void set_position(vec2 pos);
 	vec2 get_position() const;
 	
-	void set_rotation(float radians);
+	void set_rotation(float rad);
 
-	// detects if char in radius
+	// alert
+	void set_alert(bool val);
+
+	// combat
+	void set_in_combat(bool val);
+	bool is_in_combat() const;
 
 	// collision
 	vec2 get_bounding_box() const;
 
-	bool is_shooting;
-
-	bool alert_mode;
-
 	Bullets bullets;
-
 };

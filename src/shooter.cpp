@@ -61,9 +61,10 @@ bool Shooter::init()
 		return false;
 
 	motion.radians = 0.f;
-	motion.speed = 0.f;
 
 	physics.scale = { config_scale, config_scale };
+
+	m_in_combat = false;
 
 	return true;
 }
@@ -130,26 +131,14 @@ void Shooter::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
-	// sprite change
-	/* if (shooter_sprite_countdown < 0) {
-		string temp_str = "data/textures/shooters/" + to_string(shooter_sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char* path = s.c_str();
-
-		shooter_texture.~Texture();
-		shooter_texture.load_from_file(path);
-		shooter_sprite_countdown = 1500.f;
-	} */
-
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 // movement
-void Shooter::set_position(vec2 position)
+void Shooter::set_position(vec2 pos)
 {
-	motion.position = position;
+	motion.position = pos;
 }
 
 vec2 Shooter::get_position() const
@@ -157,9 +146,26 @@ vec2 Shooter::get_position() const
 	return motion.position;
 }
 
-void Shooter::set_rotation(float radians)
+void Shooter::set_rotation(float rad)
 {
-	motion.radians = radians;
+	motion.radians = rad;
+}
+
+// alert
+void Shooter::set_alert(bool val)
+{
+	m_alert_mode = val;
+}
+
+// combat
+void Shooter::set_in_combat(bool val)
+{
+	m_in_combat = val;
+}
+
+bool Shooter::is_in_combat() const
+{
+	return m_in_combat;
 }
 
 // collision
