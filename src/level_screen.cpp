@@ -1,21 +1,24 @@
 // header
 #include "level_screen.hpp"
+
+// stdlib
+#include <algorithm>
 #include <cmath>
 
 Texture LevelScreen::tutorial;
-Texture LevelScreen::level1;
-Texture LevelScreen::level2;
-Texture LevelScreen::level3;
+Texture LevelScreen::level_1;
+Texture LevelScreen::level_2;
+Texture LevelScreen::level_3;
 Texture LevelScreen::pointer;
 
-bool LevelScreen::init()
+bool LevelScreen::init(vec2 screen)
 {
 	// load shared texture
 	if (!tutorial.is_valid())
 	{
-		if (!tutorial.load_from_file(textures_path("leveltutorial.png")))
+		if (!tutorial.load_from_file(textures_path("level_tutorial.png")))
 		{
-			fprintf(stderr, "Failed to load level tutorial texture!");
+			fprintf(stderr, "Failed to load level_tutorial texture!");
 			return false;
 		}
 	}
@@ -29,45 +32,45 @@ bool LevelScreen::init()
 		}
 	}
 
-	if (!level1.is_valid())
+	if (!level_1.is_valid())
 	{
-		if (!level1.load_from_file(textures_path("level1.png")))
+		if (!level_1.load_from_file(textures_path("level_1.png")))
 		{
-			fprintf(stderr, "Failed to load level1 texture!");
+			fprintf(stderr, "Failed to load level_1 texture!");
 			return false;
 		}
 	}
 
-	if (!level2.is_valid())
+	if (!level_2.is_valid())
 	{
-		if (!level2.load_from_file(textures_path("level2.png")))
+		if (!level_2.load_from_file(textures_path("level_2.png")))
 		{
-			fprintf(stderr, "Failed to load level2 texture!");
+			fprintf(stderr, "Failed to load level_2 texture!");
 			return false;
 		}
 	}
 
-	if (!level3.is_valid())
+	if (!level_3.is_valid())
 	{
-		if (!level3.load_from_file(textures_path("level3.png")))
+		if (!level_3.load_from_file(textures_path("level_3.png")))
 		{
-			fprintf(stderr, "Failed to load level3 texture!");
+			fprintf(stderr, "Failed to load level_3 texture!");
 			return false;
 		}
 	}
 
 	// the position corresponds to the center of the texture
-	float tutorial_wr = tutorial.width * 0.5f;
-	float tutorial_hr = tutorial.height * 0.5f;
+	float wr = std::max(screen.x, screen.y) * 0.5f;
+	float hr = std::max(screen.x, screen.y) * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-tutorial_wr, +tutorial_wr, -0.0f};
+	vertices[0].position = {-wr, +hr, -0.0f};
 	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+tutorial_wr, +tutorial_wr, -0.02f};
+	vertices[1].position = {+wr, +hr, -0.02f};
 	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+tutorial_wr, -tutorial_wr, -0.02f};
+	vertices[2].position = {+wr, -hr, -0.02f};
 	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-tutorial_wr, -tutorial_wr, -0.02f};
+	vertices[3].position = {-wr, -hr, -0.02f};
 	vertices[3].texcoord = {0.f, 0.f};
 
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -94,11 +97,9 @@ bool LevelScreen::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	// TODO -- position relative to the screen size, need to edit init() to take argument to do so
-	motion.position.x = 605.0f;
-	motion.position.y = 150.0f;
+	motion.position = vec2({0.f, 0.f});
 
-	physics.scale = {1.0f, 1.0f};
+	physics.scale = vec2({1.0f, 1.0f});
 
 	return true;
 }
@@ -113,32 +114,54 @@ void LevelScreen::destroy()
 	effect.release();
 }
 
-void LevelScreen::update(unsigned int level_state)
+// TODO -- remove hardcoded locs
+void LevelScreen::update(unsigned int state)
 {
-	switch (level_state)
-	{
-	case 0:
-		pointer_position = vec2({270.0f, 150.0f});
-		break;
-	case 1:
-		pointer_position = vec2({315.0f, 325.0f});
-		break;
-	case 2:
-		pointer_position = vec2({315.0f, 485.0f});
-		break;
-	case 3:
-		pointer_position = vec2({315.0f, 645.0f});
-		break;
-	}
+	if (state == 0)
+		m_pointer_pos = vec2({1200.f / 3.f, 160.f});
+	else if (state == 1)
+		m_pointer_pos = vec2({1200.f / 3.f, 320.f});
+	else if (state == 2)
+		m_pointer_pos = vec2({1200.f / 3.f, 480.f});
+	else if (state == 3)
+		m_pointer_pos = vec2({1200.f / 3.f, 640.f});
 }
 
-void LevelScreen::draw(const mat3 &projection)
+// TODO -- remove hardcoded pos
+void LevelScreen::draw(const mat3 &proj)
 {
 	// pointer
+	vec2 pointer_scale = vec2({pointer.width / (8 * 1200.f), pointer.height / (8 * 1200.f)});
+	//vec2 m_pointer_pos
+	draw_element(proj, pointer, m_pointer_pos, pointer_scale);
+
+	// tutorial
+	vec2 tutorial_pos = vec2({600.f, 160.f});
+	vec2 tutorial_scale = vec2({tutorial.width / (2 * 1200.f), tutorial.height / (2 * 1200.f)});
+	draw_element(proj, tutorial, tutorial_pos, tutorial_scale);
+
+	//level_1
+	vec2 level_1_pos = vec2({600.f, 320.f});
+	vec2 level_1_scale = vec2({level_1.width / (2 * 1200.f), level_1.height / (2 * 1200.f)});
+	draw_element(proj, level_1, level_1_pos, level_1_scale);
+
+	//level_2
+	vec2 level_2_pos = vec2({600.f, 480.f});
+	vec2 level_2_scale = vec2({level_2.width / (2 * 1200.f), level_2.height / (2 * 1200.f)});
+	draw_element(proj, level_2, level_2_pos, level_2_scale);
+
+	// level_3
+	vec2 level_3_pos = vec2({600.f, 640.f});
+	vec2 level_3_scale = vec2({level_3.width / (2 * 1200.f), level_3.height / (2 * 1200.f)});
+	draw_element(proj, level_3, level_3_pos, level_3_scale);
+}
+
+void LevelScreen::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
+{
 	// transformation
 	transform.begin();
-	transform.translate(pointer_position);
-	transform.scale(mul(physics.scale, 0.10f));
+	transform.translate(pos);
+	transform.scale(scale);
 	transform.end();
 
 	// set shaders
@@ -171,203 +194,13 @@ void LevelScreen::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pointer.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	// tutorial
-	// transformation
-	transform.begin();
-	transform.translate({motion.position.x, 150.f});
-	transform.scale({0.5f, 0.1f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glEnable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tutorial.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	//level1
-	// transformation
-	transform.begin();
-	transform.translate(vec2({motion.position.x, 325.f}));
-	transform.scale({0.4f, 0.09f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glEnable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, level1.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	//level2
-	// transformation
-	transform.begin();
-	transform.translate(vec2({motion.position.x, 485.0f}));
-	transform.rotate(motion.radians);
-	transform.scale({0.4f, 0.09f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glEnable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, level2.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	// level3
-	// transformation
-	transform.begin();
-	transform.translate(vec2({motion.position.x, 645.0f}));
-	transform.rotate(motion.radians);
-	transform.scale({0.4f, 0.09f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glEnable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, level3.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&proj);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);

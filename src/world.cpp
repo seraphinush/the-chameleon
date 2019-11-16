@@ -155,7 +155,7 @@ bool World::init(vec2 screen)
 
 	return m_start_screen.init(screen) &&
 		   m_control_screen.init(screen) &&
-		   m_level_screen.init() &&
+		   m_level_screen.init(screen) &&
 		   m_cutscene.init() &&
 		   m_hud.init() &&
 		   m_map.init() &&
