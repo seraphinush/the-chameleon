@@ -14,11 +14,13 @@ class StartScreen : public Entity
 	static Texture quit;
 	static Texture game_title;
 
-	vec2 pointer_position;
+	vec2 pointer_pos;
 
 public:
-	bool init();
+	bool init(vec2 screen);
 	void destroy();
 	void update(unsigned int game_state);
+
 	void draw(const mat3& projection) override;
+	void draw_element(const mat3& projection, const Texture& texture, vec2 pos, vec2 scale);
 };

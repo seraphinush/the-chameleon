@@ -153,7 +153,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_start_screen.init() &&
+	return m_start_screen.init(screen) &&
 		   m_control_screen.init(screen) &&
 		   m_level_screen.init() &&
 		   m_cutscene.init() &&
