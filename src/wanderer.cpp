@@ -74,15 +74,8 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	//motion.radians = 0.f;
 	motion.speed = config_speed;
 	physics.scale = { config_scale, config_scale };
-
-	// TO REMOVE - placeholder for randomize path wall collision
-	m_wall_up = false;
-	m_wall_down = false;
-	m_wall_left = false;
-	m_wall_right = false;
 
 	return true;
 }
@@ -214,31 +207,24 @@ vec2 Wanderer::get_position() const
 }
 
 // collision
-void Wanderer::set_wall_collision(char direction, bool value)
-{
-	if (direction == 'R') m_wall_right = value;
-	else if (direction == 'L') m_wall_left = value;
-	else if (direction == 'U') m_wall_up = value;
-	else if (direction == 'D') m_wall_down = value;
-}
-
 vec2 Wanderer::get_bounding_box() const
 {
 	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
 }
 
-void Wanderer::alert_wanderer_status(bool alert) 
+// alert
+void Wanderer::set_alert_mode(bool val) 
 {
-	if (alert_mode == false && alert == true)
+	if (!alert_mode && val)
 	{
-		alert_mode = true;
+		alert_mode = val;
 		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
 		current_immediate_goal_index = 1;
 		chase_refresh_timer = CHASE_REFRESH_MS;
 	}
-	else if (alert_mode == true && alert == false)
+	else if (alert_mode && !val)
 	{
-		alert_mode = false;
+		alert_mode = val;
 		set_position(m_map->get_tile_center_coords(m_path[0]));
 		current_goal_index = 1;
 		current_immediate_goal_index = 0;
@@ -246,7 +232,7 @@ void Wanderer::alert_wanderer_status(bool alert)
 	}
 }
 
-
+// ai
 void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 {
 	bool limit_set = limit_search != 0;

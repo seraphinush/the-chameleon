@@ -2,14 +2,14 @@
 
 // internal
 #include "common.hpp"
-#include "map.hpp"
+
 #include "char.hpp"
+#include "map.hpp"
 
 #include <vector>
 
-class Map;
-
 class Char;
+class Map;
 
 struct path_construction
 {
@@ -18,7 +18,6 @@ struct path_construction
 	int expected_total;
 };
 
-//class Map;
 // guard type 1 : wanderer
 class Wanderer : public Entity
 {
@@ -29,12 +28,6 @@ private:
 	// config
 	const float config_scale = 0.30f;
 	const float config_speed = 30.f;
-
-	// TO REMOVE - placeholder for randomize path wall collision
-	bool m_wall_up;
-	bool m_wall_down;
-	bool m_wall_left;
-	bool m_wall_right;
 	
 	// direction
 	vec2 direction = { 1, 0 };
@@ -44,7 +37,7 @@ private:
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 
-	// Pathing AI
+	// pathing ai
 	Map* m_map;
 	Char* m_player;
 	std::vector<vec2> m_path;
@@ -55,8 +48,7 @@ private:
 	int chase_refresh_timer;
 
 private:
-
-	// Pathing AI
+	// pathing ai
 	void calculate_immediate_path(vec2 goal, int limit_search);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);
@@ -70,12 +62,13 @@ public:
 	void update(float ms);
 	void draw(const mat3& projection) override;
 
+	// movement
 	void set_position(vec2 position);
 	vec2 get_position() const;
 
 	// collision
-	void set_wall_collision(char direction, bool value);
 	vec2 get_bounding_box() const;
 
-	void alert_wanderer_status(bool alert);
+	// alert
+	void set_alert_mode(bool val);
 };

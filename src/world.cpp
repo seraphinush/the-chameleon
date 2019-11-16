@@ -234,7 +234,7 @@ bool World::update(float elapsed_ms)
 
 		// unalert wanderers
 		for (auto &wanderer : m_wanderers)
-			wanderer.alert_wanderer_status(false);
+			wanderer.set_alert_mode(false);
 	}
 
 	// IF ALERT MODE OVERLAY
@@ -300,7 +300,7 @@ bool World::update(float elapsed_ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(elapsed_ms * m_current_speed);
-			wanderer.alert_wanderer_status(alert_mode);
+			wanderer.set_alert_mode(alert_mode);
 		}
 
 		//////////////////////
@@ -471,7 +471,7 @@ bool World::update(float elapsed_ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(elapsed_ms * m_current_speed);
-			wanderer.alert_wanderer_status(alert_mode);
+			wanderer.set_alert_mode(alert_mode);
 		}
 
 		//////////////////////
@@ -683,7 +683,7 @@ bool World::update(float elapsed_ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(elapsed_ms * m_current_speed);
-			wanderer.alert_wanderer_status(alert_mode);
+			wanderer.set_alert_mode(alert_mode);
 		}
 
 		// update shooter
