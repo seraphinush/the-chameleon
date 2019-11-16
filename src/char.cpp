@@ -7,6 +7,7 @@
 #include <algorithm>
 
 Texture Char::char_texture;
+
 using namespace std;
 
 bool Char::init(vec2 spos)

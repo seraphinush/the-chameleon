@@ -6,7 +6,7 @@
 
 Texture ControlScreen::control_screen;
 
-bool ControlScreen::init(vec2 screen)
+bool ControlScreen::init()
 {
 	// load shared texture
 	if (!control_screen.is_valid())
@@ -56,11 +56,11 @@ bool ControlScreen::init(vec2 screen)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.position.x = screen.x / 2;
-	motion.position.y = screen.y / 2;
+	motion.position.x = SCREEN_WIDTH / 2;
+	motion.position.y = SCREEN_HEIGHT / 2;
 
-	physics.scale.x = screen.x / control_screen.width;
-	physics.scale.y = screen.y / control_screen.height;
+	physics.scale.x = SCREEN_WIDTH / control_screen.width;
+	physics.scale.y = SCREEN_HEIGHT / control_screen.height;
 
 	return true;
 }

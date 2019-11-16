@@ -12,8 +12,7 @@ Texture StartScreen::quit;
 Texture StartScreen::game_title;
 Texture StartScreen::pointer;
 
-// TODO -- remove screen size, and add to constant page (constants.h)
-bool StartScreen::init(vec2 screen)
+bool StartScreen::init()
 {
 	// load shared texture
 	if (!start_game.is_valid())
@@ -70,9 +69,8 @@ bool StartScreen::init(vec2 screen)
 		}
 	}
 
-	// TODO -- the position corresponds to the center of the texture
-	float wr = std::max(screen.x, screen.y) * 0.5f;
-	float hr = std::max(screen.x, screen.y) * 0.5f;
+	float wr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
+	float hr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = {-wr, +hr, -0.0f};
@@ -125,53 +123,51 @@ void StartScreen::destroy()
 	effect.release();
 }
 
-// TODO -- remove hardcoded locs for relative position on screen
 void StartScreen::update(unsigned int state)
 {
 	if (state == 0)
-		pointer_pos = vec2({1200.f / 2.f, 160.f});
+		pointer_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5)});
 	else if (state == 1)
-		pointer_pos = vec2({1200.f / 2.f, 320.f});
+		pointer_pos = vec2({SCREEN_WIDTH / 2.f, 2 * (SCREEN_HEIGHT / 5)});
 	else if (state == 2)
-		pointer_pos = vec2({1200.f / 2.f, 480.f});
+		pointer_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5)});
 	else if (state == 3)
-		pointer_pos = vec2({1200.f / 2.f, 640.f});
+		pointer_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5)});
 }
 
-// TODO -- use constants.h for relative position on screen
 // -- edit images
 // -- remove hardcoded locs
 // -- remove hardcoded scale
 void StartScreen::draw(const mat3 &projection)
 {
 	// pointer
-	vec2 pointer_scale = vec2({pointer.width / (8 * 1200.f), pointer.height / (8 * 1200.f)});
+	vec2 pointer_scale = vec2({pointer.width / (8 * SCREEN_WIDTH), pointer.height / (8 * SCREEN_WIDTH)});
 	//vec2 pointer_pos
 	draw_element(projection, pointer, pointer_pos, pointer_scale);
 
 	// start
-	vec2 start_game_scale = vec2({start_game.width / (2 * 1200.f), start_game.height / (2 * 1200.f)});
-	vec2 start_game_pos = vec2({850.f, 1 * (800.f / 5.f)});
+	vec2 start_game_scale = vec2({start_game.width / (2 * SCREEN_WIDTH), start_game.height / (2 * SCREEN_WIDTH)});
+	vec2 start_game_pos = vec2({850.f, 1 * (SCREEN_HEIGHT / 5.f)});
 	draw_element(projection, start_game, start_game_pos, start_game_scale);
 
 	// controls
-	vec2 controls_scale = vec2({controls.width / (2 * 1200.f), controls.height / (2 * 1200.f)});
-	vec2 controls_pos = vec2({850.f, 2 * (800.f / 5.f)});
+	vec2 controls_scale = vec2({controls.width / (2 * SCREEN_WIDTH), controls.height / (2 * SCREEN_WIDTH)});
+	vec2 controls_pos = vec2({850.f, 2 * (SCREEN_HEIGHT / 5.f)});
 	draw_element(projection, controls, controls_pos, controls_scale);
 	
 	// levels
-	vec2 levels_scale = vec2({levels.width / (2 * 1200.f), levels.height / (2 * 1200.f)});
-	vec2 levels_pos = vec2({850.f, 3 * (800.f / 5.f)});
+	vec2 levels_scale = vec2({levels.width / (2 * SCREEN_WIDTH), levels.height / (2 * SCREEN_WIDTH)});
+	vec2 levels_pos = vec2({850.f, 3 * (SCREEN_HEIGHT / 5.f)});
 	draw_element(projection, levels, levels_pos, levels_scale);
 
 	// quit
-	vec2 quit_scale = vec2({quit.width / (2 * 1200.f), quit.height / (2 * 1200.f)});
-	vec2 quit_pos = vec2({850.f, 4 * (800.f / 5.f)});
+	vec2 quit_scale = vec2({quit.width / (2 * SCREEN_WIDTH), quit.height / (2 * SCREEN_WIDTH)});
+	vec2 quit_pos = vec2({850.f, 4 * (SCREEN_HEIGHT / 5.f)});
 	draw_element(projection, quit, quit_pos, quit_scale);
 
 	// game title
-	vec2 game_title_scale = vec2({game_title.width / 1200.f, game_title.height / 1200.f});
-	vec2 game_title_pos = vec2({350.f, 400.f});
+	vec2 game_title_scale = vec2({game_title.width / SCREEN_WIDTH, game_title.height / SCREEN_WIDTH});
+	vec2 game_title_pos = vec2({350.f, SCREEN_HEIGHT / 2.f});
 	draw_element(projection, game_title, game_title_pos, game_title_scale);
 }
 

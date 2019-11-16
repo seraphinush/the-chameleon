@@ -32,6 +32,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 
 set(SOURCE_FILES
 	src/common.cpp
+  src/constants.hpp
 	src/main.cpp
 	src/spotter.cpp
   src/wanderer.cpp

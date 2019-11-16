@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "constants.hpp"
 
 // start screen
 class StartScreen : public Entity
@@ -17,7 +18,7 @@ class StartScreen : public Entity
 	vec2 pointer_pos;
 
 public:
-	bool init(vec2 screen);
+	bool init();
 	void destroy();
 	void update(unsigned int game_state);
 

@@ -5,26 +5,24 @@
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
 
-// stlib
+// stdlib
 #include <chrono>
 #include <iostream>
 
 using Clock = std::chrono::high_resolution_clock;
 
-// Global 
+// global 
 World world;
-const int width = 1200;
-const int height = 800;
 
 const float TICK = 40.f;
 
-// Entry point
+// entry point
 int main(int argc, char* argv[])
 {
-	// Initializing world (after renderer.init().. sorry)
-	if (!world.init({ (float)width, (float)height }))
+	// initializing world (after renderer.init().. sorry)
+	if (!world.init())
 	{
-		// Time to read the error message
+		// time to read the error message
 		std::cout << "Press any key to exit" << std::endl;
 		std::cin.get();
 		return EXIT_FAILURE;
@@ -38,10 +36,10 @@ int main(int argc, char* argv[])
 	// variable timestep loop
 	while (!world.is_over())
 	{
-		// Processes system messages, if this wasn't present the window would become unresponsive
+		// processes system messages, if this wasn't present the window would become unresponsive
 		glfwPollEvents();
 
-		// Calculating elapsed times in milliseconds from the previous iteration
+		// calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
 		float ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 

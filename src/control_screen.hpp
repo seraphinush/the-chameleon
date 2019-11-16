@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "constants.hpp"
 
 // control screen
 class ControlScreen : public Entity
@@ -10,7 +11,7 @@ class ControlScreen : public Entity
 	static Texture control_screen;
 
 public:
-	bool init(vec2 screen);
+	bool init();
 	void destroy();
 	void draw(const mat3 &projection) override;
 };

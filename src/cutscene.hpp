@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "constants.hpp"
 
 // start screen
 class Cutscene : public Entity
@@ -25,9 +26,11 @@ class Cutscene : public Entity
 	vec2 right_scale = {0.08f, 0.8f};
 	vec2 enemy_scale = {0.08f, 0.8f};
 
-	int left_dialogues[43] = {1, 3, 6, 7, 10, 14, 15, 17, 19, 20, 26, 27, 30, 31, 34,
-								37, 39, 41, 43, 46, 47, 51, 53, 55, 57, 59, 61, 63, 67,
-								68, 69, 71, 73, 75, 78, 80, 81, 82, 84, 86, 88, 90, 92};
+	int left_dialogues[43] = {
+		1, 3, 6, 7, 10, 14, 15, 17, 19, 20, 26, 27, 30, 31, 34,
+		37, 39, 41, 43, 46, 47, 51, 53, 55, 57, 59, 61, 63, 67,
+		68, 69, 71, 73, 75, 78, 80, 81, 82, 84, 86, 88, 90, 92
+	};
 
 	unsigned int current_cutscene_state;
 

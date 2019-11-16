@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "constants.hpp"
 
 // level screen
 class LevelScreen : public Entity
@@ -17,7 +18,7 @@ private:
 	vec2 m_pointer_pos;
 
 public:
-	bool init(vec2 screen);
+	bool init();
 	void destroy();
 	void update(unsigned int game_state);
 

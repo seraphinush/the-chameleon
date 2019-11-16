@@ -99,7 +99,7 @@ void Hud::destroy()
 
 void Hud::update(unsigned int game_state, vec2 char_position)
 {
-  if (game_state == 1000 || game_state == 2000 || game_state == 3000)
+  if (game_state == LEVEL_1 || game_state == LEVEL_2 || game_state == LEVEL_3)
   {
     motion.position = {char_position.x + 95.f, char_position.y - 55.f};
     physics.scale = {0.035f, 0.035f};
@@ -109,7 +109,7 @@ void Hud::update(unsigned int game_state, vec2 char_position)
     green_tooltip_position = {motion.position.x - 17, motion.position.y + 9.5f};
     tooltip_scale = {0.055f, 0.015f};
   }
-  else if (game_state == 6000)
+  else if (game_state == LEVEL_TUTORIAL)
   {
     motion.position = {1075.f, 120.f};
     physics.scale = {0.14f, 0.14f};

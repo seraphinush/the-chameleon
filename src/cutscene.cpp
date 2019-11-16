@@ -138,7 +138,7 @@ void Cutscene::draw(const mat3 &projection)
 	// Dialogues
 	// transformation
 	transform.begin();
-	if (current_cutscene_state != 6000)
+	if (current_cutscene_state != LEVEL_TUTORIAL)
 	{
 		if (is_left_dialogue())
 			transform.translate(left_dialogue_position);
@@ -300,15 +300,15 @@ void Cutscene::draw(const mat3 &projection)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state == 6000 || current_cutscene_state == 2500)
+	else if (current_cutscene_state == LEVEL_TUTORIAL || current_cutscene_state == LEVEL_2_CUTSCENE)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state == 1500 && dialogue_counter <= 66)
+	else if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter <= 66)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state == 3500 && dialogue_counter >= 83)
+	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 83)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
@@ -358,15 +358,15 @@ void Cutscene::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// draw
-	if (current_cutscene_state == 1500 && dialogue_counter >= 58)
+	if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter >= 58)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state == 2500 && dialogue_counter >= 76)
+	else if (current_cutscene_state == LEVEL_2_CUTSCENE && dialogue_counter >= 76)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state == 3500 && dialogue_counter >= 81)
+	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 81)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
@@ -376,13 +376,13 @@ bool Cutscene::dialogue_done(unsigned int cutscene_state)
 {
 	if (cutscene_state == 4 && dialogue_counter == 27)
 		return true;
-	else if (cutscene_state == 6000 && dialogue_counter == 49)
+	else if (cutscene_state == LEVEL_TUTORIAL && dialogue_counter == 49)
 		return true;
-	else if (cutscene_state == 1500 && dialogue_counter == 69)
+	else if (cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter == 69)
 		return true;
-	else if (cutscene_state == 2500 && dialogue_counter == 80)
+	else if (cutscene_state == LEVEL_2_CUTSCENE && dialogue_counter == 80)
 		return true;
-	else if (cutscene_state == 3500 && dialogue_counter == 92)
+	else if (cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter == 92)
 		return true;
 
 	return false;
@@ -426,7 +426,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
-	else if (cutscene_state == 6000)
+	else if (cutscene_state == LEVEL_TUTORIAL)
 	{
 		string temp_str = "data/textures/cutscenes/tutorial/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
@@ -450,7 +450,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		left_texture_position = {200.f, 740.f};
 		right_texture_position = {1000.f, 730.f};
 	}
-	else if (cutscene_state == 1500)
+	else if (cutscene_state == LEVEL_1_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level1/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
@@ -477,7 +477,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
-	else if (cutscene_state == 2500)
+	else if (cutscene_state == LEVEL_2_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level2/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
@@ -504,7 +504,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
-	else if (cutscene_state == 3500)
+	else if (cutscene_state == LEVEL_3_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level3/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
@@ -549,7 +549,7 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
-	else if (cutscene_state == 6000 && counter_value == 28)
+	else if (cutscene_state == LEVEL_TUTORIAL && counter_value == 28)
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
@@ -563,7 +563,7 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_texture_position = {200.f, 740.f};
 		right_texture_position = {1000.f, 730.f};
 	}
-	else if (cutscene_state == 1500 && counter_value == 50)
+	else if (cutscene_state == LEVEL_1_CUTSCENE && counter_value == 50)
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level1/50.png"));
@@ -580,7 +580,7 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		enemy_texture.load_from_file(textures_path("wanderers/1.png"));
 		enemy_scale = {0.08f, 0.8f};
 	}
-	else if (cutscene_state == 2500 && counter_value == 70)
+	else if (cutscene_state == LEVEL_2_CUTSCENE && counter_value == 70)
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level2/70.png"));
@@ -597,7 +597,7 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		enemy_texture.load_from_file(textures_path("spotters/1.png"));
 		enemy_scale = {0.08f, 0.7f};
 	}
-	else if (cutscene_state == 3500 && counter_value == 81)
+	else if (cutscene_state == LEVEL_3_CUTSCENE && counter_value == 81)
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level3/81.png"));

@@ -11,7 +11,7 @@ Texture LevelScreen::level_2;
 Texture LevelScreen::level_3;
 Texture LevelScreen::pointer;
 
-bool LevelScreen::init(vec2 screen)
+bool LevelScreen::init()
 {
 	// load shared texture
 	if (!tutorial.is_valid())
@@ -60,8 +60,8 @@ bool LevelScreen::init(vec2 screen)
 	}
 
 	// the position corresponds to the center of the texture
-	float wr = std::max(screen.x, screen.y) * 0.5f;
-	float hr = std::max(screen.x, screen.y) * 0.5f;
+	float wr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
+	float hr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = {-wr, +hr, -0.0f};
@@ -114,45 +114,44 @@ void LevelScreen::destroy()
 	effect.release();
 }
 
-// TODO -- remove hardcoded locs
 void LevelScreen::update(unsigned int state)
 {
 	if (state == 0)
-		m_pointer_pos = vec2({1200.f / 3.f, 160.f});
+		m_pointer_pos = vec2({SCREEN_WIDTH / 3.f, 1 * (SCREEN_HEIGHT / 5.f)});
 	else if (state == 1)
-		m_pointer_pos = vec2({1200.f / 3.f, 320.f});
+		m_pointer_pos = vec2({SCREEN_WIDTH / 3.f, 2 * (SCREEN_HEIGHT / 5.f)});
 	else if (state == 2)
-		m_pointer_pos = vec2({1200.f / 3.f, 480.f});
+		m_pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 5.f)});
 	else if (state == 3)
-		m_pointer_pos = vec2({1200.f / 3.f, 640.f});
+		m_pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 5.f)});
 }
 
 // TODO -- remove hardcoded pos
 void LevelScreen::draw(const mat3 &proj)
 {
 	// pointer
-	vec2 pointer_scale = vec2({pointer.width / (8 * 1200.f), pointer.height / (8 * 1200.f)});
+	vec2 pointer_scale = vec2({pointer.width / (8 * SCREEN_WIDTH), pointer.height / (8 * SCREEN_WIDTH)});
 	//vec2 m_pointer_pos
 	draw_element(proj, pointer, m_pointer_pos, pointer_scale);
 
 	// tutorial
-	vec2 tutorial_pos = vec2({600.f, 160.f});
-	vec2 tutorial_scale = vec2({tutorial.width / (2 * 1200.f), tutorial.height / (2 * 1200.f)});
+	vec2 tutorial_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
+	vec2 tutorial_scale = vec2({tutorial.width / (2 * SCREEN_WIDTH), tutorial.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, tutorial, tutorial_pos, tutorial_scale);
 
 	//level_1
-	vec2 level_1_pos = vec2({600.f, 320.f});
-	vec2 level_1_scale = vec2({level_1.width / (2 * 1200.f), level_1.height / (2 * 1200.f)});
+	vec2 level_1_pos = vec2({SCREEN_WIDTH / 2.f, 2 * (SCREEN_HEIGHT / 5.f)});
+	vec2 level_1_scale = vec2({level_1.width / (2 * SCREEN_WIDTH), level_1.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, level_1, level_1_pos, level_1_scale);
 
 	//level_2
-	vec2 level_2_pos = vec2({600.f, 480.f});
-	vec2 level_2_scale = vec2({level_2.width / (2 * 1200.f), level_2.height / (2 * 1200.f)});
+	vec2 level_2_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	vec2 level_2_scale = vec2({level_2.width / (2 * SCREEN_WIDTH), level_2.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, level_2, level_2_pos, level_2_scale);
 
 	// level_3
-	vec2 level_3_pos = vec2({600.f, 640.f});
-	vec2 level_3_scale = vec2({level_3.width / (2 * 1200.f), level_3.height / (2 * 1200.f)});
+	vec2 level_3_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
+	vec2 level_3_scale = vec2({level_3.width / (2 * SCREEN_WIDTH), level_3.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, level_3, level_3_pos, level_3_scale);
 }
 

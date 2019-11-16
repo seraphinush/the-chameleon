@@ -21,7 +21,7 @@ static constexpr float TILE_SIZE = 20.f;
 // 800 * 1200 Map of Level 1
 // 61 for the \n of all chars
 // W = Wall, S = Wall_Shadow, R = Red Tile, G = Green tile, B = Blue Tile, Y = Yellow Tile, C = Plain_Corridor
-char level_test[40][61] = {
+char map_test[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
 	"WCCCCCGGGGGGGGGGGGGGGGGGGGYYYYYRRRRRRRRRRRCCCCCCCCCCCCCCCCCW",
@@ -107,7 +107,7 @@ char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
-char level_1[40][61] = {
+char map_level_1[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WSSSSSSWSSSSSSSSSWSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSWSSSSSSSSW",
 	"WBBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
@@ -150,7 +150,7 @@ char level_1[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 };
 
-char level_2[40][61] = {
+char map_level_2[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WSSSSSSSSSSWSSSSSSSSSSSWSSSSSSSSSSSSSWSSSSSSSSSWSSSSSSSSSSSW",
 	"WGGGGGGGGGGWYYYYYYYYYYYWRRYYYYYYYYYYYWBBBBZBBBBWWBBBBBBBBBBW",
@@ -193,7 +193,7 @@ char level_2[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 };
 
-char level_3[40][61] = {
+char map_level_3[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WSSSSSSSSSSSSWSSSSSWSSSSSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSSW",
 	"WBBBBBBBBBBBBWCCCCCWBBGGGGGGGWGGGGGGGGGGGGGGBBBBBBBBBBBBBYYW",
@@ -615,7 +615,7 @@ void Map::set_current_map(int level)
 {
 	switch (level)
 	{
-	case 6000:
+	case LEVEL_TUTORIAL:
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 61; x++)
@@ -624,32 +624,38 @@ void Map::set_current_map(int level)
 			}
 		}
 		break;
-	case 1000:
+	case LEVEL_1:
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 61; x++)
 			{
-				current_level[y][x] = level_1[y][x];
+				current_level[y][x] = map_level_1[y][x];
 			}
 		}
 		break;
-	case 2000:
+	case LEVEL_2:
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 61; x++)
 			{
-				current_level[y][x] = level_2[y][x];
+				current_level[y][x] = map_level_2[y][x];
 			}
 		}
 		break;
-	case 3000:
+	case LEVEL_3:
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 61; x++)
 			{
-				current_level[y][x] = level_3[y][x];
+				current_level[y][x] = map_level_3[y][x];
 			}
 		}
+		break;
+	case LEVEL_4:
+		//
+		break;
+	case LEVEL_5:
+		//
 		break;
 	}
 }

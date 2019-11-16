@@ -1,8 +1,10 @@
 #pragma once
 
 // internal
-#include "char.hpp"
 #include "common.hpp"
+#include "constants.hpp"
+
+#include "char.hpp"
 class Char;
 
 class Map : public Entity

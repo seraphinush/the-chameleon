@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "constants.hpp"
 
 // complete screen
 class CompleteScreen : public Entity
@@ -10,7 +11,7 @@ class CompleteScreen : public Entity
 	static Texture complete_screen;
 
 public:
-	bool init(vec2 screen);
+	bool init();
 	void destroy();
 	void draw(const mat3 &projection) override;
 };

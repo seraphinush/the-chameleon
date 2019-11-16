@@ -6,7 +6,7 @@
 
 Texture CompleteScreen::complete_screen;
 
-bool CompleteScreen::init(vec2 screen)
+bool CompleteScreen::init()
 {
 	// load shared texture
 	if (!complete_screen.is_valid())
@@ -56,11 +56,11 @@ bool CompleteScreen::init(vec2 screen)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.position.x = screen.x / 2;
-	motion.position.y = screen.y / 2;
+	motion.position.x = SCREEN_WIDTH / 2;
+	motion.position.y = SCREEN_HEIGHT / 2;
 
-	physics.scale.x = screen.x / complete_screen.width;
-	physics.scale.y = screen.y / complete_screen.height;
+	physics.scale.x = SCREEN_WIDTH / complete_screen.width;
+	physics.scale.y = SCREEN_HEIGHT / complete_screen.height;
 
 	return true;
 }

@@ -9,22 +9,17 @@
 
 namespace
 {
+// TODO -- need to remove
 const size_t MAX_SPOTTERS = 5;
 const size_t MAX_SHOOTERS = 5;
-// Cooldown
-const int MAX_COOLDOWN = 50;
-int cooldown = MAX_COOLDOWN;
-// Particles
-bool spawn_particles = false;
 
+const size_t MAX_COOLDOWN = 50;
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
-int alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
 
-// fade/flash
 const float FADE_TIME = 0.7;
 const float FLASH_TIME = 0.5;
 
-// TODO
+// TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
 vec2 shooter_loc[5];
 
@@ -38,10 +33,9 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 
 World::World() : m_control(0),
-				 m_current_game_state(0),
-				 m_current_level_state(0),
-				 m_game_state(START_SCREEN),
-				 m_show_story_screen(true)
+	m_current_game_state(0),
+	m_current_level_state(0),
+	m_game_state(START_SCREEN)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -52,21 +46,21 @@ World::~World()
 }
 
 // initialization
-bool World::init(vec2 screen)
+bool World::init()
 {
 	// TODO -- need static spawn of spotters per level
 	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
 	spotter_loc[0] = {100, 100};
-	spotter_loc[1] = {screen.x - 100, 100};
-	spotter_loc[2] = {100, screen.y - 100};
-	spotter_loc[3] = {screen.x - 100, screen.y - 100};
+	spotter_loc[1] = {SCREEN_WIDTH - 100, 100};
+	spotter_loc[2] = {100, SCREEN_HEIGHT - 100};
+	spotter_loc[3] = {SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100};
 	spotter_loc[4] = {800, 500};
 
 	// TODO
 	shooter_loc[0] = {100 + 100, 100 + 50};
-	shooter_loc[1] = {screen.x - 50, 100 + 50};
-	shooter_loc[2] = {150, screen.y - 150};
-	shooter_loc[3] = {screen.x - 50, screen.y - 50};
+	shooter_loc[1] = {SCREEN_WIDTH - 50, 100 + 50};
+	shooter_loc[2] = {150, SCREEN_HEIGHT - 150};
+	shooter_loc[3] = {SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50};
 	shooter_loc[4] = {850, 550};
 
 	// GLFW / OGL Initialization
@@ -86,7 +80,7 @@ bool World::init(vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "The Chameleon", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)SCREEN_WIDTH, (int)SCREEN_HEIGHT, "The Chameleon", nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -114,7 +108,7 @@ bool World::init(vec2 screen)
 	// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
 	int fb_width, fb_height;
 	glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
-	m_screen_scale = static_cast<float>(fb_width) / screen.x;
+	m_screen_scale = static_cast<float>(fb_width) / SCREEN_WIDTH;
 
 	// initialize the screen texture
 	m_screen_tex.create_from_screen(m_window);
@@ -151,18 +145,22 @@ bool World::init(vec2 screen)
 	Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
+	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
+	m_cooldown = MAX_COOLDOWN;
 	m_current_speed = 1.f;
+	m_recent_dash = false;
+	m_spawn_particles = false;
 
-	return m_start_screen.init(screen) &&
-		   m_control_screen.init(screen) &&
-		   m_level_screen.init(screen) &&
-		   m_cutscene.init() &&
-		   m_hud.init() &&
-		   m_map.init() &&
-		   m_char.init(m_map.get_spawn_pos()) &&
-		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
-		   m_particles_emitter.init() &&
-		   m_complete_screen.init(screen);
+	return m_start_screen.init() &&
+		m_control_screen.init() &&
+		m_level_screen.init() &&
+		m_cutscene.init() &&
+		m_hud.init() &&
+		m_map.init() &&
+		m_char.init(m_map.get_spawn_pos()) &&
+		m_overlay.init(alert_mode, MAX_COOLDOWN) &&
+		m_particles_emitter.init() &&
+		m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -181,32 +179,34 @@ void World::destroy()
 
 	Mix_CloseAudio();
 
-	for (auto &spotter : m_spotters)
-		spotter.destroy();
-	for (auto &wanderer : m_wanderers)
-		wanderer.destroy();
-	m_wanderers.clear();
-	m_spotters.clear();
 	m_char.destroy();
-	m_particles_emitter.destroy();
 	m_map.destroy();
 	m_overlay.destroy();
+	m_particles_emitter.destroy();
+	for (auto& shooter : m_shooters)
+		shooter.destroy();
+	m_wanderers.clear();
+	for (auto& spotter : m_spotters)
+		spotter.destroy();
+	m_spotters.clear();
+	for (auto& wanderer : m_wanderers)
+		wanderer.destroy();
+	m_wanderers.clear();
 	m_start_screen.destroy();
 	m_control_screen.destroy();
 	m_level_screen.destroy();
 	m_cutscene.destroy();
-	m_hud.destroy();
 	m_complete_screen.destroy();
+	m_hud.destroy();
 
 	glfwDestroyWindow(m_window);
 }
 
 // update our game world
-bool World::update(float elapsed_ms)
+bool World::update(float ms)
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = {(float)w / m_screen_scale, (float)h / m_screen_scale};
 
 	m_start_screen.update(m_current_game_state);
 	m_level_screen.update(m_current_level_state);
@@ -216,9 +216,9 @@ bool World::update(float elapsed_ms)
 	// COOLDOWN
 	//////////////////////
 
-	if (alert_mode_cooldown < MAX_ALERT_MODE_COOLDOWN)
+	if (m_alert_mode_cooldown < MAX_ALERT_MODE_COOLDOWN)
 	{
-		alert_mode_cooldown++;
+		m_alert_mode_cooldown++;
 	}
 	else
 	{
@@ -245,10 +245,10 @@ bool World::update(float elapsed_ms)
 	}
 
 	// cooldown update
-	if (!(cooldown >= MAX_COOLDOWN))
+	if (!(m_cooldown >= MAX_COOLDOWN))
 	{
-		cooldown++;
-		m_overlay.set_cooldown(cooldown);
+		m_cooldown++;
+		m_overlay.set_cooldown(m_cooldown);
 	}
 
 	if (m_game_state == LEVEL_1)
@@ -258,7 +258,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.check_wall(m_char, elapsed_ms);
+		m_map.check_wall(m_char, ms);
 
 		// collision, char-wanderer
 		for (const auto &wanderer : m_wanderers)
@@ -293,13 +293,13 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// update char
-		m_char.update(elapsed_ms);
+		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
 		for (auto &wanderer : m_wanderers)
 		{
-			wanderer.update(elapsed_ms * m_current_speed);
+			wanderer.update(ms * m_current_speed);
 			wanderer.set_alert_mode(alert_mode);
 		}
 
@@ -320,8 +320,8 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_wall_collision())
 			{
 				m_char.set_dash(false);
-				recent_dash = true;
-				spawn_particles = true;
+				m_recent_dash = true;
+				m_spawn_particles = true;
 				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
 				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			}
@@ -330,10 +330,10 @@ bool World::update(float elapsed_ms)
 				m_char.set_dash(true);
 			}
 		}
-		if (recent_dash)
+		if (m_recent_dash)
 		{
-			recent_dash = false;
-			cooldown = 0;
+			m_recent_dash = false;
+			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
 				m_char.change_position({0.f, 5.f});
@@ -346,13 +346,13 @@ bool World::update(float elapsed_ms)
 		}
 
 		//particles update
-		m_particles_emitter.update(elapsed_ms);
+		m_particles_emitter.update(ms);
 
 		// Spawning new Particles
-		if (spawn_particles)
+		if (m_spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			spawn_particles = false;
+			m_spawn_particles = false;
 		}
 
 		// spawn wanderer
@@ -397,7 +397,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.check_wall(m_char, elapsed_ms);
+		m_map.check_wall(m_char, ms);
 
 		// collision, char-spotter
 		for (const auto &spotter : m_spotters)
@@ -449,7 +449,7 @@ bool World::update(float elapsed_ms)
 				{
 					alert_mode = true;
 					spotter.set_alert_mode(alert_mode);
-					alert_mode_cooldown = 0;
+					m_alert_mode_cooldown = 0;
 				}
 				break;
 			}
@@ -460,17 +460,17 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// update char
-		m_char.update(elapsed_ms);
+		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
-			spotter.update(elapsed_ms * m_current_speed);
+			spotter.update(ms * m_current_speed);
 
 		// update wanderers
 		for (auto &wanderer : m_wanderers)
 		{
-			wanderer.update(elapsed_ms * m_current_speed);
+			wanderer.update(ms * m_current_speed);
 			wanderer.set_alert_mode(alert_mode);
 		}
 
@@ -503,8 +503,8 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_wall_collision())
 			{
 				m_char.set_dash(false);
-				recent_dash = true;
-				spawn_particles = true;
+				m_recent_dash = true;
+				m_spawn_particles = true;
 				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
 				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			}
@@ -513,10 +513,10 @@ bool World::update(float elapsed_ms)
 				m_char.set_dash(true);
 			}
 		}
-		if (recent_dash)
+		if (m_recent_dash)
 		{
-			recent_dash = false;
-			cooldown = 0;
+			m_recent_dash = false;
+			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
 				m_char.change_position({0.f, 5.f});
@@ -529,13 +529,13 @@ bool World::update(float elapsed_ms)
 		}
 
 		//particles update
-		m_particles_emitter.update(elapsed_ms);
+		m_particles_emitter.update(ms);
 
 		// Spawning new Particles
-		if (spawn_particles)
+		if (m_spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			spawn_particles = false;
+			m_spawn_particles = false;
 		}
 
 		// spawn wanderer
@@ -580,7 +580,7 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.check_wall(m_char, elapsed_ms);
+		m_map.check_wall(m_char, ms);
 
 		// collision, char-spotter
 		for (const auto& spotter : m_spotters)
@@ -631,7 +631,7 @@ bool World::update(float elapsed_ms)
 				if (m_char.is_alive())
 				{
 					alert_mode = true;
-					alert_mode_cooldown = 0;
+					m_alert_mode_cooldown = 0;
 
 					// rotate to char
 					float angle = atan2((m_char.get_position().y - shooter.get_position().y), (m_char.get_position().x - shooter.get_position().x));
@@ -659,7 +659,7 @@ bool World::update(float elapsed_ms)
 				{
 					alert_mode = true;
 					spotter.set_alert_mode(alert_mode);
-					alert_mode_cooldown = 0;
+					m_alert_mode_cooldown = 0;
 				}
 				break;
 			}
@@ -670,19 +670,19 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// update char
-		m_char.update(elapsed_ms);
+		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update spotters
 		for (auto &spotter : m_spotters)
 		{
-			spotter.update(elapsed_ms * m_current_speed);
+			spotter.update(ms * m_current_speed);
 		}
 
 		// update wanderers
 		for (auto &wanderer : m_wanderers)
 		{
-			wanderer.update(elapsed_ms * m_current_speed);
+			wanderer.update(ms * m_current_speed);
 			wanderer.set_alert_mode(alert_mode);
 		}
 
@@ -693,7 +693,7 @@ bool World::update(float elapsed_ms)
 			shooter.set_alert_mode(alert_mode);
 
 			// TODO
-			shooter.update(elapsed_ms * m_current_speed);
+			shooter.update(ms * m_current_speed);
 			// angle to shooter, alternative solution to save bullet angle as part of bullet struct
 
 			// TODO
@@ -702,11 +702,11 @@ bool World::update(float elapsed_ms)
 			// TODO -- wrong location for collision and code flow
 			if (shooter.is_in_combat())
 			{
-				shooter.bullets.update(elapsed_ms * m_current_speed);
+				shooter.bullets.update(ms * m_current_speed);
 				if (m_char.is_colliding(shooter.bullets))
 				{
 					m_char.set_color(0);
-					cooldown = 0;
+					m_cooldown = 0;
 					m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
 				}
 			}
@@ -741,8 +741,8 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_wall_collision())
 			{
 				m_char.set_dash(false);
-				recent_dash = true;
-				spawn_particles = true;
+				m_recent_dash = true;
+				m_spawn_particles = true;
 				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
 				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			}
@@ -751,10 +751,10 @@ bool World::update(float elapsed_ms)
 				m_char.set_dash(true);
 			}
 		}
-		if (recent_dash)
+		if (m_recent_dash)
 		{
-			recent_dash = false;
-			cooldown = 0;
+			m_recent_dash = false;
+			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
 				m_char.change_position({0.f, 5.f});
@@ -767,13 +767,13 @@ bool World::update(float elapsed_ms)
 		}
 
 		//particles update
-		m_particles_emitter.update(elapsed_ms);
+		m_particles_emitter.update(ms);
 
 		// Spawning new Particles
-		if (spawn_particles)
+		if (m_spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			spawn_particles = false;
+			m_spawn_particles = false;
 		}
 		// spawn shooter
 		if (m_shooters.size() < MAX_SHOOTERS)
@@ -827,14 +827,14 @@ bool World::update(float elapsed_ms)
 		//////////////////////
 
 		// collision, char-wall
-		m_map.check_wall(m_char, elapsed_ms);
+		m_map.check_wall(m_char, ms);
 
 		//////////////////////
 		// UPDATE
 		//////////////////////
 
 		// update char
-		m_char.update(elapsed_ms);
+		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
 
 		//////////////////////
@@ -854,8 +854,8 @@ bool World::update(float elapsed_ms)
 			if (m_char.is_wall_collision())
 			{
 				m_char.set_dash(false);
-				recent_dash = true;
-				spawn_particles = true;
+				m_recent_dash = true;
+				m_spawn_particles = true;
 				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
 				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			}
@@ -864,10 +864,10 @@ bool World::update(float elapsed_ms)
 				m_char.set_dash(true);
 			}
 		}
-		if (recent_dash)
+		if (m_recent_dash)
 		{
-			recent_dash = false;
-			cooldown = 0;
+			m_recent_dash = false;
+			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
 				m_char.change_position({0.f, 5.f});
@@ -880,13 +880,13 @@ bool World::update(float elapsed_ms)
 		}
 
 		//particles update
-		m_particles_emitter.update(elapsed_ms);
+		m_particles_emitter.update(ms);
 
 		// Spawning new Particles
-		if (spawn_particles)
+		if (m_spawn_particles)
 		{
 			//fprintf(stderr, "spawn pebble called");
-			spawn_particles = false;
+			m_spawn_particles = false;
 		}
 
 		//////////////////////
@@ -1064,7 +1064,8 @@ void World::draw()
 		m_complete_screen.draw(projection_2D);
 		break;
 	case QUIT:
-		glfwDestroyWindow(m_window);
+		destroy();
+		exit(0);
 		break;
 	}
 
@@ -1238,9 +1239,6 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			}
 			else if (m_current_game_state == 0)
 			{
-				// TO REMOVE -- need to fix bug where story screen shrinks upon winning
-				//m_game_state = STORY_SCREEN : m_game_state = LEVEL_1;
-				//m_show_story_screen = false;
 				m_game_state = STORY_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
 			}
@@ -1321,7 +1319,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// color, set color, consequences
-	if (action == GLFW_PRESS && cooldown >= MAX_COOLDOWN && !m_char.is_dashing() && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_PRESS && m_cooldown >= MAX_COOLDOWN && !m_char.is_dashing() && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
@@ -1333,15 +1331,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
 			Mix_PlayChannel(-1, m_char_green_sound, 0);
-			cooldown = 0;
+			m_cooldown = 0;
 			m_char.set_color(2);
 			alert_mode = true;
-			alert_mode_cooldown = 0;
+			m_alert_mode_cooldown = 0;
 		}
 		// blue
 		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
 		{
-			cooldown = 0;
+			m_cooldown = 0;
 			m_char.set_color(3);
 		}
 		// yellow
@@ -1350,8 +1348,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_char.set_color(4);
 			m_map.set_flash(1);
 			alert_mode = true;
-			alert_mode_cooldown = 0;
-			cooldown = 0;
+			m_alert_mode_cooldown = 0;
+			m_cooldown = 0;
 		}
 	}
 
@@ -1380,28 +1378,28 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// skip dialogues
 	if (action == GLFW_PRESS && key == GLFW_KEY_SPACE)
 	{
-		if (m_game_state == 4)
+		if (m_game_state == STORY_SCREEN)
 		{
 			m_game_state = LEVEL_TUTORIAL;
 			m_map.set_current_map(LEVEL_TUTORIAL);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 28);
 		}
-		else if (m_game_state == 1500)
+		else if (m_game_state == LEVEL_1_CUTSCENE)
 		{
 			m_game_state = LEVEL_1;
 			m_map.set_current_map(LEVEL_1);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
 		}
-		else if (m_game_state == 2500)
+		else if (m_game_state == LEVEL_2_CUTSCENE)
 		{
 			m_game_state = LEVEL_2;
 			m_map.set_current_map(LEVEL_2);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 70);
 		}
-		else if (m_game_state == 3500)
+		else if (m_game_state == LEVEL_3_CUTSCENE)
 		{
 			m_game_state = LEVEL_3;
 			m_map.set_current_map(LEVEL_3);
@@ -1470,7 +1468,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 			m_hud.set_tooltip('Y', false);
 		}
 	}
-	else if (m_game_state == 6000)
+	else if (m_game_state == LEVEL_TUTORIAL)
 	{
 		// red tooltip
 		if (xpos >= 1053 && xpos <= 1094 && ypos >= 52 && ypos <= 91)
