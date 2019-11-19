@@ -176,6 +176,9 @@ private:
 
 	mat3 calculateProjectionMatrix(int width, int height);
 
+	// cutscene caller
+	void advance_to_cutscene();
+
 	// reset
 	void reset_game();
 };

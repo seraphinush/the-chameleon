@@ -251,109 +251,229 @@ bool World::update(float ms)
 		m_overlay.set_cooldown(m_cooldown);
 	}
 
-	if (m_game_state == LEVEL_1)
+
+	//////////////////////
+	// COLLISION
+	//////////////////////
+
+	// collision, char-wall
+	m_map.check_wall(m_char, ms);
+
+	// collision, char-wanderer
+	for (const auto& wanderer : m_wanderers)
 	{
-		//////////////////////
-		// COLLISION
-		//////////////////////
-
-		// collision, char-wall
-		m_map.check_wall(m_char, ms);
-
-		// collision, char-wanderer
-		for (const auto &wanderer : m_wanderers)
+		if (m_char.is_colliding(wanderer) && is_char_detectable())
 		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_map.set_char_dead();
-				}
-				m_char.kill();
-				break;
-			}
-		}
-
-		// collision, char-trophy
-		if (m_map.get_tile_type(m_char.get_position()) == 100) {
 			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
-				m_cutscene.set_dialogue_counter(LEVEL_2_CUTSCENE, 70);
-				m_game_state = LEVEL_2_CUTSCENE;
-				m_char.kill();
-				return true;
+				Mix_PlayChannel(-1, m_char_dead_sound, 0);
+				m_map.set_char_dead();
 			}
 			m_char.kill();
+			break;
 		}
+	}
 
-		//////////////////////
-		// UPDATE
-		//////////////////////
-
-		// update char
-		m_char.update(ms);
-		m_hud.update(m_game_state, m_char.get_position());
-
-		// update wanderers
-		for (auto &wanderer : m_wanderers)
+	// collision, char-trophy
+	if (m_map.get_tile_type(m_char.get_position()) == 100) {
+		if (m_char.is_alive())
 		{
-			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(alert_mode);
+			Mix_PlayChannel(-1, m_char_win_sound, 0);
+			advance_to_cutscene();
+			m_char.kill();
+			return true;
 		}
+		m_char.kill();
+	}
+
+	// collision, char-spotter
+	for (const auto& spotter : m_spotters)
+	{
+		if (m_char.is_colliding(spotter) && is_char_detectable())
+		{
+			if (m_char.is_alive())
+			{
+				Mix_PlayChannel(-1, m_char_dead_sound, 0);
+				m_map.set_char_dead();
+			}
+			m_char.kill();
+			break;
+		}
+	}
+
+	// proximity, char-shooter
+	for (auto& shooter : m_shooters)
+	{
+		if (m_char.is_colliding(shooter) && is_char_detectable())
+		{
+			if (m_char.is_alive())
+			{
+				alert_mode = true;
+				m_alert_mode_cooldown = 0;
+
+				// rotate to char
+				float angle = atan2((m_char.get_position().y - shooter.get_position().y), (m_char.get_position().x - shooter.get_position().x));
+				shooter.set_rotation(angle);
+
+				// SHOOTING AND COOLDOWN
+				shooter.set_in_combat(true);
+				shooter.bullets.cooldown -= 15.f;
+				if (shooter.bullets.cooldown < 0.f)
+				{
+					shooter.bullets.spawn_bullet(shooter.get_position(), angle);
+					shooter.bullets.cooldown = 1500.f;
+				}
+			}
+			break;
+		}
+	}
+
+	// proximity, spotter
+	for (auto& spotter : m_spotters)
+	{
+		if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+		{
+			if (m_char.is_alive())
+			{
+				alert_mode = true;
+				spotter.set_alert_mode(alert_mode);
+				m_alert_mode_cooldown = 0;
+			}
+			break;
+		}
+	}
+
+	//////////////////////
+	// UPDATE
+	//////////////////////
+
+	// update char
+	m_char.update(ms);
+	m_hud.update(m_game_state, m_char.get_position());
+
+	// update wanderers
+	for (auto& wanderer : m_wanderers)
+	{
+		wanderer.update(ms * m_current_speed);
+		wanderer.set_alert_mode(alert_mode);
+	}
+
+	// update spotters
+	for (auto& spotter : m_spotters)
+	{
+		spotter.update(ms * m_current_speed);
+	}
+
+	// update shooter
+	for (auto& shooter : m_shooters)
+	{
+		// TODO -- wrong location for proper code flow
+		shooter.set_alert_mode(alert_mode);
+
+		// TODO
+		shooter.update(ms * m_current_speed);
+		// angle to shooter, alternative solution to save bullet angle as part of bullet struct
+
+		// TODO
+		float angle = atan2((m_char.get_position().y - shooter.get_position().y), (m_char.get_position().x - shooter.get_position().x));
+
+		// TODO -- wrong location for collision and code flow
+		if (shooter.is_in_combat())
+		{
+			shooter.bullets.update(ms * m_current_speed);
+			if (m_char.is_colliding(shooter.bullets))
+			{
+				m_char.set_color(0);
+				m_cooldown = 0;
+				m_char.change_position({ 25.f * cos(angle), 25.f * sin(angle) });
+			}
+		}
+	}
+
+	//////////////////////
+	// DYNAMIC SPAWN
+	//////////////////////
+
+	if (m_particles_emitter.get_fade_time() > FADE_TIME)
+	{
+		m_particles_emitter.reset_fade_time();
+		m_particles_emitter.set_fade(0);
+		m_particles_emitter.destroy();
+		m_particles_emitter.init();
+	}
+
+	if (m_char.is_dashing())
+	{
+		if (m_char.is_wall_collision())
+		{
+			m_char.set_dash(false);
+			m_recent_dash = true;
+			m_spawn_particles = true;
+			m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
+			//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+		}
+		else
+		{
+			m_char.set_dash(true);
+		}
+	}
+	if (m_recent_dash)
+	{
+		m_recent_dash = false;
+		m_cooldown = 0;
+		// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
+		if (m_char.get_direction() == 0)
+			m_char.change_position({ 0.f, 5.f });
+		else if (m_char.get_direction() == 1)
+			m_char.change_position({ 0.f, -5.f });
+		else if (m_char.get_direction() == 2)
+			m_char.change_position({ 5.f, 0.f });
+		else if (m_char.get_direction() == 3)
+			m_char.change_position({ -5.f, 0.f });
+	}
+
+
+	//particles update
+	m_particles_emitter.update(ms);
+
+	// Spawning new Particles
+	if (m_spawn_particles)
+	{
+		//fprintf(stderr, "spawn pebble called");
+		m_spawn_particles = false;
+	}
+
+	//////////////////////
+	// CONSEQUENCES
+	//////////////////////
+
+	// yellow
+	if (m_map.get_flash_time() > FLASH_TIME)
+	{
+		m_map.reset_flash_time();
+		m_map.set_flash(0);
+	}
+
+	// red
+	if (m_char.is_dashing())
+		if (m_char.is_wall_collision())
+			m_char.set_dash(false);
+
+	//////////////////////
+	// RESET LEVEL
+	//////////////////////
+
+	if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
+	{
+		reset_game();
+	}
+
+	if (m_game_state == LEVEL_1)
+	{
 
 		//////////////////////
 		// DYNAMIC SPAWN
 		//////////////////////
-
-		if (m_particles_emitter.get_fade_time() > FADE_TIME)
-		{
-			m_particles_emitter.reset_fade_time();
-			m_particles_emitter.set_fade(0);
-			m_particles_emitter.destroy();
-			m_particles_emitter.init();
-		}
-
-		if (m_char.is_dashing())
-		{
-			if (m_char.is_wall_collision())
-			{
-				m_char.set_dash(false);
-				m_recent_dash = true;
-				m_spawn_particles = true;
-				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
-				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			}
-			else
-			{
-				m_char.set_dash(true);
-			}
-		}
-		if (m_recent_dash)
-		{
-			m_recent_dash = false;
-			m_cooldown = 0;
-			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			if (m_char.get_direction() == 0)
-				m_char.change_position({0.f, 5.f});
-			else if (m_char.get_direction() == 1)
-				m_char.change_position({0.f, -5.f});
-			else if (m_char.get_direction() == 2)
-				m_char.change_position({5.f, 0.f});
-			else if (m_char.get_direction() == 3)
-				m_char.change_position({-5.f, 0.f});
-		}
-
-		//particles update
-		m_particles_emitter.update(ms);
-
-		// Spawning new Particles
-		if (m_spawn_particles)
-		{
-			//fprintf(stderr, "spawn pebble called");
-			m_spawn_particles = false;
-		}
 
 		// spawn wanderer
 		while (m_wanderers.size() < wanderer_paths.size())
@@ -363,116 +483,9 @@ bool World::update(float ms)
 
 			Wanderer &new_wanderer = m_wanderers.back();
 		}
-
-		//////////////////////
-		// CONSEQUENCES
-		//////////////////////
-
-		// yellow
-		if (m_map.get_flash_time() > FLASH_TIME)
-		{
-			m_map.reset_flash_time();
-			m_map.set_flash(0);
-		}
-
-		// red
-		if (m_char.is_dashing())
-			if (m_char.is_wall_collision())
-				m_char.set_dash(false);
-
-		//////////////////////
-		// RESET LEVEL
-		//////////////////////
-
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
-		{
-			reset_game();
-		}
-		return true;
 	}
 	else if (m_game_state == LEVEL_2)
 	{
-		//////////////////////
-		// COLLISION
-		//////////////////////
-
-		// collision, char-wall
-		m_map.check_wall(m_char, ms);
-
-		// collision, char-spotter
-		for (const auto &spotter : m_spotters)
-			if (m_char.is_colliding(spotter) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_map.set_char_dead();
-				}
-				m_char.kill();
-				break;
-			}
-
-		// collision, char-wanderer
-		for (const auto &wanderer : m_wanderers)
-		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_map.set_char_dead();
-				}
-				m_char.kill();
-				break;
-			}
-		}
-
-		// collision, char-trophy
-		if (m_map.get_tile_type(m_char.get_position()) == 100) {
-			if (m_char.is_alive())
-			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
-				m_cutscene.set_dialogue_counter(LEVEL_3_CUTSCENE, 81);
-				m_game_state = LEVEL_3_CUTSCENE;
-				m_char.kill();
-				return true;
-			}
-			m_char.kill();
-		}
-
-		// proximity, spotter
-		for (auto& spotter : m_spotters)
-		{
-			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					spotter.set_alert_mode(alert_mode);
-					m_alert_mode_cooldown = 0;
-				}
-				break;
-			}
-		}
-
-		//////////////////////
-		// UPDATE
-		//////////////////////
-
-		// update char
-		m_char.update(ms);
-		m_hud.update(m_game_state, m_char.get_position());
-
-		// update spotters
-		for (auto &spotter : m_spotters)
-			spotter.update(ms * m_current_speed);
-
-		// update wanderers
-		for (auto &wanderer : m_wanderers)
-		{
-			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(alert_mode);
-		}
 
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -490,54 +503,6 @@ bool World::update(float ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
-		if (m_particles_emitter.get_fade_time() > FADE_TIME)
-		{
-			m_particles_emitter.reset_fade_time();
-			m_particles_emitter.set_fade(0);
-			m_particles_emitter.destroy();
-			m_particles_emitter.init();
-		}
-
-		if (m_char.is_dashing())
-		{
-			if (m_char.is_wall_collision())
-			{
-				m_char.set_dash(false);
-				m_recent_dash = true;
-				m_spawn_particles = true;
-				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
-				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			}
-			else
-			{
-				m_char.set_dash(true);
-			}
-		}
-		if (m_recent_dash)
-		{
-			m_recent_dash = false;
-			m_cooldown = 0;
-			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			if (m_char.get_direction() == 0)
-				m_char.change_position({0.f, 5.f});
-			else if (m_char.get_direction() == 1)
-				m_char.change_position({0.f, -5.f});
-			else if (m_char.get_direction() == 2)
-				m_char.change_position({5.f, 0.f});
-			else if (m_char.get_direction() == 3)
-				m_char.change_position({-5.f, 0.f});
-		}
-
-		//particles update
-		m_particles_emitter.update(ms);
-
-		// Spawning new Particles
-		if (m_spawn_particles)
-		{
-			//fprintf(stderr, "spawn pebble called");
-			m_spawn_particles = false;
-		}
-
 		// spawn wanderer
 		while (m_wanderers.size() < wanderer_paths_2.size())
 		{
@@ -546,172 +511,9 @@ bool World::update(float ms)
 
 			Wanderer &new_wanderer = m_wanderers.back();
 		}
-
-		//////////////////////
-		// CONSEQUENCES
-		//////////////////////
-
-		// yellow
-		if (m_map.get_flash_time() > FLASH_TIME)
-		{
-			m_map.reset_flash_time();
-			m_map.set_flash(0);
-		}
-
-		// red
-		if (m_char.is_dashing())
-			if (m_char.is_wall_collision())
-				m_char.set_dash(false);
-
-		//////////////////////
-		// RESET LEVEL
-		//////////////////////
-
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
-		{
-			reset_game();
-		}
-		return true;
 	}
 	else if (m_game_state == LEVEL_3)
 	{
-		//////////////////////
-		// COLLISION
-		//////////////////////
-
-		// collision, char-wall
-		m_map.check_wall(m_char, ms);
-
-		// collision, char-spotter
-		for (const auto& spotter : m_spotters)
-		{
-			if (m_char.is_colliding(spotter) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_map.set_char_dead();
-				}
-				m_char.kill();
-				break;
-			}
-		}
-
-		// collision, char-wanderer
-		for (auto &wanderer : m_wanderers)
-		{
-			if (m_char.is_colliding(wanderer) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
-					m_map.set_char_dead();
-				}
-				m_char.kill();
-				break;
-			}
-		}
-
-		// collision, char-trophy
-		if (m_map.get_tile_type(m_char.get_position()) == 100) {
-			if (m_char.is_alive())
-			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
-				//m_map.set_char_dead();
-				m_game_state = WIN_SCREEN;
-			}
-			m_char.kill();
-		}
-
-		// proximity, char-shooter
-		for (auto &shooter : m_shooters)
-		{
-			if (m_char.is_colliding(shooter) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					m_alert_mode_cooldown = 0;
-
-					// rotate to char
-					float angle = atan2((m_char.get_position().y - shooter.get_position().y), (m_char.get_position().x - shooter.get_position().x));
-					shooter.set_rotation(angle);
-
-					// SHOOTING AND COOLDOWN
-					shooter.set_in_combat(true);
-					shooter.bullets.cooldown -= 15.f;
-					if (shooter.bullets.cooldown < 0.f)
-					{
-						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
-						shooter.bullets.cooldown = 1500.f;
-					}
-				}
-				break;
-			}
-		}
-		
-		// proximity, spotter
-		for (auto& spotter : m_spotters)
-		{
-			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
-			{
-				if (m_char.is_alive())
-				{
-					alert_mode = true;
-					spotter.set_alert_mode(alert_mode);
-					m_alert_mode_cooldown = 0;
-				}
-				break;
-			}
-		}
-
-		//////////////////////
-		// UPDATE
-		//////////////////////
-
-		// update char
-		m_char.update(ms);
-		m_hud.update(m_game_state, m_char.get_position());
-
-		// update spotters
-		for (auto &spotter : m_spotters)
-		{
-			spotter.update(ms * m_current_speed);
-		}
-
-		// update wanderers
-		for (auto &wanderer : m_wanderers)
-		{
-			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(alert_mode);
-		}
-
-		// update shooter
-		for (auto &shooter : m_shooters)
-		{
-			// TODO -- wrong location for proper code flow
-			shooter.set_alert_mode(alert_mode);
-
-			// TODO
-			shooter.update(ms * m_current_speed);
-			// angle to shooter, alternative solution to save bullet angle as part of bullet struct
-
-			// TODO
-			float angle = atan2((m_char.get_position().y - shooter.get_position().y) , (m_char.get_position().x - shooter.get_position().x));
-
-			// TODO -- wrong location for collision and code flow
-			if (shooter.is_in_combat())
-			{
-				shooter.bullets.update(ms * m_current_speed);
-				if (m_char.is_colliding(shooter.bullets))
-				{
-					m_char.set_color(0);
-					m_cooldown = 0;
-					m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
-				}
-			}
-		}
-
 		//////////////////////
 		// DYNAMIC SPAWN
 		//////////////////////
@@ -728,53 +530,6 @@ bool World::update(float ms)
 			new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 		}
 
-		if (m_particles_emitter.get_fade_time() > FADE_TIME)
-		{
-			m_particles_emitter.reset_fade_time();
-			m_particles_emitter.set_fade(0);
-			m_particles_emitter.destroy();
-			m_particles_emitter.init();
-		}
-
-		if (m_char.is_dashing())
-		{
-			if (m_char.is_wall_collision())
-			{
-				m_char.set_dash(false);
-				m_recent_dash = true;
-				m_spawn_particles = true;
-				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
-				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			}
-			else
-			{
-				m_char.set_dash(true);
-			}
-		}
-		if (m_recent_dash)
-		{
-			m_recent_dash = false;
-			m_cooldown = 0;
-			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			if (m_char.get_direction() == 0)
-				m_char.change_position({0.f, 5.f});
-			else if (m_char.get_direction() == 1)
-				m_char.change_position({0.f, -5.f});
-			else if (m_char.get_direction() == 2)
-				m_char.change_position({5.f, 0.f});
-			else if (m_char.get_direction() == 3)
-				m_char.change_position({-5.f, 0.f});
-		}
-
-		//particles update
-		m_particles_emitter.update(ms);
-
-		// Spawning new Particles
-		if (m_spawn_particles)
-		{
-			//fprintf(stderr, "spawn pebble called");
-			m_spawn_particles = false;
-		}
 		// spawn shooter
 		if (m_shooters.size() < MAX_SHOOTERS)
 		{
@@ -793,127 +548,6 @@ bool World::update(float ms)
 
 			Wanderer &new_wanderer = m_wanderers.back();
 		}
-
-		//////////////////////
-		// CONSEQUENCES
-		//////////////////////
-
-		// yellow
-		if (m_map.get_flash_time() > FLASH_TIME)
-		{
-			m_map.reset_flash_time();
-			m_map.set_flash(0);
-		}
-
-		// red
-		if (m_char.is_dashing())
-			if (m_char.is_wall_collision())
-				m_char.set_dash(false);
-
-		//////////////////////
-		// RESET LEVEL
-		//////////////////////
-
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
-		{
-			reset_game();
-		}
-		return true;
-	}
-	else if (m_game_state == LEVEL_TUTORIAL)
-	{
-		//////////////////////
-		// COLLISION
-		//////////////////////
-
-		// collision, char-wall
-		m_map.check_wall(m_char, ms);
-
-		//////////////////////
-		// UPDATE
-		//////////////////////
-
-		// update char
-		m_char.update(ms);
-		m_hud.update(m_game_state, m_char.get_position());
-
-		//////////////////////
-		// DYNAMIC SPAWN
-		//////////////////////
-
-		if (m_particles_emitter.get_fade_time() > FADE_TIME)
-		{
-			m_particles_emitter.reset_fade_time();
-			m_particles_emitter.set_fade(0);
-			m_particles_emitter.destroy();
-			m_particles_emitter.init();
-		}
-
-		if (m_char.is_dashing())
-		{
-			if (m_char.is_wall_collision())
-			{
-				m_char.set_dash(false);
-				m_recent_dash = true;
-				m_spawn_particles = true;
-				m_particles_emitter.spawn_particle(m_char.get_position(), m_char.get_direction());
-				//fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			}
-			else
-			{
-				m_char.set_dash(true);
-			}
-		}
-		if (m_recent_dash)
-		{
-			m_recent_dash = false;
-			m_cooldown = 0;
-			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
-			if (m_char.get_direction() == 0)
-				m_char.change_position({0.f, 5.f});
-			else if (m_char.get_direction() == 1)
-				m_char.change_position({0.f, -5.f});
-			else if (m_char.get_direction() == 2)
-				m_char.change_position({5.f, 0.f});
-			else if (m_char.get_direction() == 3)
-				m_char.change_position({-5.f, 0.f});
-		}
-
-		//particles update
-		m_particles_emitter.update(ms);
-
-		// Spawning new Particles
-		if (m_spawn_particles)
-		{
-			//fprintf(stderr, "spawn pebble called");
-			m_spawn_particles = false;
-		}
-
-		//////////////////////
-		// CONSEQUENCES
-		//////////////////////
-
-		// yellow
-		if (m_map.get_flash_time() > FLASH_TIME)
-		{
-			m_map.reset_flash_time();
-			m_map.set_flash(0);
-		}
-
-		// red
-		if (m_char.is_dashing())
-			if (m_char.is_wall_collision())
-				m_char.set_dash(false);
-
-		//////////////////////
-		// RESET LEVEL
-		//////////////////////
-
-		if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
-		{
-			reset_game();
-		}
-		return true;
 	}
 
 	return true;
@@ -1515,6 +1149,23 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 bool World::is_char_detectable()
 {
 	return m_char.is_moving() || (m_map.get_tile_type(m_char.get_position()) != m_char.get_color() + 1);
+}
+
+void World::advance_to_cutscene()
+{
+	switch (m_game_state)
+	{
+	case LEVEL_1: 
+		m_cutscene.set_dialogue_counter(LEVEL_2_CUTSCENE, 70);
+		m_game_state = LEVEL_2_CUTSCENE; 
+		break;
+	case LEVEL_2:
+		m_cutscene.set_dialogue_counter(LEVEL_3_CUTSCENE, 81);
+		m_game_state = LEVEL_3_CUTSCENE; 
+		break;
+	case LEVEL_3: break;
+	default: break;
+	}
 }
 
 void World::reset_game()
