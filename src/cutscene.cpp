@@ -8,6 +8,7 @@ Texture Cutscene::dialogue_texture;
 Texture Cutscene::left_dialogue_texture;
 Texture Cutscene::right_dialogue_texture;
 Texture Cutscene::enemy_texture;
+Texture Cutscene::skip_texture;
 
 using namespace std;
 
@@ -49,6 +50,15 @@ bool Cutscene::init()
 		if (!enemy_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
 			fprintf(stderr, "Failed to load enemy texture!");
+			return false;
+		}
+	}
+
+	if (!skip_texture.is_valid())
+	{
+		if (!skip_texture.load_from_file(textures_path("skip.png")))
+		{
+			fprintf(stderr, "Failed to load skip texture!");
 			return false;
 		}
 	}
@@ -242,11 +252,11 @@ void Cutscene::draw(const mat3 &projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
 	// draw
-	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == 4)
+	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == STORY_SCREEN)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
-	else if (current_cutscene_state != 4)
+	else if (current_cutscene_state != STORY_SCREEN)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
@@ -370,6 +380,56 @@ void Cutscene::draw(const mat3 &projection)
 	{
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	}
+
+	// skip texture
+	transform.begin();
+	transform.translate({830.f, 760.f});
+	transform.rotate(motion.radians);
+	transform.scale({0.9f, 0.4f});
+	transform.end();
+
+	// set shaders
+	glUseProgram(effect.program);
+
+	// enable alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// depth
+	glDisable(GL_DEPTH_TEST);
+
+	// get uniform locations for glUniform* calls
+	transform_uloc = glGetUniformLocation(effect.program, "transform");
+	color_uloc = glGetUniformLocation(effect.program, "fcolor");
+	projection_uloc = glGetUniformLocation(effect.program, "projection");
+
+	// set vertices and indices
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
+	// input data location as in the vertex buffer
+	in_position_loc = glGetAttribLocation(effect.program, "in_position");
+	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+	glEnableVertexAttribArray(in_position_loc);
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+
+	// enable and binding texture to slot 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, skip_texture.id);
+
+	// set uniform values to the currently bound program
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
+	glUniform3fv(color_uloc, 1, color);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+
+	// draw
+	if (current_cutscene_state != LEVEL_TUTORIAL)
+	{
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+	}
 }
 
 bool Cutscene::dialogue_done(unsigned int cutscene_state)
@@ -461,7 +521,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.8f};
 
-		if (dialogue_counter == 28)
+		if (dialogue_counter == 50)
 		{
 			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
@@ -472,6 +532,8 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("wanderers/1.png"));
 			enemy_scale = {0.08f, 0.8f};
+			skip_texture.~Texture();
+			skip_texture.load_from_file(textures_path("skip.png"));
 		}
 
 		left_texture_position = {200.f, 540.f};
@@ -488,7 +550,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.7f};
 
-		if (dialogue_counter == 28)
+		if (dialogue_counter == 70)
 		{
 			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
@@ -499,6 +561,8 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("spotters/1.png"));
 			enemy_scale = {0.08f, 0.7f};
+			skip_texture.~Texture();
+			skip_texture.load_from_file(textures_path("skip.png"));
 		}
 
 		left_texture_position = {200.f, 540.f};
@@ -515,7 +579,7 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		dialogue_texture.load_from_file(path);
 		physics.scale = {0.8f, 0.7f};
 
-		if (dialogue_counter == 28)
+		if (dialogue_counter == 81)
 		{
 			right_dialogue_texture.~Texture();
 			right_dialogue_texture.load_from_file(textures_path("intel.png"));
@@ -526,6 +590,8 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 			enemy_texture.~Texture();
 			enemy_texture.load_from_file(textures_path("survivor-idle_shotgun_0.png"));
 			enemy_scale = {-0.09f, 0.9f};
+			skip_texture.~Texture();
+			skip_texture.load_from_file(textures_path("skip.png"));
 		}
 
 		left_texture_position = {200.f, 540.f};
@@ -546,6 +612,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_dialogue_texture.load_from_file(textures_path("spotters/3.png"));
 		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("wanderers/1.png"));
+		skip_texture.~Texture();
+		skip_texture.load_from_file(textures_path("skip.png"));
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 	}
@@ -574,6 +642,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
+		skip_texture.~Texture();
+		skip_texture.load_from_file(textures_path("skip.png"));
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 		enemy_texture.~Texture();
@@ -591,6 +661,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
+		skip_texture.~Texture();
+		skip_texture.load_from_file(textures_path("skip.png"));
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 		enemy_texture.~Texture();
@@ -608,6 +680,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		left_dialogue_texture.~Texture();
 		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
 		left_scale = {0.1f, 1.f};
+		skip_texture.~Texture();
+		skip_texture.load_from_file(textures_path("skip.png"));
 		left_texture_position = {200.f, 540.f};
 		right_texture_position = {1000.f, 530.f};
 		enemy_texture.~Texture();
