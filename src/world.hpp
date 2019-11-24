@@ -17,6 +17,7 @@
 #include "spotter.hpp"
 #include "start_screen.hpp"
 #include "wanderer.hpp"
+#include "pause_screen.hpp"
 
 // stlib
 #include <vector>
@@ -54,6 +55,7 @@ private:
 	Cutscene m_cutscene;
 	CompleteScreen m_complete_screen;
 	Hud m_hud;
+	PauseScreen m_pause_screen;
 
 	// entities
 	Char m_char;
@@ -76,12 +78,16 @@ private:
 	// current level state
 	unsigned int m_current_level_state;
 
+	// current pause state
+	unsigned int m_current_pause_state;
+
 	// variables
 	int m_alert_mode_cooldown;
 	int m_cooldown;
 	float m_current_speed;
 	bool m_recent_dash;
 	bool m_spawn_particles;
+	bool m_paused;
 
 	// wanderer checkpoint
 	vector<vector<vec2>> wanderer_paths =

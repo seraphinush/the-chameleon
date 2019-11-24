@@ -50,6 +50,7 @@ set(SOURCE_FILES
   src/overlay.hpp
   src/level_screen.cpp
   src/particles.cpp
+  src/pause_screen.cpp
   src/project_path.hpp
 	src/common.hpp
 	src/spotter.hpp
@@ -66,6 +67,7 @@ set(SOURCE_FILES
 	src/shooter.hpp
 	src/bullets.hpp
   src/level_screen.hpp
+  src/pause_screen.hpp
 	)
 
 if (IS_OS_MAC)
