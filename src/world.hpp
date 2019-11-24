@@ -84,6 +84,7 @@ private:
 	// variables
 	int m_alert_mode_cooldown;
 	int m_cooldown;
+	int m_level;
 	float m_current_speed;
 	bool m_recent_dash;
 	bool m_spawn_particles;

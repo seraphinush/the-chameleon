@@ -123,28 +123,16 @@ void PauseScreen::destroy()
 	effect.release();
 }
 
-void PauseScreen::update(unsigned int state, vec2 position)
+void PauseScreen::update(unsigned int state)
 {
 	if (state == 0)
-	{
-		pointer_pos = vec2({position.x - 10.f, position.y - 5.f});
-		resume_pos = vec2({position.x, position.y - 5.f});
-	}
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 2 * (SCREEN_HEIGHT / 6.f)});
 	else if (state == 1)
-	{
-		pointer_pos = vec2({position.x - 10.f, position.y});
-		restart_pos = vec2({position.x, position.y});
-	}
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 6.f)});
 	else if (state == 2)
-	{
-		pointer_pos = vec2({position.x - 10.f, position.y + 5.f});
-		resume_pos = vec2({position.x, position.y + 5.f});
-	}
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 6.f)});
 	else if (state == 3)
-	{
-		pointer_pos = vec2({position.x - 10.f, position.y + 10.f});
-		resume_pos = vec2({position.x, position.y + 10.f});
-	}
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 5 * (SCREEN_HEIGHT / 6.f)});
 }
 
 // -- edit images
@@ -154,28 +142,32 @@ void PauseScreen::draw(const mat3 &projection)
 {
 	// pointer
 	vec2 pointer_scale = vec2({pointer.width / (8 * SCREEN_WIDTH), pointer.height / (8 * SCREEN_WIDTH)});
-	//vec2 pointer_pos
+	//vec2 m_pointer_pos
 	draw_element(projection, pointer, pointer_pos, pointer_scale);
 
 	// game paused
+	vec2 game_paused_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 6.f)});
 	vec2 game_paused_scale = vec2({game_paused.width / (2 * SCREEN_WIDTH), game_paused.height / (2 * SCREEN_WIDTH)});
-	game_paused_pos = {resume_pos.x, resume_pos.y - 5.f};
 	draw_element(projection, game_paused, game_paused_pos, game_paused_scale);
 
 	// resume
+	vec2 resume_pos = vec2({SCREEN_WIDTH / 2.f, 2 * (SCREEN_HEIGHT / 6.f)});
 	vec2 resume_scale = vec2({resume.width / (2 * SCREEN_WIDTH), resume.height / (2 * SCREEN_WIDTH)});
 	draw_element(projection, resume, resume_pos, resume_scale);
 	
 	// restart
+	vec2 restart_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 6.f)});
 	vec2 restart_scale = vec2({restart.width / (2 * SCREEN_WIDTH), restart.height / (2 * SCREEN_WIDTH)});
 	draw_element(projection, restart, restart_pos, restart_scale);
 
 	// main menu
+	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 6.f)});
 	vec2 main_menu_scale = vec2({main_menu.width / (2 * SCREEN_WIDTH), main_menu.height / (2 * SCREEN_WIDTH)});
 	draw_element(projection, main_menu, main_menu_pos, main_menu_scale);
 
 	// quit
-	vec2 quit_scale = vec2({quit.width / SCREEN_WIDTH, quit.height / SCREEN_WIDTH});
+	vec2 quit_pos = vec2({SCREEN_WIDTH / 2.f, 5 * (SCREEN_HEIGHT / 6.f)});
+	vec2 quit_scale = vec2({quit.width / (2 * SCREEN_WIDTH), quit.height / (2 * SCREEN_WIDTH)});
 	draw_element(projection, quit, quit_pos, quit_scale);
 }
 

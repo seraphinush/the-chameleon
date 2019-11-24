@@ -215,7 +215,7 @@ bool World::update(float ms)
 	m_start_screen.update(m_current_game_state);
 	m_level_screen.update(m_current_level_state);
 	m_cutscene.update(m_current_game_state);
-	m_pause_screen.update(m_current_pause_state, m_char.get_position());
+	m_pause_screen.update(m_current_pause_state);
 
 	//////////////////////
 	// COOLDOWN
@@ -651,14 +651,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		if (m_paused)
-		{
-			m_pause_screen.draw(projection_2D);
-		}
-		else
-		{
-			m_hud.draw(projection_2D);
-		}
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -680,14 +673,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		if (m_paused)
-		{
-			m_pause_screen.draw(projection_2D);
-		}
-		else
-		{
-			m_hud.draw(projection_2D);
-		}
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -717,14 +703,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		if (m_paused)
-		{
-			m_pause_screen.draw(projection_2D);
-		}
-		else
-		{
-			m_hud.draw(projection_2D);
-		}
+		m_hud.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -732,6 +711,9 @@ void World::draw()
 		break;
 	case WIN_SCREEN:
 		m_complete_screen.draw(projection_2D);
+		break;
+	case PAUSE_SCREEN:
+		m_pause_screen.draw(projection_2D);
 		break;
 	case QUIT:
 		destroy();
@@ -818,7 +800,7 @@ bool World::spawn_wanderer(std::vector<vec2> path)
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
 	// start screen, control screen, story screen
-	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3)
+	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3)
 	{
 		if (m_game_state == START_SCREEN)
 		{
@@ -871,6 +853,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_cutscene.dialogue_done(m_game_state))
 				{
 					m_game_state = LEVEL_1;
+					m_level = m_game_state;
 					m_map.set_current_map(LEVEL_1);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -883,6 +866,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_cutscene.dialogue_done(m_game_state))
 				{
 					m_game_state = LEVEL_2;
+					m_level = m_game_state;
 					m_map.set_current_map(LEVEL_2);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -895,6 +879,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_cutscene.dialogue_done(m_game_state))
 				{
 					m_game_state = LEVEL_3;
+					m_level = m_game_state;
 					m_map.set_current_map(LEVEL_3);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -956,9 +941,20 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// ESC: return to start screen or pause screen
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
 	{
-		if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
+		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
 		{
-			m_paused = !m_paused;
+			if (!m_paused)
+			{
+				m_paused = true;
+				m_level = m_game_state;
+				m_game_state = PAUSE_SCREEN;
+			}
+			else
+			{
+				m_paused = false;
+				m_game_state = m_level;
+			}
+			
 		}
 		else
 		{
@@ -969,7 +965,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// pause screen
-	if (action == GLFW_PRESS && m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3))
+	if (action == GLFW_PRESS && m_paused && m_game_state == PAUSE_SCREEN)
 	{
 		if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
 			if (m_current_pause_state < 3)
@@ -983,29 +979,30 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			if (m_current_pause_state == RESUME)
 			{
+				m_current_pause_state = 0;
 				m_paused = !m_paused;
+				m_game_state = m_level;
 			}
 			else if (m_current_pause_state == RESTART)
 			{
-				m_paused = !m_paused;
 				m_current_pause_state = 0;
+				m_paused = !m_paused;
+				m_game_state = m_level;
 				reset_game();
 			}
 			else if (m_current_pause_state == MAIN_MENU)
 			{
-				m_current_game_state = 0;
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = START_SCREEN;
+				m_current_game_state = 0;
 				reset_game();
 			}
 			else if (m_current_pause_state == QUIT)
 			{
-				m_current_game_state = 0;
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = QUIT;
-				reset_game();
 			}
 		}
 	}
@@ -1107,6 +1104,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if (m_game_state == LEVEL_1_CUTSCENE)
 		{
 			m_game_state = LEVEL_1;
+			m_level = m_game_state;
 			m_map.set_current_map(LEVEL_1);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
@@ -1114,6 +1112,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if (m_game_state == LEVEL_2_CUTSCENE)
 		{
 			m_game_state = LEVEL_2;
+			m_level = m_game_state;
 			m_map.set_current_map(LEVEL_2);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 70);
@@ -1121,6 +1120,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if (m_game_state == LEVEL_3_CUTSCENE)
 		{
 			m_game_state = LEVEL_3;
+			m_level = m_game_state;
 			m_map.set_current_map(LEVEL_3);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 81);

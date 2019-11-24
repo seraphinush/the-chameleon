@@ -12,6 +12,7 @@ static constexpr unsigned int QUIT = 3;
 static constexpr unsigned int STORY_SCREEN = 4;
 static constexpr unsigned int WIN_SCREEN = 5;
 static constexpr unsigned int LOSE_SCREEN = 6;
+static constexpr unsigned int PAUSE_SCREEN = 7;
 static constexpr unsigned int LEVEL_1 = 1000;
 static constexpr unsigned int LEVEL_1_CUTSCENE = 1500;
 static constexpr unsigned int LEVEL_2 = 2000;
