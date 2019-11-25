@@ -81,6 +81,9 @@ private:
 	// current pause state
 	unsigned int m_current_pause_state;
 
+	// current pause state
+	unsigned int m_current_game_done_state;
+
 	// variables
 	int m_alert_mode_cooldown;
 	int m_cooldown;
