@@ -33,9 +33,9 @@ void glfw_err_cb(int error, const char *desc)
 } // namespace
 
 World::World() : m_control(0),
-	m_current_game_state(0),
-	m_current_level_state(0),
-	m_game_state(START_SCREEN)
+				 m_current_game_state(0),
+				 m_current_level_state(0),
+				 m_game_state(START_SCREEN)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -142,7 +142,7 @@ bool World::init()
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	// Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -152,15 +152,15 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		m_control_screen.init() &&
-		m_level_screen.init() &&
-		m_cutscene.init() &&
-		m_hud.init() &&
-		m_map.init() &&
-		m_char.init(m_map.get_spawn_pos()) &&
-		m_overlay.init(alert_mode, MAX_COOLDOWN) &&
-		m_particles_emitter.init() &&
-		m_complete_screen.init();
+		   m_control_screen.init() &&
+		   m_level_screen.init() &&
+		   m_cutscene.init() &&
+		   m_hud.init() &&
+		   m_map.init() &&
+		   m_char.init(m_map.get_spawn_pos()) &&
+		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
+		   m_particles_emitter.init() &&
+		   m_complete_screen.init();
 }
 
 // release all the associated resources
@@ -183,13 +183,13 @@ void World::destroy()
 	m_map.destroy();
 	m_overlay.destroy();
 	m_particles_emitter.destroy();
-	for (auto& shooter : m_shooters)
+	for (auto &shooter : m_shooters)
 		shooter.destroy();
 	m_wanderers.clear();
-	for (auto& spotter : m_spotters)
+	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	m_spotters.clear();
-	for (auto& wanderer : m_wanderers)
+	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_start_screen.destroy();
@@ -222,8 +222,7 @@ bool World::update(float ms)
 	}
 	else
 	{
-		alert_mode = false;
-
+		bool stay_alert = false;
 		// unalert shooters
 		for (auto &shooter : m_shooters)
 			shooter.set_alert_mode(false);
@@ -234,7 +233,29 @@ bool World::update(float ms)
 
 		// unalert wanderers
 		for (auto &wanderer : m_wanderers)
-			wanderer.set_alert_mode(false);
+		{
+			if (alert_mode)
+			{
+				if (m_char.is_in_range(wanderer))
+				{
+					// fprintf(stderr, "alert mode active and in range \n");
+					stay_alert = true;
+				}
+				else
+				{
+					wanderer.set_alert_mode(false);
+				}
+			}
+		}
+
+		if (stay_alert)
+		{
+			alert_mode = true;
+		}
+		else
+		{
+			alert_mode = false;
+		}
 	}
 
 	// IF ALERT MODE OVERLAY
@@ -251,7 +272,6 @@ bool World::update(float ms)
 		m_overlay.set_cooldown(m_cooldown);
 	}
 
-
 	//////////////////////
 	// COLLISION
 	//////////////////////
@@ -260,7 +280,7 @@ bool World::update(float ms)
 	m_map.check_wall(m_char, ms);
 
 	// collision, char-wanderer
-	for (const auto& wanderer : m_wanderers)
+	for (const auto &wanderer : m_wanderers)
 	{
 		if (m_char.is_colliding(wanderer) && is_char_detectable())
 		{
@@ -275,7 +295,8 @@ bool World::update(float ms)
 	}
 
 	// collision, char-trophy
-	if (m_map.get_tile_type(m_char.get_position()) == 100) {
+	if (m_map.get_tile_type(m_char.get_position()) == 100)
+	{
 		if (m_char.is_alive())
 		{
 			Mix_PlayChannel(-1, m_char_win_sound, 0);
@@ -287,7 +308,7 @@ bool World::update(float ms)
 	}
 
 	// collision, char-spotter
-	for (const auto& spotter : m_spotters)
+	for (const auto &spotter : m_spotters)
 	{
 		if (m_char.is_colliding(spotter) && is_char_detectable())
 		{
@@ -302,7 +323,7 @@ bool World::update(float ms)
 	}
 
 	// proximity, char-shooter
-	for (auto& shooter : m_shooters)
+	for (auto &shooter : m_shooters)
 	{
 		if (m_char.is_colliding(shooter) && is_char_detectable())
 		{
@@ -329,7 +350,7 @@ bool World::update(float ms)
 	}
 
 	// proximity, spotter
-	for (auto& spotter : m_spotters)
+	for (auto &spotter : m_spotters)
 	{
 		if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
 		{
@@ -352,20 +373,20 @@ bool World::update(float ms)
 	m_hud.update(m_game_state, m_char.get_position());
 
 	// update wanderers
-	for (auto& wanderer : m_wanderers)
+	for (auto &wanderer : m_wanderers)
 	{
 		wanderer.update(ms * m_current_speed);
 		wanderer.set_alert_mode(alert_mode);
 	}
 
 	// update spotters
-	for (auto& spotter : m_spotters)
+	for (auto &spotter : m_spotters)
 	{
 		spotter.update(ms * m_current_speed);
 	}
 
 	// update shooter
-	for (auto& shooter : m_shooters)
+	for (auto &shooter : m_shooters)
 	{
 		// TODO -- wrong location for proper code flow
 		shooter.set_alert_mode(alert_mode);
@@ -385,7 +406,7 @@ bool World::update(float ms)
 			{
 				m_char.set_color(0);
 				m_cooldown = 0;
-				m_char.change_position({ 25.f * cos(angle), 25.f * sin(angle) });
+				m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
 			}
 		}
 	}
@@ -423,15 +444,14 @@ bool World::update(float ms)
 		m_cooldown = 0;
 		// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 		if (m_char.get_direction() == 0)
-			m_char.change_position({ 0.f, 5.f });
+			m_char.change_position({0.f, 5.f});
 		else if (m_char.get_direction() == 1)
-			m_char.change_position({ 0.f, -5.f });
+			m_char.change_position({0.f, -5.f});
 		else if (m_char.get_direction() == 2)
-			m_char.change_position({ 5.f, 0.f });
+			m_char.change_position({5.f, 0.f});
 		else if (m_char.get_direction() == 3)
-			m_char.change_position({ -5.f, 0.f });
+			m_char.change_position({-5.f, 0.f});
 	}
-
 
 	//particles update
 	m_particles_emitter.update(ms);
@@ -964,7 +984,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// green
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
-			Mix_PlayChannel(-1, m_char_green_sound, 0);
+			// Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_cooldown = 0;
 			m_char.set_color(2);
 			alert_mode = true;
@@ -1155,16 +1175,18 @@ void World::advance_to_cutscene()
 {
 	switch (m_game_state)
 	{
-	case LEVEL_1: 
+	case LEVEL_1:
 		m_cutscene.set_dialogue_counter(LEVEL_2_CUTSCENE, 70);
-		m_game_state = LEVEL_2_CUTSCENE; 
+		m_game_state = LEVEL_2_CUTSCENE;
 		break;
 	case LEVEL_2:
 		m_cutscene.set_dialogue_counter(LEVEL_3_CUTSCENE, 81);
-		m_game_state = LEVEL_3_CUTSCENE; 
+		m_game_state = LEVEL_3_CUTSCENE;
 		break;
-	case LEVEL_3: break;
-	default: break;
+	case LEVEL_3:
+		break;
+	default:
+		break;
 	}
 }
 
