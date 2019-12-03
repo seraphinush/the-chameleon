@@ -106,7 +106,7 @@ void Wanderer::update(float ms)
 		if (chase_refresh_timer < 0 || current_immediate_goal_index == immediate_path.size())
 		{
 			chase_refresh_timer = CHASE_REFRESH_MS;
-			calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
+			calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 40);
 			current_immediate_goal_index = 0;
 		}
 	}
@@ -225,8 +225,6 @@ void Wanderer::set_alert_mode(bool val)
 	else if (alert_mode && !val)
 	{
 		alert_mode = val;
-		set_position(m_map->get_tile_center_coords(m_path[0]));
-		current_goal_index = 1;
 		current_immediate_goal_index = 0;
 		calculate_immediate_path(m_path[current_goal_index], 0);
 	}
@@ -247,7 +245,10 @@ void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 
 	vector<path_construction> paths_in_progress;
 	path_construction beginning;
+
 	beginning.path = { {grid_position} };
+	vector<vec2> visited_nodes = { {grid_position} };
+
 	beginning.heuristic = abs(grid_position.x - goal.x) + abs(grid_position.y - goal.y);
 	beginning.expected_total = beginning.heuristic;
 
@@ -256,7 +257,13 @@ void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 	
 	while (paths_in_progress[0].heuristic != 0 && limit_search > 0)
 	{
-		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
+		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal, visited_nodes);
+
+		for (path_construction path_const : new_paths)
+		{
+			visited_nodes.push_back(path_const.path[path_const.path.size() - 1]);
+		}
+
 		paths_in_progress.erase(paths_in_progress.begin());
 		paths_in_progress = merge_in_order(paths_in_progress, new_paths);
 
@@ -283,7 +290,7 @@ void Wanderer::move_towards_goal(vec2 goal, float ms)
 	motion.position.x += step * (motionVector.x / magnitude);
 }
 
-vector<path_construction> Wanderer::find_paths_from(path_construction origin, vec2 goal)
+vector<path_construction> Wanderer::find_paths_from(path_construction origin, vec2 goal, vector<vec2> already_visited_nodes)
 {
 	vec2 point_of_origin = origin.path[origin.path.size() - 1];
 	vector<path_construction> return_list;
@@ -307,7 +314,7 @@ vector<path_construction> Wanderer::find_paths_from(path_construction origin, ve
 			path_construction new_path;
 			new_path.path = origin.path;
 			vec2 new_point = { point_of_origin.x + x, point_of_origin.y + y };
-			if (m_map->is_wall(new_point))
+			if (m_map->is_wall(new_point) || path_would_contain_cycles(new_path.path, new_point) || new_point_has_been_visited(already_visited_nodes, new_point))
 			{
 				continue;
 			}
@@ -380,4 +387,29 @@ vector<path_construction> Wanderer::merge_in_order(vector<path_construction> p1,
 bool Wanderer::tile_is_accessible(vec2 origin, int x_delta, int y_delta)
 {
 	return !m_map->is_wall({ origin.x, origin.y + y_delta }) && !m_map->is_wall({ origin.x + x_delta, origin.y });
+}
+
+
+bool Wanderer::point_collection_contains_point(std::vector<vec2> collection, vec2 point)
+{
+	for (vec2 collection_point : collection)
+	{
+		if (collection_point.x == point.x && collection_point.y == point.y)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+bool Wanderer::path_would_contain_cycles(std::vector<vec2> path, vec2 new_point)
+{
+	return point_collection_contains_point(path, new_point);
+}
+
+
+bool Wanderer::new_point_has_been_visited(std::vector<vec2> visited_nodes, vec2 new_point)
+{
+	return point_collection_contains_point(visited_nodes, new_point);
 }
