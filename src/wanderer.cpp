@@ -225,8 +225,6 @@ void Wanderer::set_alert_mode(bool val)
 	else if (alert_mode && !val)
 	{
 		alert_mode = val;
-		set_position(m_map->get_tile_center_coords(m_path[0]));
-		current_goal_index = 1;
 		current_immediate_goal_index = 0;
 		calculate_immediate_path(m_path[current_goal_index], 0);
 	}
