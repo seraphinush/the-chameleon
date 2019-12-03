@@ -52,9 +52,12 @@ private:
 	void calculate_immediate_path(vec2 goal, int limit_search);
 	bool check_goal_arrival(vec2 goal);
 	void move_towards_goal(vec2 goal, float ms);
-	std::vector<path_construction> find_paths_from(path_construction origin, vec2 goal);
+	std::vector<path_construction> find_paths_from(path_construction origin, vec2 goal, std::vector<vec2> already_visited_nodes);
 	std::vector<path_construction> merge_in_order(std::vector<path_construction> p1, std::vector<path_construction> p2);
 	bool tile_is_accessible(vec2 origin, int x_delta, int y_delta);
+	bool point_collection_contains_point(std::vector<vec2> collection, vec2 point);
+	bool path_would_contain_cycles(std::vector<vec2> path, vec2 new_point);
+	bool new_point_has_been_visited(std::vector<vec2> visited_nodes, vec2 new_point);
 
 public:
 	bool init(std::vector<vec2> path, Map& map, Char& player);
