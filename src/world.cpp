@@ -394,7 +394,8 @@ bool World::update(float ms)
 			if (m_char.is_in_range(wanderer))
 			{
 				// fprintf(stderr, "alert mode active and in range \n");
-				wanderer.set_alert_mode(true);
+				if (is_char_detectable())
+					wanderer.set_alert_mode(true);
 			}
 			else
 			{

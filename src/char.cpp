@@ -352,7 +352,7 @@ bool Char::is_in_range(Wanderer &w)
 	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
 	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
-	r *= 4.f;
+	r *= 6.f;
 
 	if (d_sq < r * r)
 		return true;
