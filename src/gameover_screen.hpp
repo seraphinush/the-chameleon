@@ -4,14 +4,14 @@
 #include "common.hpp"
 #include "constants.hpp"
 
-// complete screen
-class CompleteScreen : public Entity
+// gameover screen
+class GameoverScreen : public Entity
 {
 	// shared texture
 	static Texture pointer;
-	static Texture game_done;
+	static Texture game_over;
+	static Texture retry;
 	static Texture main_menu;
-	static Texture quit;
 
 private:
 	vec2 pointer_pos;
