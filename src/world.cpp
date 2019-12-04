@@ -17,7 +17,7 @@ const size_t MAX_COOLDOWN = 50;
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
 const float FADE_TIME = 0.7;
-const float FLASH_TIME = 0.5;
+const float FLASH_TIME = 1.5;
 
 // TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
@@ -1028,8 +1028,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
-			alert_mode = true;
-			m_alert_mode_cooldown = 0;
+			// Alert mode removed from yellow
+			// alert_mode = true;
+			// m_alert_mode_cooldown = 0;
 			m_cooldown = 0;
 		}
 	}

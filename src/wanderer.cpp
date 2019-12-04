@@ -3,7 +3,7 @@
 
 // stlib
 #include <cmath>
-#include <string> 
+#include <string>
 #include <iostream>
 
 // CONSTANTS
@@ -13,7 +13,7 @@ const int CHASE_REFRESH_MS = 5000;
 Texture Wanderer::wanderer_texture;
 using namespace std;
 
-bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
+bool Wanderer::init(vector<vec2> path, Map &map, Char &player)
 {
 	// Pathing AI init
 	m_map = &map;
@@ -40,17 +40,17 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 	float hr = wanderer_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.00f };
-	vertices[0].texcoord = { 0.f, 1.f};
-	vertices[1].position = { +wr, +hr, -0.00f };
-	vertices[1].texcoord = { 1.f, 1.f };
-	vertices[2].position = { +wr, -hr, -0.00f };
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.00f };
-	vertices[3].texcoord = { 0.f, 0.f };
+	vertices[0].position = {-wr, +hr, -0.00f};
+	vertices[0].texcoord = {0.f, 1.f};
+	vertices[1].position = {+wr, +hr, -0.00f};
+	vertices[1].texcoord = {1.f, 1.f};
+	vertices[2].position = {+wr, -hr, -0.00f};
+	vertices[2].texcoord = {1.f, 0.f};
+	vertices[3].position = {-wr, -hr, -0.00f};
+	vertices[3].texcoord = {0.f, 0.f};
 
 	// counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
 
 	// clear errors
 	gl_flush_errors();
@@ -75,7 +75,7 @@ bool Wanderer::init(vector<vec2> path, Map& map, Char& player)
 		return false;
 
 	motion.speed = config_speed;
-	physics.scale = { config_scale, config_scale };
+	physics.scale = {config_scale, config_scale};
 
 	return true;
 }
@@ -96,10 +96,10 @@ void Wanderer::update(float ms)
 	{
 		return;
 	}
-	if (alert_mode) {
+	if (alert_mode)
+	{
 		chase_refresh_timer -= ms;
-		if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]))
-		&& !check_goal_arrival(m_map->get_grid_coords(m_player->get_position())))
+		if (check_goal_arrival(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index])) && !check_goal_arrival(m_map->get_grid_coords(m_player->get_position())))
 		{
 			current_immediate_goal_index++;
 		}
@@ -110,7 +110,8 @@ void Wanderer::update(float ms)
 			current_immediate_goal_index = 0;
 		}
 	}
-	else {
+	else
+	{
 		if (check_goal_arrival(m_map->get_tile_center_coords(m_path[current_goal_index])))
 		{
 			current_goal_index = (current_goal_index + 1) % m_path.size();
@@ -126,7 +127,7 @@ void Wanderer::update(float ms)
 	{
 		move_towards_goal(m_map->get_tile_center_coords(immediate_path[current_immediate_goal_index]), ms);
 	}
-	
+
 	// sprite change
 	if (sprite_countdown > 0.f)
 		sprite_countdown -= ms;
@@ -134,7 +135,7 @@ void Wanderer::update(float ms)
 	sprite_switch >= 5 ? sprite_switch = 1 : sprite_switch++;
 }
 
-void Wanderer::draw(const mat3& projection)
+void Wanderer::draw(const mat3 &projection)
 {
 	// transformation
 	transform.begin();
@@ -149,7 +150,7 @@ void Wanderer::draw(const mat3& projection)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // depth
+	// depth
 	glDisable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
@@ -167,24 +168,25 @@ void Wanderer::draw(const mat3& projection)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, wanderer_texture.id);
 
 	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
-	float color[] = { 1.f, 1.f, 1.f };
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
+	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
-	if (sprite_countdown < 0) {
+	if (sprite_countdown < 0)
+	{
 		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
-		const char* path = s.c_str();
+		const char *path = s.c_str();
 
 		wanderer_texture.~Texture();
 		wanderer_texture.load_from_file(path);
@@ -209,11 +211,11 @@ vec2 Wanderer::get_position() const
 // collision
 vec2 Wanderer::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f };
+	return {std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f};
 }
 
 // alert
-void Wanderer::set_alert_mode(bool val) 
+void Wanderer::set_alert_mode(bool val)
 {
 	if (!alert_mode && val)
 	{
@@ -232,6 +234,11 @@ void Wanderer::set_alert_mode(bool val)
 	}
 }
 
+bool Wanderer::get_alert_mode() const
+{
+	return alert_mode;
+}
+
 // ai
 void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 {
@@ -247,13 +254,12 @@ void Wanderer::calculate_immediate_path(vec2 goal, int limit_search)
 
 	vector<path_construction> paths_in_progress;
 	path_construction beginning;
-	beginning.path = { {grid_position} };
+	beginning.path = {{grid_position}};
 	beginning.heuristic = abs(grid_position.x - goal.x) + abs(grid_position.y - goal.y);
 	beginning.expected_total = beginning.heuristic;
 
 	paths_in_progress.push_back(beginning);
 
-	
 	while (paths_in_progress[0].heuristic != 0 && limit_search > 0)
 	{
 		vector<path_construction> new_paths = find_paths_from(paths_in_progress[0], goal);
@@ -277,7 +283,7 @@ bool Wanderer::check_goal_arrival(vec2 goal)
 void Wanderer::move_towards_goal(vec2 goal, float ms)
 {
 	float step = -1.0 * motion.speed * (ms / 1000);
-	vec2 motionVector = { motion.position.x - goal.x, motion.position.y - goal.y };
+	vec2 motionVector = {motion.position.x - goal.x, motion.position.y - goal.y};
 	float magnitude = std::sqrt((motionVector.x * motionVector.x) + (motionVector.y * motionVector.y));
 	motion.position.y += step * (motionVector.y / magnitude);
 	motion.position.x += step * (motionVector.x / magnitude);
@@ -306,7 +312,7 @@ vector<path_construction> Wanderer::find_paths_from(path_construction origin, ve
 
 			path_construction new_path;
 			new_path.path = origin.path;
-			vec2 new_point = { point_of_origin.x + x, point_of_origin.y + y };
+			vec2 new_point = {point_of_origin.x + x, point_of_origin.y + y};
 			if (m_map->is_wall(new_point))
 			{
 				continue;
@@ -315,7 +321,7 @@ vector<path_construction> Wanderer::find_paths_from(path_construction origin, ve
 			new_path.path.push_back(new_point);
 			new_path.heuristic = abs(new_point.x - goal.x) + abs(new_point.y - goal.y);
 			new_path.expected_total = new_path.heuristic + origin.path.size();
-			
+
 			if (return_list.empty())
 			{
 				return_list.insert(return_list.begin(), new_path);
@@ -379,5 +385,5 @@ vector<path_construction> Wanderer::merge_in_order(vector<path_construction> p1,
 
 bool Wanderer::tile_is_accessible(vec2 origin, int x_delta, int y_delta)
 {
-	return !m_map->is_wall({ origin.x, origin.y + y_delta }) && !m_map->is_wall({ origin.x + x_delta, origin.y });
+	return !m_map->is_wall({origin.x, origin.y + y_delta}) && !m_map->is_wall({origin.x + x_delta, origin.y});
 }
