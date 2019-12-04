@@ -236,7 +236,7 @@ bool World::update(float ms)
 		{
 			if (alert_mode)
 			{
-				if (m_char.is_in_range(wanderer))
+				if (m_char.is_in_alert_mode_range(wanderer))
 				{
 					// fprintf(stderr, "alert mode active and in range \n");
 					stay_alert = true;
@@ -248,14 +248,15 @@ bool World::update(float ms)
 			}
 		}
 
-		if (stay_alert)
-		{
-			alert_mode = true;
-		}
-		else
-		{
-			alert_mode = false;
-		}
+		// if (stay_alert)
+		// {
+		// 	alert_mode = true;
+		// }
+		// else
+		// {
+		// 	alert_mode = false;
+		// }
+		alert_mode = stay_alert;
 	}
 
 	// IF ALERT MODE OVERLAY
@@ -376,7 +377,30 @@ bool World::update(float ms)
 	for (auto &wanderer : m_wanderers)
 	{
 		wanderer.update(ms * m_current_speed);
-		wanderer.set_alert_mode(alert_mode);
+		if (alert_mode)
+		{
+			if (m_char.is_in_alert_mode_range(wanderer))
+			{
+				// fprintf(stderr, "alert mode active and in range \n");
+				wanderer.set_alert_mode(true);
+			}
+			else
+			{
+				wanderer.set_alert_mode(false);
+			}
+		}
+		else
+		{
+			if (m_char.is_in_range(wanderer))
+			{
+				// fprintf(stderr, "alert mode active and in range \n");
+				wanderer.set_alert_mode(true);
+			}
+			else
+			{
+				wanderer.set_alert_mode(false);
+			}
+		}
 	}
 
 	// update spotters
@@ -577,6 +601,8 @@ bool World::update(float ms)
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void World::draw()
 {
+
+	// fprintf(stderr, "Timer - %f", glfwGetTime());
 	// clear error buffer
 	gl_flush_errors();
 

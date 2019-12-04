@@ -352,6 +352,23 @@ bool Char::is_in_range(Wanderer &w)
 	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
 	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
+	r *= 4.f;
+
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+bool Char::is_in_alert_mode_range(Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
+	float dx = motion.position.x - w.get_position().x;
+	float dy = motion.position.y - w.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
 	r *= 12.f;
 
 	if (d_sq < r * r)
