@@ -12,6 +12,30 @@ using namespace std;
 
 bool Char::init(vec2 spos)
 {
+	// load sound
+	if (SDL_Init(SDL_INIT_AUDIO) < 0)
+	{
+		fprintf(stderr, "Failed to initialize SDL Audio");
+		return false;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+	{
+		fprintf(stderr, "Failed to open audio device");
+		return false;
+	}
+
+	m_sound_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
+	m_sound_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
+	
+	if (m_sound_dead == nullptr || m_sound_walk == nullptr)
+	{
+		fprintf(stderr, "Failed to load sounds\n %s\n &s\n make sure the data directory is present\n",
+				audio_path("char_dead.wav"),
+				audio_path("char_walk.wav"));
+		return false;
+	}
+
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
@@ -92,6 +116,13 @@ bool Char::init(vec2 spos)
 // release all graphics resources
 void Char::destroy()
 {
+	if (m_sound_dead != nullptr)
+		Mix_FreeChunk(m_sound_dead);
+	if (m_sound_walk != nullptr)
+		Mix_FreeChunk(m_sound_walk);
+
+	Mix_CloseAudio();
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
@@ -249,6 +280,8 @@ bool Char::is_alive() const
 
 void Char::kill()
 {
+	if (m_is_alive)
+		Mix_PlayChannel(1, m_sound_dead, 0);
 	m_is_alive = false;
 }
 

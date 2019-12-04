@@ -11,6 +11,10 @@
 // stlib
 #include <vector>
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 class Shooter;
 class Spotter;
 class Wanderer;
@@ -50,6 +54,10 @@ private:
 	int sprite_switch = 1;
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
+
+	// sound
+	Mix_Chunk *m_sound_dead;
+	Mix_Chunk *m_sound_walk;
 
 public:
 	bool init(vec2 pos);
