@@ -36,6 +36,8 @@ World::World() : m_control(0),
 				 m_current_game_state(0),
 				 m_current_level_state(0),
 				 m_current_pause_state(0),
+				 m_current_game_won_state(2),
+				 m_current_game_over_state(1),
 				 m_paused(false),
 				 m_game_state(START_SCREEN)
 {
@@ -163,7 +165,8 @@ bool World::init()
 		   m_char.init(m_map.get_spawn_pos()) &&
 		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
-		   m_complete_screen.init();
+		   m_complete_screen.init() &&
+		   m_gameover_screen.init();
 }
 
 // release all the associated resources
@@ -201,6 +204,7 @@ void World::destroy()
 	m_pause_screen.destroy();
 	m_cutscene.destroy();
 	m_complete_screen.destroy();
+	m_gameover_screen.destroy();
 	m_hud.destroy();
 
 	glfwDestroyWindow(m_window);
@@ -214,6 +218,8 @@ bool World::update(float ms)
 
 	m_start_screen.update(m_current_game_state);
 	m_level_screen.update(m_current_level_state);
+	m_complete_screen.update(m_current_game_won_state);
+	m_gameover_screen.update(m_current_game_over_state);
 	m_cutscene.update(m_current_game_state);
 	m_pause_screen.update(m_current_pause_state);
 
@@ -712,6 +718,9 @@ void World::draw()
 	case WIN_SCREEN:
 		m_complete_screen.draw(projection_2D);
 		break;
+	case LOSE_SCREEN:
+		m_gameover_screen.draw(projection_2D);
+		break;
 	case PAUSE_SCREEN:
 		m_pause_screen.draw(projection_2D);
 		break;
@@ -822,6 +831,26 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				if (m_current_level_state > 0)
 					m_current_level_state--;
 		}
+		else if (m_game_state == WIN_SCREEN)
+		{
+			if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
+				if (m_current_game_won_state == MAIN_MENU)
+					m_current_game_won_state = QUIT;
+
+			if (action == GLFW_PRESS && key == GLFW_KEY_UP)
+				if (m_current_game_won_state == QUIT)
+					m_current_game_won_state = MAIN_MENU;
+		}
+		else if (m_game_state == LOSE_SCREEN)
+		{
+			if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
+				if (m_current_game_over_state == RESTART)
+					m_current_game_over_state = MAIN_MENU;
+
+			if (action == GLFW_PRESS && key == GLFW_KEY_UP)
+				if (m_current_game_over_state == MAIN_MENU)
+					m_current_game_over_state = RESTART;
+		}
 
 		if (action == GLFW_PRESS && key == GLFW_KEY_ENTER)
 		{
@@ -889,8 +918,36 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			}
 			else if (m_game_state == WIN_SCREEN)
 			{
-				m_game_state = START_SCREEN;
-				m_cutscene.set_dialogue_counter(m_game_state, 1);
+				if (m_current_game_won_state == MAIN_MENU)
+				{
+					m_current_game_won_state = MAIN_MENU;
+					m_game_state = START_SCREEN;
+					m_cutscene.set_dialogue_counter(m_game_state, 1);
+					m_current_game_state = 0;
+					reset_game();
+				}
+				else if (m_current_game_won_state == QUIT)
+				{
+					m_current_game_won_state = MAIN_MENU;
+					m_game_state = QUIT;
+				}
+			}
+			else if (m_game_state == LOSE_SCREEN)
+			{
+				if (m_current_game_over_state == MAIN_MENU)
+				{
+					m_current_game_over_state = RESTART;
+					m_game_state = START_SCREEN;
+					m_cutscene.set_dialogue_counter(m_game_state, 1);
+					m_current_game_state = 0;
+					reset_game();
+				}
+				else if (m_current_game_over_state == RESTART)
+				{
+					m_current_game_over_state = RESTART;
+					m_game_state = m_level;
+					reset_game();
+				}
 			}
 			else if (m_current_game_state == 0)
 			{
@@ -954,7 +1011,6 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = false;
 				m_game_state = m_level;
 			}
-			
 		}
 		else
 		{
@@ -1249,6 +1305,7 @@ void World::advance_to_cutscene()
 		m_game_state = LEVEL_3_CUTSCENE;
 		break;
 	case LEVEL_3:
+		m_game_state = WIN_SCREEN;
 		break;
 	default:
 		break;

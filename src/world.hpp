@@ -18,6 +18,7 @@
 #include "start_screen.hpp"
 #include "wanderer.hpp"
 #include "pause_screen.hpp"
+#include "gameover_screen.hpp"
 
 // stlib
 #include <vector>
@@ -56,6 +57,7 @@ private:
 	CompleteScreen m_complete_screen;
 	Hud m_hud;
 	PauseScreen m_pause_screen;
+	GameoverScreen m_gameover_screen;
 
 	// entities
 	Char m_char;
@@ -80,6 +82,12 @@ private:
 
 	// current pause state
 	unsigned int m_current_pause_state;
+
+	// current game done state
+	unsigned int m_current_game_won_state;
+
+	// current game over state
+	unsigned int m_current_game_over_state;
 
 	// variables
 	int m_alert_mode_cooldown;

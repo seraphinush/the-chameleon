@@ -1,16 +1,16 @@
 // header
-#include "complete_screen.hpp"
+#include "gameover_screen.hpp"
 
 // stdlib
 #include <algorithm>
 #include <cmath>
 
-Texture CompleteScreen::pointer;
-Texture CompleteScreen::game_done;
-Texture CompleteScreen::main_menu;
-Texture CompleteScreen::quit;
+Texture GameoverScreen::pointer;
+Texture GameoverScreen::game_over;
+Texture GameoverScreen::retry;
+Texture GameoverScreen::main_menu;
 
-bool CompleteScreen::init()
+bool GameoverScreen::init()
 {
 	// load shared texture
 	if (!pointer.is_valid())
@@ -22,29 +22,29 @@ bool CompleteScreen::init()
 		}
 	}
 
-	if (!game_done.is_valid())
+	if (!game_over.is_valid())
 	{
-		if (!game_done.load_from_file(textures_path("congratulations.png")))
+		if (!game_over.load_from_file(textures_path("game_over.png")))
 		{
-			fprintf(stderr, "Failed to load game done texture!");
+			fprintf(stderr, "Failed to load game over texture!");
 			return false;
 		}
 	}
 
-	if (!main_menu.is_valid())
+	if (!retry.is_valid())
+	{
+		if (!retry.load_from_file(textures_path("retry.png")))
+		{
+			fprintf(stderr, "Failed to load retry texture!");
+			return false;
+		}
+	}
+
+    if (!main_menu.is_valid())
 	{
 		if (!main_menu.load_from_file(textures_path("main_menu.png")))
 		{
 			fprintf(stderr, "Failed to load main menu texture!");
-			return false;
-		}
-	}
-
-	if (!quit.is_valid())
-	{
-		if (!quit.load_from_file(textures_path("quit.png")))
-		{
-			fprintf(stderr, "Failed to load quit texture!");
 			return false;
 		}
 	}
@@ -95,7 +95,7 @@ bool CompleteScreen::init()
 }
 
 // release all graphics resources
-void CompleteScreen::destroy()
+void GameoverScreen::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -104,39 +104,39 @@ void CompleteScreen::destroy()
 	effect.release();
 }
 
-void CompleteScreen::update(unsigned int state)
+void GameoverScreen::update(unsigned int state)
 {
-	if (state == 2)
+	if (state == 1)
 		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 5.f)});
-	else if (state == 3)
+	else if (state == 2)
 		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 5.f)});
 }
 
 // TODO -- remove hardcoded pos
-void CompleteScreen::draw(const mat3 &proj)
+void GameoverScreen::draw(const mat3 &proj)
 {
 	// pointer
 	vec2 pointer_scale = vec2({pointer.width / (8 * SCREEN_WIDTH), pointer.height / (8 * SCREEN_WIDTH)});
 	//vec2 m_pointer_pos
 	draw_element(proj, pointer, pointer_pos, pointer_scale);
 
-	// game done
-	vec2 game_done_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
-	vec2 game_done_scale = vec2({game_done.width * 1.5f / (2 * SCREEN_WIDTH), game_done.height * 1.5f / (2 * SCREEN_WIDTH)});
-	draw_element(proj, game_done, game_done_pos, game_done_scale);
+	// game over
+	vec2 game_over_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
+	vec2 game_over_scale = vec2({game_over.width * 1.5f / (2 * SCREEN_WIDTH), game_over.height * 1.5f / (2 * SCREEN_WIDTH)});
+	draw_element(proj, game_over, game_over_pos, game_over_scale);
 
-	// main menu
-	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	// retry
+	vec2 retry_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	vec2 retry_scale = vec2({retry.width / (2 * SCREEN_WIDTH), retry.height / (2 * SCREEN_WIDTH)});
+	draw_element(proj, retry, retry_pos, retry_scale);
+
+    // main menu
+	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
 	vec2 main_menu_scale = vec2({main_menu.width / (2 * SCREEN_WIDTH), main_menu.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, main_menu, main_menu_pos, main_menu_scale);
-
-	// quit
-	vec2 quit_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
-	vec2 quit_scale = vec2({quit.width / (2 * SCREEN_WIDTH), quit.height / (2 * SCREEN_WIDTH)});
-	draw_element(proj, quit, quit_pos, quit_scale);
 }
 
-void CompleteScreen::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
+void GameoverScreen::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
 {
 	// transformation
 	transform.begin();
