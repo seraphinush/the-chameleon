@@ -1,16 +1,18 @@
 // header
-#include "complete_screen.hpp"
+#include "pause_screen.hpp"
 
 // stdlib
 #include <algorithm>
 #include <cmath>
 
-Texture CompleteScreen::pointer;
-Texture CompleteScreen::game_done;
-Texture CompleteScreen::main_menu;
-Texture CompleteScreen::quit;
+Texture PauseScreen::pointer;
+Texture PauseScreen::game_paused;
+Texture PauseScreen::resume;
+Texture PauseScreen::restart;
+Texture PauseScreen::main_menu;
+Texture PauseScreen::quit;
 
-bool CompleteScreen::init()
+bool PauseScreen::init()
 {
 	// load shared texture
 	if (!pointer.is_valid())
@@ -22,11 +24,11 @@ bool CompleteScreen::init()
 		}
 	}
 
-	if (!game_done.is_valid())
+	if (!game_paused.is_valid())
 	{
-		if (!game_done.load_from_file(textures_path("congratulations.png")))
+		if (!game_paused.load_from_file(textures_path("game_paused.png")))
 		{
-			fprintf(stderr, "Failed to load game done texture!");
+			fprintf(stderr, "Failed to load game paused texture!");
 			return false;
 		}
 	}
@@ -40,6 +42,24 @@ bool CompleteScreen::init()
 		}
 	}
 
+	if (!resume.is_valid())
+	{
+		if (!resume.load_from_file(textures_path("resume.png")))
+		{
+			fprintf(stderr, "Failed to load resume texture!");
+			return false;
+		}
+	}
+
+	if (!restart.is_valid())
+	{
+		if (!restart.load_from_file(textures_path("restart.png")))
+		{
+			fprintf(stderr, "Failed to load restart texture!");
+			return false;
+		}
+	}
+
 	if (!quit.is_valid())
 	{
 		if (!quit.load_from_file(textures_path("quit.png")))
@@ -49,7 +69,6 @@ bool CompleteScreen::init()
 		}
 	}
 
-	// the position corresponds to the center of the texture
 	float wr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
 	float hr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
 
@@ -95,7 +114,7 @@ bool CompleteScreen::init()
 }
 
 // release all graphics resources
-void CompleteScreen::destroy()
+void PauseScreen::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -104,39 +123,55 @@ void CompleteScreen::destroy()
 	effect.release();
 }
 
-void CompleteScreen::update(unsigned int state)
+void PauseScreen::update(unsigned int state)
 {
-	if (state == 2)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	if (state == 0)
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 2 * (SCREEN_HEIGHT / 6.f)});
+	else if (state == 1)
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 6.f)});
+	else if (state == 2)
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 6.f)});
 	else if (state == 3)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 5.f)});
+		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 5 * (SCREEN_HEIGHT / 6.f)});
 }
 
-// TODO -- remove hardcoded pos
-void CompleteScreen::draw(const mat3 &proj)
+// -- edit images
+// -- remove hardcoded locs
+// -- remove hardcoded scale
+void PauseScreen::draw(const mat3 &projection)
 {
 	// pointer
 	vec2 pointer_scale = vec2({pointer.width / (8 * SCREEN_WIDTH), pointer.height / (8 * SCREEN_WIDTH)});
 	//vec2 m_pointer_pos
-	draw_element(proj, pointer, pointer_pos, pointer_scale);
+	draw_element(projection, pointer, pointer_pos, pointer_scale);
 
-	// game done
-	vec2 game_done_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
-	vec2 game_done_scale = vec2({game_done.width * 1.5f / (2 * SCREEN_WIDTH), game_done.height * 1.5f / (2 * SCREEN_WIDTH)});
-	draw_element(proj, game_done, game_done_pos, game_done_scale);
+	// game paused
+	vec2 game_paused_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 6.f)});
+	vec2 game_paused_scale = vec2({game_paused.width / (2 * SCREEN_WIDTH), game_paused.height / (2 * SCREEN_WIDTH)});
+	draw_element(projection, game_paused, game_paused_pos, game_paused_scale);
+
+	// resume
+	vec2 resume_pos = vec2({SCREEN_WIDTH / 2.f, 2 * (SCREEN_HEIGHT / 6.f)});
+	vec2 resume_scale = vec2({resume.width / (2 * SCREEN_WIDTH), resume.height / (2 * SCREEN_WIDTH)});
+	draw_element(projection, resume, resume_pos, resume_scale);
+	
+	// restart
+	vec2 restart_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 6.f)});
+	vec2 restart_scale = vec2({restart.width / (2 * SCREEN_WIDTH), restart.height / (2 * SCREEN_WIDTH)});
+	draw_element(projection, restart, restart_pos, restart_scale);
 
 	// main menu
-	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 6.f)});
 	vec2 main_menu_scale = vec2({main_menu.width / (2 * SCREEN_WIDTH), main_menu.height / (2 * SCREEN_WIDTH)});
-	draw_element(proj, main_menu, main_menu_pos, main_menu_scale);
+	draw_element(projection, main_menu, main_menu_pos, main_menu_scale);
 
 	// quit
-	vec2 quit_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
+	vec2 quit_pos = vec2({SCREEN_WIDTH / 2.f, 5 * (SCREEN_HEIGHT / 6.f)});
 	vec2 quit_scale = vec2({quit.width / (2 * SCREEN_WIDTH), quit.height / (2 * SCREEN_WIDTH)});
-	draw_element(proj, quit, quit_pos, quit_scale);
+	draw_element(projection, quit, quit_pos, quit_scale);
 }
 
-void CompleteScreen::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
+void PauseScreen::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
 {
 	// transformation
 	transform.begin();
