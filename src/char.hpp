@@ -57,6 +57,7 @@ private:
 
 	// sound
 	Mix_Chunk *m_sfx_bump;
+	Mix_Chunk *m_sfx_color_change;
 	Mix_Chunk *m_sfx_dead;
 	Mix_Chunk *m_sfx_walk;
 

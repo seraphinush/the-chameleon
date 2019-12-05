@@ -26,15 +26,16 @@ bool Char::init(vec2 spos)
 	}
 
 	m_sfx_bump = Mix_LoadWAV(audio_path("char_bump.wav"));
+	m_sfx_color_change = Mix_LoadWAV(audio_path("char_color_change.wav"));
 	m_sfx_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
 	m_sfx_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
-
-	if (m_sfx_bump == nullptr || m_sfx_dead == nullptr || m_sfx_walk == nullptr)
+	
+	if (m_sfx_bump == nullptr || 
+	  m_sfx_color_change == nullptr || 
+	  m_sfx_dead == nullptr || 
+		m_sfx_walk == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n &s\n make sure the data directory is present\n",
-				audio_path("char_bump.wav"),
-				audio_path("char_dead.wav"),
-				audio_path("char_walk.wav"));
+		fprintf(stderr, "Failed to load char sfx\n");
 		return false;
 	}
 
@@ -491,7 +492,11 @@ int Char::get_direction() const
 // 1: red, 2: green; 3: blue; 4: yellow;
 void Char::set_color(int color)
 {
-	m_color = color;
+	if (m_color != color)
+	{
+		Mix_PlayChannel(-1, m_sfx_color_change, 0);
+		m_color = color;
+	}
 }
 
 int Char::get_color() const
@@ -503,15 +508,14 @@ int Char::get_color() const
 // CONSEQUENCE
 ////////////////////
 
-// up: 0, down: 1, left: 2, right: 3
 void Char::set_dash(bool value)
 {
-	if (!value)
+	if (m_dash && !value)
 		Mix_PlayChannel(-1, m_sfx_bump, 0);
 	m_dash = value;
 
 	if (!value)
-		m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
+		m_dash = m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
 bool Char::is_dashing()

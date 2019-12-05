@@ -131,15 +131,21 @@ bool World::init()
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-	m_sfx_alert = Mix_LoadWAV(audio_path("alert.wav"));
-	m_sfx_get_trophy = Mix_LoadWAV(audio_path("get_trophy.wav"));
+	m_sfx_alert = Mix_LoadWAV(audio_path("sfx_alert.wav"));
+	m_sfx_click = Mix_LoadWAV(audio_path("sfx_click.wav"));
+	m_sfx_get_trophy = Mix_LoadWAV(audio_path("sfx_get_trophy.wav"));
+	m_sfx_pause = Mix_LoadWAV(audio_path("sfx_pause.wav"));
+	m_sfx_resume = Mix_LoadWAV(audio_path("sfx_resume.wav"));
 
-	if (m_background_music == nullptr || m_sfx_get_trophy == nullptr || m_sfx_alert == nullptr)
+	if (m_background_music == nullptr ||
+		m_sfx_alert == nullptr ||
+		m_sfx_click == nullptr ||
+		m_sfx_get_trophy == nullptr ||
+		m_sfx_pause == nullptr ||
+		m_sfx_resume == nullptr
+		)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-				audio_path("music.wav"),
-				audio_path("alert.wav"),
-				audio_path("char_win.wav"));
+		fprintf(stderr, "Failed to load sounds\n");
 		return false;
 	}
 
@@ -179,6 +185,10 @@ void World::destroy()
 		Mix_FreeChunk(m_sfx_alert);
 	if (m_sfx_get_trophy != nullptr)
 		Mix_FreeChunk(m_sfx_get_trophy);
+	if (m_sfx_pause != nullptr)
+		Mix_FreeChunk(m_sfx_pause);
+	if (m_sfx_resume != nullptr)
+		Mix_FreeChunk(m_sfx_resume);
 
 	Mix_CloseAudio();
 
@@ -908,6 +918,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_TUTORIAL);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -970,16 +982,18 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			{
 				if (m_current_game_won_state == MAIN_MENU)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = START_SCREEN;
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+					
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_won_state == QUIT)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = QUIT;
+					
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_game_state == LOSE_SCREEN)
@@ -991,23 +1005,31 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_over_state == RESTART)
 				{
 					m_current_game_over_state = RESTART;
 					m_game_state = m_level;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_current_game_state == 0)
 			{
 				m_game_state = STORY_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == CONTROL_SCREEN)
 			{
 				m_game_state = START_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+				
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == LEVEL_SCREEN)
 			{
@@ -1036,11 +1058,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_current_level_state = 0;
 					break;
 				}
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else
 			{
 				m_game_state = m_current_game_state;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1055,11 +1081,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = true;
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
+
+				Mix_PlayChannel(-1, m_sfx_pause, 0);
 			}
 			else
 			{
 				m_paused = false;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 		}
 		else
@@ -1088,6 +1118,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 			else if (m_current_pause_state == RESTART)
 			{
@@ -1095,6 +1127,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = !m_paused;
 				m_game_state = m_level;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == MAIN_MENU)
 			{
@@ -1103,12 +1137,16 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_game_state = START_SCREEN;
 				m_current_game_state = 0;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == QUIT)
 			{
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = QUIT;
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1146,11 +1184,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
-			m_char.set_color(1);
 			m_char.set_dash(true);
+			m_char.set_color(1);
 		}
 		// green
-		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
+		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)))
 		{
 			m_cooldown = 0;
 			m_char.set_color(2);
@@ -1160,13 +1198,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_alert_mode_cooldown = 0;
 		}
 		// blue
-		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
+		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)))
 		{
 			m_cooldown = 0;
 			m_char.set_color(3);
 		}
 		// yellow
-		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
+		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)))
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
