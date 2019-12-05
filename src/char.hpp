@@ -56,8 +56,9 @@ private:
 	int flip_in_x = 1;
 
 	// sound
-	Mix_Chunk *m_sound_dead;
-	Mix_Chunk *m_sound_walk;
+	Mix_Chunk *m_sfx_bump;
+	Mix_Chunk *m_sfx_dead;
+	Mix_Chunk *m_sfx_walk;
 
 public:
 	bool init(vec2 pos);

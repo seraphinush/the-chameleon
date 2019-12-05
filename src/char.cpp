@@ -25,12 +25,14 @@ bool Char::init(vec2 spos)
 		return false;
 	}
 
-	m_sound_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
-	m_sound_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
+	m_sfx_bump = Mix_LoadWAV(audio_path("char_bump.wav"));
+	m_sfx_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
+	m_sfx_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
 	
-	if (m_sound_dead == nullptr || m_sound_walk == nullptr)
+	if (m_sfx_bump == nullptr || m_sfx_dead == nullptr || m_sfx_walk == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n &s\n make sure the data directory is present\n",
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n &s\n make sure the data directory is present\n",
+				audio_path("char_bump.wav"),
 				audio_path("char_dead.wav"),
 				audio_path("char_walk.wav"));
 		return false;
@@ -116,10 +118,12 @@ bool Char::init(vec2 spos)
 // release all graphics resources
 void Char::destroy()
 {
-	if (m_sound_dead != nullptr)
-		Mix_FreeChunk(m_sound_dead);
-	if (m_sound_walk != nullptr)
-		Mix_FreeChunk(m_sound_walk);
+	if (m_sfx_bump != nullptr)
+		Mix_FreeChunk(m_sfx_bump);
+	if (m_sfx_dead != nullptr)
+		Mix_FreeChunk(m_sfx_dead);
+	if (m_sfx_walk != nullptr)
+		Mix_FreeChunk(m_sfx_walk);
 
 	Mix_CloseAudio();
 
@@ -281,7 +285,7 @@ bool Char::is_alive() const
 void Char::kill()
 {
 	if (m_is_alive)
-		Mix_PlayChannel(1, m_sound_dead, 0);
+		Mix_PlayChannel(1, m_sfx_dead, 0);
 	m_is_alive = false;
 }
 
@@ -468,6 +472,8 @@ int Char::get_color() const
 // up: 0, down: 1, left: 2, right: 3
 void Char::set_dash(bool value)
 {
+	if (!value)
+		Mix_PlayChannel(-1, m_sfx_bump, 0);
 	m_dash = value;
 
 	if (!value)
