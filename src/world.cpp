@@ -140,6 +140,7 @@ bool World::init()
 	}
 
 	// play background music
+	Mix_VolumeMusic(70);
 	Mix_PlayMusic(m_background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
