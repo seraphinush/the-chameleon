@@ -61,9 +61,7 @@ char map_test[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
-
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -111,7 +109,7 @@ char map_level_1[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WSSSSSSWSSSSSSSSSWSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSWSSSSSSSSW",
 	"WBBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
-	"WBBBBBBSYYYYYYYYYSRRRSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCZCW",
+	"WBBBBBBSYYYYYYYYYSRRRSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCZCCW",
 	"WBBBBBBBYYYYYYYYYRRRRRRRWWWWWWWWWWBWWWWWWWBBWWWWBBSWCCCCCCCW",
 	"WBBBBBBBYYYYYYYYYRRRRRRRSSSSSSSWSSBSSWSSSSBBSSSWBBBWCCCCCCCW",
 	"WBBBBBBWYYYYYYYYYWRRRRRRRRRRRRRWGGGGGWCCCCCCCCCSBBBSWCCCCCCW",
@@ -147,8 +145,7 @@ char map_level_1[40][61] = {
 	"WCCCCCCCWCCCCCCCCCCCCCSSSSBBSSSSRRSSSSYYSSSSBBSSSSSGGSSSRRSW",
 	"WCCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
 	"WCCACCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char map_level_2[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -190,8 +187,7 @@ char map_level_2[40][61] = {
 	"WWWWWRRWWWWWYYYYYYYYYYYYRSWGGSYYWWWBBWGGGWWWBBYYYYYRRRRWWWYW",
 	"WSSSSRRSSSSWYYYYYYYYYYYYRRSGGGYYSSSBBWGGGSSSGRRRRRYYYYRSSSYW",
 	"WCACCRRCCCCWYYYYYYYYYYYYGGGGGGBBBBBBBWGGGGGGGRRRRRRRRRYYYYYW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char map_level_3[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -233,8 +229,7 @@ char map_level_3[40][61] = {
 	"WCCWGGSSSSSSSSSGGWBBSSSWRRWBBSSSSSSSSSSBBSYYWBBSSSSBBBBBBBBW",
 	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
 	"WACWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 bool Map::init()
 {
@@ -376,7 +371,6 @@ void Map::destroy()
 	effect.release();
 }
 
-
 void Map::draw(const mat3 &projection)
 {
 
@@ -402,7 +396,7 @@ void Map::draw(const mat3 &projection)
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if ((current_level[y][x] == 'Z'))
+			else if (current_level[y][x] == 'Z')
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -434,7 +428,6 @@ void Map::draw(const mat3 &projection)
 		translation_tile.y += TILE_SIZE;
 	}
 }
-
 
 void Map::draw_element(const mat3 &projection, const Texture &texture)
 {
@@ -484,7 +477,7 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 20.0f) : -1);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -500,7 +493,7 @@ void Map::check_wall(Char &ch, const float ms)
 		ch.set_wall_collision('R', false);
 		return;
 	}
-	
+
 	// ch info
 	vec2 pos = ch.get_position();
 	vec2 box = ch.get_bounding_box();
@@ -512,7 +505,7 @@ void Map::check_wall(Char &ch, const float ms)
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
-	
+
 	// initialize
 	int tile_x_top_left = 0;
 	int tile_y_top_left = 0;
@@ -541,7 +534,7 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_x_top_right = (int)pos_top_right.x / (int)TILE_SIZE;
 		tile_y_top_right = (int)(pos_top_right.y - step) / (int)TILE_SIZE;
 		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
-			current_level[tile_y_top_right][tile_x_top_right] == 'W' ||	current_level[tile_y_top_right][tile_x_top_right] == 'S')
+			current_level[tile_y_top_right][tile_x_top_right] == 'W' || current_level[tile_y_top_right][tile_x_top_right] == 'S')
 		{
 			d = TILE_SIZE - (pos_top_left.y - (tile_y_top_left * TILE_SIZE));
 			ch.change_position({0.f, d});
@@ -560,7 +553,7 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_x_bottom_right = (int)pos_bottom_right.x / (int)TILE_SIZE;
 		tile_y_bottom_right = (int)(pos_bottom_right.y + step) / (int)TILE_SIZE;
 		if (current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' || current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S' ||
-			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' || current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
 			d = (tile_y_bottom_left * TILE_SIZE) - pos_bottom_left.y - 0.001f;
 			ch.change_position({0.f, d});
@@ -579,7 +572,7 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_x_bottom_left = (int)(pos_bottom_left.x - step) / (int)TILE_SIZE;
 		tile_y_bottom_left = (int)pos_bottom_left.y / (int)TILE_SIZE;
 		if (current_level[tile_y_top_left][tile_x_top_left] == 'W' || current_level[tile_y_top_left][tile_x_top_left] == 'S' ||
-			current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' ||	current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S')
+			current_level[tile_y_bottom_left][tile_x_bottom_left] == 'W' || current_level[tile_y_bottom_left][tile_x_bottom_left] == 'S')
 		{
 			d = TILE_SIZE - (pos_top_left.x - (tile_x_top_left * TILE_SIZE));
 			ch.change_position({d, 0.f});
@@ -598,7 +591,7 @@ void Map::check_wall(Char &ch, const float ms)
 		tile_x_bottom_right = (int)(pos_bottom_right.x + step) / (int)TILE_SIZE;
 		tile_y_bottom_right = (int)pos_bottom_right.y / (int)TILE_SIZE;
 		if (current_level[tile_y_top_right][tile_x_top_right] == 'W' || current_level[tile_y_top_right][tile_x_top_right] == 'S' ||
-			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' ||	current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
+			current_level[tile_y_bottom_right][tile_x_bottom_right] == 'W' || current_level[tile_y_bottom_right][tile_x_bottom_right] == 'S')
 		{
 			d = (tile_x_top_right * TILE_SIZE) - pos_top_right.x - 0.001f;
 			ch.change_position({d, 0.f});
@@ -662,7 +655,7 @@ void Map::set_current_map(int level)
 
 vec2 Map::get_spawn_pos() const
 {
-	vec2 res = vec2({ 0.f, 0.f });
+	vec2 res = vec2({0.f, 0.f});
 
 	for (int y = 0; y < 40; y++)
 	{
@@ -737,7 +730,6 @@ void Map::reset_flash_time()
 	m_flash_time = glfwGetTime();
 }
 
-
 int Map::get_flash()
 {
 	return flash_map;
@@ -753,14 +745,14 @@ float Map::get_flash_time() const
 
 vec2 Map::get_tile_center_coords(vec2 tile_indices)
 {
-	return vec2{ (tile_indices.x * TILE_SIZE) + TILE_SIZE / 2, (tile_indices.y * TILE_SIZE) + TILE_SIZE / 2 };
+	return vec2{(tile_indices.x * TILE_SIZE) + TILE_SIZE / 2, (tile_indices.y * TILE_SIZE) + TILE_SIZE / 2};
 }
 
 vec2 Map::get_grid_coords(vec2 position)
 {
 	int truncated_x = (int)position.x / (int)TILE_SIZE;
 	int truncated_y = (int)position.y / (int)TILE_SIZE;
-	return vec2{ (float)truncated_x, (float)truncated_y };
+	return vec2{(float)truncated_x, (float)truncated_y};
 }
 
 bool Map::is_wall(vec2 grid_coords)

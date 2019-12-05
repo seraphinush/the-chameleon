@@ -17,6 +17,8 @@
 #include "spotter.hpp"
 #include "start_screen.hpp"
 #include "wanderer.hpp"
+#include "pause_screen.hpp"
+#include "gameover_screen.hpp"
 
 // stlib
 #include <vector>
@@ -39,9 +41,11 @@ private:
 
 	// sound
 	Mix_Music *m_background_music;
-	Mix_Chunk *m_char_dead_sound;
-	Mix_Chunk *m_char_green_sound;
-	Mix_Chunk *m_char_win_sound;
+	Mix_Chunk *m_sfx_alert;
+	Mix_Chunk *m_sfx_click;
+	Mix_Chunk *m_sfx_get_trophy;
+	Mix_Chunk *m_sfx_pause;
+	Mix_Chunk *m_sfx_resume;
 
 	// c++ rng
 	std::default_random_engine m_rng;
@@ -54,6 +58,8 @@ private:
 	Cutscene m_cutscene;
 	CompleteScreen m_complete_screen;
 	Hud m_hud;
+	PauseScreen m_pause_screen;
+	GameoverScreen m_gameover_screen;
 
 	// entities
 	Char m_char;
@@ -76,12 +82,24 @@ private:
 	// current level state
 	unsigned int m_current_level_state;
 
+	// current pause state
+	unsigned int m_current_pause_state;
+
+	// current game done state
+	unsigned int m_current_game_won_state;
+
+	// current game over state
+	unsigned int m_current_game_over_state;
+
 	// variables
+	bool m_alert_mode;
 	int m_alert_mode_cooldown;
 	int m_cooldown;
+	int m_level;
 	float m_current_speed;
 	bool m_recent_dash;
 	bool m_spawn_particles;
+	bool m_paused;
 
 	// wanderer checkpoint
 	vector<vector<vec2>> wanderer_paths =
@@ -160,8 +178,6 @@ public:
 	bool update(float ms);
 	void draw();
 	bool is_over() const;
-
-	bool alert_mode;
 
 private:
 	bool spawn_spotter();
