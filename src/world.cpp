@@ -131,22 +131,21 @@ bool World::init()
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
-	m_char_green_sound = Mix_LoadWAV(audio_path("green_sound.wav"));
-	m_char_win_sound = Mix_LoadWAV(audio_path("char_win.wav"));
+	m_sfx_alert = Mix_LoadWAV(audio_path("alert.wav"));
+	m_sfx_get_trophy = Mix_LoadWAV(audio_path("get_trophy.wav"));
 
-	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr || m_char_green_sound == nullptr)
+	if (m_background_music == nullptr || m_sfx_get_trophy == nullptr || m_sfx_alert == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 				audio_path("music.wav"),
-				audio_path("char_dead.wav"),
-				audio_path("green_sound.wav"),
+				audio_path("alert.wav"),
 				audio_path("char_win.wav"));
 		return false;
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	Mix_VolumeMusic(60);
+	Mix_FadeInMusic(m_background_music, -1, 1000);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -156,17 +155,17 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		   m_control_screen.init() &&
-		   m_level_screen.init() &&
-		   m_pause_screen.init() &&
-		   m_cutscene.init() &&
-		   m_hud.init() &&
-		   m_map.init() &&
-		   m_char.init(m_map.get_spawn_pos()) &&
-		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
-		   m_particles_emitter.init() &&
-		   m_complete_screen.init() &&
-		   m_gameover_screen.init();
+		  m_control_screen.init() &&
+		  m_level_screen.init() &&
+		  m_pause_screen.init() &&
+		  m_cutscene.init() &&
+		  m_hud.init() &&
+		  m_map.init() &&
+		  m_char.init(m_map.get_spawn_pos()) &&
+		  m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		  m_particles_emitter.init() &&
+		  m_complete_screen.init() &&
+		  m_gameover_screen.init();
 }
 
 // release all the associated resources
@@ -176,12 +175,10 @@ void World::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
-	if (m_char_dead_sound != nullptr)
-		Mix_FreeChunk(m_char_dead_sound);
-	if (m_char_green_sound != nullptr)
-		Mix_FreeChunk(m_char_green_sound);
-	if (m_char_win_sound != nullptr)
-		Mix_FreeChunk(m_char_win_sound);
+	if (m_sfx_alert != nullptr)
+		Mix_FreeChunk(m_sfx_alert);
+	if (m_sfx_get_trophy != nullptr)
+		Mix_FreeChunk(m_sfx_get_trophy);
 
 	Mix_CloseAudio();
 
@@ -234,7 +231,7 @@ bool World::update(float ms)
 		}
 		else
 		{
-			alert_mode = false;
+			m_alert_mode = false;
 
 			// unalert shooters
 			for (auto &shooter : m_shooters)
@@ -250,8 +247,8 @@ bool World::update(float ms)
 		}
 
 		// IF ALERT MODE OVERLAY
-		m_overlay.update_alert_mode(alert_mode);
-		if (alert_mode)
+		m_overlay.update_alert_mode(m_alert_mode);
+		if (m_alert_mode)
 		{
 			m_overlay.oscillation();
 		}
@@ -277,7 +274,6 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -290,7 +286,8 @@ bool World::update(float ms)
 		{
 			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				Mix_HaltMusic();
+				Mix_PlayChannel(-1, m_sfx_get_trophy, 0);
 				advance_to_cutscene();
 				m_char.kill();
 				return true;
@@ -305,7 +302,6 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -320,7 +316,9 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					alert_mode = true;
+					if (!m_alert_mode)
+						Mix_PlayChannel(-1, m_sfx_alert, 0);
+					m_alert_mode = true;
 					m_alert_mode_cooldown = 0;
 
 					// rotate to char
@@ -330,13 +328,13 @@ bool World::update(float ms)
 					// SHOOTING AND COOLDOWN
 					shooter.set_in_combat(true);
 					shooter.bullets.cooldown -= 15.f;
-					if (shooter.bullets.cooldown < 0.f)
-					{
-						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
-						shooter.bullets.cooldown = 1500.f;
+						if (shooter.bullets.cooldown < 0.f)
+						{
+							shooter.bullets.spawn_bullet(shooter.get_position(), angle);
+							shooter.bullets.cooldown = 1500.f;
+						}
 					}
-				}
-				break;
+					break;
 			}
 		}
 
@@ -347,8 +345,10 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					alert_mode = true;
-					spotter.set_alert_mode(alert_mode);
+					if (!m_alert_mode)
+						Mix_PlayChannel(-1, m_sfx_alert, 0);
+					m_alert_mode = true;
+					spotter.set_alert_mode(m_alert_mode);
 					m_alert_mode_cooldown = 0;
 				}
 				break;
@@ -367,7 +367,7 @@ bool World::update(float ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(alert_mode);
+			wanderer.set_alert_mode(m_alert_mode);
 		}
 
 		// update spotters
@@ -380,7 +380,7 @@ bool World::update(float ms)
 		for (auto &shooter : m_shooters)
 		{
 			// TODO -- wrong location for proper code flow
-			shooter.set_alert_mode(alert_mode);
+			shooter.set_alert_mode(m_alert_mode);
 
 			// TODO
 			shooter.update(ms * m_current_speed);
@@ -899,6 +899,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_2);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+					
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -912,6 +914,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_3);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -1102,10 +1106,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// green
 		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
 		{
-			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_cooldown = 0;
 			m_char.set_color(2);
-			alert_mode = true;
+			if (!m_alert_mode)
+				Mix_PlayChannel(-1, m_sfx_alert, 0);
+			m_alert_mode = true;
 			m_alert_mode_cooldown = 0;
 		}
 		// blue
@@ -1119,7 +1124,6 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
-			alert_mode = true;
 			m_alert_mode_cooldown = 0;
 			m_cooldown = 0;
 		}
@@ -1164,6 +1168,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_map.set_current_map(LEVEL_1);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
+
+			Mix_VolumeMusic(25);
 		}
 		else if (m_game_state == LEVEL_2_CUTSCENE)
 		{
@@ -1181,6 +1187,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 81);
 		}
+		Mix_VolumeMusic(25);
 	}
 
 	// reset
@@ -1310,6 +1317,8 @@ void World::advance_to_cutscene()
 	default:
 		break;
 	}
+	Mix_VolumeMusic(60);
+	Mix_FadeInMusic(m_background_music, -1, 5000);
 }
 
 void World::reset_game()
@@ -1322,8 +1331,8 @@ void World::reset_game()
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
 	m_overlay.destroy();
-	alert_mode = false;
-	m_overlay.init(alert_mode, MAX_COOLDOWN);
+	m_alert_mode = false;
+	m_overlay.init(m_alert_mode, MAX_COOLDOWN);
 
 	// reset direction for every spotter
 	for (auto &spotter : m_spotters)
