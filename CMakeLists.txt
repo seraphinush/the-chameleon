@@ -70,6 +70,8 @@ set(SOURCE_FILES
   src/level_screen.hpp
   src/pause_screen.hpp
   src/gameover_screen.hpp
+  src/timer.cpp
+  src/timer.hpp
 	)
 
 if (IS_OS_MAC)
@@ -88,9 +90,14 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/freetype)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
+# Find freetype
+find_package(Freetype REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${FREETYPE_LIBRARIES})
 
 if (OPENGL_FOUND)
    target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})

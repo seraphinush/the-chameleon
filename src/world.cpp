@@ -170,7 +170,8 @@ bool World::init()
 		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init() &&
-		   m_gameover_screen.init();
+		   m_gameover_screen.init() && 
+		   m_timer.init();
 }
 
 // release all the associated resources
@@ -389,6 +390,9 @@ bool World::update(float ms)
 		// UPDATE
 		//////////////////////
 
+		//TImer update
+
+		m_timer.update(ms);
 		// update char
 		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
