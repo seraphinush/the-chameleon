@@ -140,8 +140,8 @@ bool World::init()
 	}
 
 	// play background music
-	Mix_VolumeMusic(70);
-	Mix_PlayMusic(m_background_music, -1);
+	Mix_VolumeMusic(60);
+	Mix_FadeInMusic(m_background_music, -1, 1000);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -850,6 +850,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_2);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+					
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -862,6 +864,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_3);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -1025,6 +1029,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_map.set_current_map(LEVEL_1);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
+
+			Mix_VolumeMusic(25);
 		}
 		else if (m_game_state == LEVEL_2_CUTSCENE)
 		{
@@ -1040,6 +1046,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 81);
 		}
+		Mix_VolumeMusic(25);
 	}
 
 	// reset
@@ -1166,6 +1173,7 @@ void World::advance_to_cutscene()
 	case LEVEL_3: break;
 	default: break;
 	}
+	Mix_VolumeMusic(60);
 	Mix_FadeInMusic(m_background_music, -1, 5000);
 }
 
