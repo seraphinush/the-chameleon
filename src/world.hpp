@@ -42,6 +42,7 @@ private:
 	// sound
 	Mix_Music *m_background_music;
 	Mix_Chunk *m_sfx_alert;
+	Mix_Chunk *m_sfx_click;
 	Mix_Chunk *m_sfx_get_trophy;
 	Mix_Chunk *m_sfx_pause;
 	Mix_Chunk *m_sfx_resume;

@@ -132,12 +132,14 @@ bool World::init()
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 	m_sfx_alert = Mix_LoadWAV(audio_path("sfx_alert.wav"));
+	m_sfx_click = Mix_LoadWAV(audio_path("sfx_click.wav"));
 	m_sfx_get_trophy = Mix_LoadWAV(audio_path("sfx_get_trophy.wav"));
 	m_sfx_pause = Mix_LoadWAV(audio_path("sfx_pause.wav"));
 	m_sfx_resume = Mix_LoadWAV(audio_path("sfx_resume.wav"));
 
 	if (m_background_music == nullptr ||
 		m_sfx_alert == nullptr ||
+		m_sfx_click == nullptr ||
 		m_sfx_get_trophy == nullptr ||
 		m_sfx_pause == nullptr ||
 		m_sfx_resume == nullptr
@@ -149,7 +151,7 @@ bool World::init()
 
 	// play background music
 	Mix_VolumeMusic(60);
-	Mix_FadeInMusic(m_background_music, -1, 1000);
+	//Mix_FadeInMusic(m_background_music, -1, 1000);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -870,6 +872,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_TUTORIAL);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -932,16 +936,18 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			{
 				if (m_current_game_won_state == MAIN_MENU)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = START_SCREEN;
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+					
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_won_state == QUIT)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = QUIT;
+					
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_game_state == LOSE_SCREEN)
@@ -953,23 +959,31 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_over_state == RESTART)
 				{
 					m_current_game_over_state = RESTART;
 					m_game_state = m_level;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_current_game_state == 0)
 			{
 				m_game_state = STORY_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == CONTROL_SCREEN)
 			{
 				m_game_state = START_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+				
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == LEVEL_SCREEN)
 			{
@@ -998,11 +1012,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_current_level_state = 0;
 					break;
 				}
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else
 			{
 				m_game_state = m_current_game_state;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1063,6 +1081,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = !m_paused;
 				m_game_state = m_level;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == MAIN_MENU)
 			{
@@ -1071,12 +1091,16 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_game_state = START_SCREEN;
 				m_current_game_state = 0;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == QUIT)
 			{
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = QUIT;
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1332,7 +1356,7 @@ void World::advance_to_cutscene()
 		break;
 	}
 	Mix_VolumeMusic(60);
-	Mix_FadeInMusic(m_background_music, -1, 5000);
+	//Mix_FadeInMusic(m_background_music, -1, 5000);
 }
 
 void World::reset_game()
