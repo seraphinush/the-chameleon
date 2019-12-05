@@ -151,7 +151,7 @@ bool World::init()
 
 	// play background music
 	Mix_VolumeMusic(60);
-	//Mix_FadeInMusic(m_background_music, -1, 1000);
+	Mix_FadeInMusic(m_background_music, -1, 1000);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -1138,11 +1138,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
-			m_char.set_color(1);
 			m_char.set_dash(true);
+			m_char.set_color(1);
 		}
 		// green
-		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
+		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)))
 		{
 			m_cooldown = 0;
 			m_char.set_color(2);
@@ -1152,13 +1152,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_alert_mode_cooldown = 0;
 		}
 		// blue
-		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
+		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)))
 		{
 			m_cooldown = 0;
 			m_char.set_color(3);
 		}
 		// yellow
-		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
+		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)))
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
@@ -1356,7 +1356,7 @@ void World::advance_to_cutscene()
 		break;
 	}
 	Mix_VolumeMusic(60);
-	//Mix_FadeInMusic(m_background_music, -1, 5000);
+	Mix_FadeInMusic(m_background_music, -1, 5000);
 }
 
 void World::reset_game()
