@@ -219,7 +219,7 @@ void Wanderer::set_alert_mode(bool val)
 {
 	if (!alert_mode && val)
 	{
-		motion.speed += 20.f;
+		motion.speed += 10.f;
 		alert_mode = val;
 		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
 		current_immediate_goal_index = 1;
