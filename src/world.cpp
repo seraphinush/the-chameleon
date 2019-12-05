@@ -142,8 +142,7 @@ bool World::init()
 		m_sfx_click == nullptr ||
 		m_sfx_get_trophy == nullptr ||
 		m_sfx_pause == nullptr ||
-		m_sfx_resume == nullptr
-		)
+		m_sfx_resume == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n");
 		return false;
@@ -412,11 +411,10 @@ bool World::update(float ms)
 			}
 			else
 			{
-				if (m_char.is_in_range(wanderer))
+				if (m_char.is_in_range(wanderer) && is_char_detectable())
 				{
 					// fprintf(stderr, "alert mode active and in range \n");
-					if (is_char_detectable())
-						wanderer.set_alert_mode(true);
+					wanderer.set_alert_mode(true);
 				}
 				else
 				{
@@ -986,13 +984,13 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
-					
+
 					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_won_state == QUIT)
 				{
 					m_game_state = QUIT;
-					
+
 					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
@@ -1028,7 +1026,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			{
 				m_game_state = START_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
-				
+
 				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == LEVEL_SCREEN)
