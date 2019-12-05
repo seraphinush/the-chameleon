@@ -41,9 +41,8 @@ private:
 
 	// sound
 	Mix_Music *m_background_music;
-	Mix_Chunk *m_char_dead_sound;
-	Mix_Chunk *m_char_green_sound;
-	Mix_Chunk *m_char_win_sound;
+	Mix_Chunk *m_sfx_alert;
+	Mix_Chunk *m_sfx_get_trophy;
 
 	// c++ rng
 	std::default_random_engine m_rng;
@@ -90,6 +89,7 @@ private:
 	unsigned int m_current_game_over_state;
 
 	// variables
+	bool m_alert_mode;
 	int m_alert_mode_cooldown;
 	int m_cooldown;
 	int m_level;
@@ -175,8 +175,6 @@ public:
 	bool update(float ms);
 	void draw();
 	bool is_over() const;
-
-	bool alert_mode;
 
 private:
 	bool spawn_spotter();
