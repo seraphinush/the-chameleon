@@ -17,7 +17,7 @@ const size_t MAX_COOLDOWN = 50;
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
 const float FADE_TIME = 0.7;
-const float FLASH_TIME = 0.5;
+const float FLASH_TIME = 1.5;
 
 // TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
@@ -155,17 +155,17 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		  m_control_screen.init() &&
-		  m_level_screen.init() &&
-		  m_pause_screen.init() &&
-		  m_cutscene.init() &&
-		  m_hud.init() &&
-		  m_map.init() &&
-		  m_char.init(m_map.get_spawn_pos()) &&
-		  m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
-		  m_particles_emitter.init() &&
-		  m_complete_screen.init() &&
-		  m_gameover_screen.init();
+		   m_control_screen.init() &&
+		   m_level_screen.init() &&
+		   m_pause_screen.init() &&
+		   m_cutscene.init() &&
+		   m_hud.init() &&
+		   m_map.init() &&
+		   m_char.init(m_map.get_spawn_pos()) &&
+		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		   m_particles_emitter.init() &&
+		   m_complete_screen.init() &&
+		   m_gameover_screen.init();
 }
 
 // release all the associated resources
@@ -231,8 +231,7 @@ bool World::update(float ms)
 		}
 		else
 		{
-			m_alert_mode = false;
-
+			bool stay_alert = false;
 			// unalert shooters
 			for (auto &shooter : m_shooters)
 				shooter.set_alert_mode(false);
@@ -240,10 +239,32 @@ bool World::update(float ms)
 			// unalert spotters
 			for (auto &spotter : m_spotters)
 				spotter.set_alert_mode(false);
-
 			// unalert wanderers
 			for (auto &wanderer : m_wanderers)
-				wanderer.set_alert_mode(false);
+			{
+				if (m_alert_mode)
+				{
+					if (m_char.is_in_alert_mode_range(wanderer))
+					{
+						// fprintf(stderr, "alert mode active and in range \n");
+						stay_alert = true;
+					}
+					else
+					{
+						wanderer.set_alert_mode(false);
+					}
+				}
+			}
+
+			// if (stay_alert)
+			// {
+			// 	alert_mode = true;
+			// }
+			// else
+			// {
+			// 	alert_mode = false;
+			// }
+			m_alert_mode = stay_alert;
 		}
 
 		// IF ALERT MODE OVERLAY
@@ -328,13 +349,13 @@ bool World::update(float ms)
 					// SHOOTING AND COOLDOWN
 					shooter.set_in_combat(true);
 					shooter.bullets.cooldown -= 15.f;
-						if (shooter.bullets.cooldown < 0.f)
-						{
-							shooter.bullets.spawn_bullet(shooter.get_position(), angle);
-							shooter.bullets.cooldown = 1500.f;
-						}
+					if (shooter.bullets.cooldown < 0.f)
+					{
+						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
+						shooter.bullets.cooldown = 1500.f;
 					}
-					break;
+				}
+				break;
 			}
 		}
 
@@ -367,7 +388,31 @@ bool World::update(float ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(m_alert_mode);
+			if (m_alert_mode)
+			{
+				if (m_char.is_in_alert_mode_range(wanderer))
+				{
+					// fprintf(stderr, "alert mode active and in range \n");
+					wanderer.set_alert_mode(true);
+				}
+				else
+				{
+					wanderer.set_alert_mode(false);
+				}
+			}
+			else
+			{
+				if (m_char.is_in_range(wanderer))
+				{
+					// fprintf(stderr, "alert mode active and in range \n");
+					if (is_char_detectable())
+						wanderer.set_alert_mode(true);
+				}
+				else
+				{
+					wanderer.set_alert_mode(false);
+				}
+			}
 		}
 
 		// update spotters
@@ -446,7 +491,6 @@ bool World::update(float ms)
 
 		//particles update
 		m_particles_emitter.update(ms);
-
 		// Spawning new Particles
 		if (m_spawn_particles)
 		{
@@ -578,6 +622,8 @@ bool World::update(float ms)
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void World::draw()
 {
+
+	// fprintf(stderr, "Timer - %f", glfwGetTime());
 	// clear error buffer
 	gl_flush_errors();
 
@@ -899,7 +945,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_2);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
-					
+
 					Mix_VolumeMusic(25);
 				}
 				else
@@ -1124,7 +1170,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
-			m_alert_mode_cooldown = 0;
+			// Alert mode removed from yellow
+			// m_alert_mode = true;
+			// m_alert_mode_cooldown = 0;
 			m_cooldown = 0;
 		}
 	}

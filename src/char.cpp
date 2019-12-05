@@ -28,7 +28,7 @@ bool Char::init(vec2 spos)
 	m_sfx_bump = Mix_LoadWAV(audio_path("char_bump.wav"));
 	m_sfx_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
 	m_sfx_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
-	
+
 	if (m_sfx_bump == nullptr || m_sfx_dead == nullptr || m_sfx_walk == nullptr)
 	{
 		fprintf(stderr, "Failed to load sounds\n %s\n %s\n &s\n make sure the data directory is present\n",
@@ -185,7 +185,7 @@ void Char::update(float ms)
 			if (m_moving_right && !m_wall_left)
 				change_position({-step, 0.f});
 		}
-		else 
+		else
 		{
 			if (m_moving_up && !m_wall_up)
 				change_position({0.f, -step});
@@ -379,6 +379,40 @@ bool Char::is_wall_collision()
 	return m_wall_down || m_wall_left || m_wall_right || m_wall_up;
 }
 
+bool Char::is_in_range(Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
+	float dx = motion.position.x - w.get_position().x;
+	float dy = motion.position.y - w.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 6.f;
+
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+bool Char::is_in_alert_mode_range(Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
+	float dx = motion.position.x - w.get_position().x;
+	float dy = motion.position.y - w.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 12.f;
+
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
 ////////////////////
 // MOVEMENT
 ////////////////////
@@ -426,7 +460,7 @@ float Char::get_speed() const
 vec2 Char::get_velocity()
 {
 	vec2 res = {0.f, 0.f};
-	m_moving_up ?	res.y = -1.f : res.y;
+	m_moving_up ? res.y = -1.f : res.y;
 	m_moving_down ? res.y = 1.f : res.y;
 	m_moving_left ? res.x = -1.f : res.x;
 	m_moving_right ? res.x = 1.f : res.x;
