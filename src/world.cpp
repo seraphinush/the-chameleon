@@ -18,6 +18,7 @@ const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
 const float FADE_TIME = 0.7;
 const float FLASH_TIME = 1.5;
+float pause_time = 0.f;
 
 // TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
@@ -389,9 +390,7 @@ bool World::update(float ms)
 		//////////////////////
 		// UPDATE
 		//////////////////////
-
-		//TImer update
-
+		//update timer
 		m_timer.update(ms);
 		// update char
 		m_char.update(ms);
@@ -1087,16 +1086,18 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			if (!m_paused)
 			{
 				m_paused = true;
+				fprintf(stderr, "Pause game \n");
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
-
+				pause_time = glfwGetTime();
 				Mix_PlayChannel(-1, m_sfx_pause, 0);
 			}
 			else
 			{
 				m_paused = false;
+				fprintf(stderr, "unPause game \n");
 				m_game_state = m_level;
-
+				glfwSetTime(pause_time);
 				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 		}
@@ -1125,6 +1126,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			{
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
+				glfwSetTime(pause_time);
 				m_game_state = m_level;
 
 				Mix_PlayChannel(-1, m_sfx_resume, 0);
