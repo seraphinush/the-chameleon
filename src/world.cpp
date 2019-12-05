@@ -688,6 +688,8 @@ void World::draw()
 		}
 
 		m_hud.draw(projection_2D);
+		// draw timer
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -716,7 +718,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
-
+		// draw timer
+		m_timer.draw(projection_2D);
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -738,6 +741,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -768,7 +773,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
-
+		// draw timer
+		m_timer.draw(projection_2D);
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);

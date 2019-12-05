@@ -606,6 +606,7 @@ void Map::check_wall(Char &ch, const float ms)
 
 void Map::set_current_map(int level)
 {
+	glfwSetTime(0);
 	switch (level)
 	{
 	case LEVEL_TUTORIAL:
