@@ -131,15 +131,19 @@ bool World::init()
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-	m_sfx_alert = Mix_LoadWAV(audio_path("alert.wav"));
-	m_sfx_get_trophy = Mix_LoadWAV(audio_path("get_trophy.wav"));
+	m_sfx_alert = Mix_LoadWAV(audio_path("sfx_alert.wav"));
+	m_sfx_get_trophy = Mix_LoadWAV(audio_path("sfx_get_trophy.wav"));
+	m_sfx_pause = Mix_LoadWAV(audio_path("sfx_pause.wav"));
+	m_sfx_resume = Mix_LoadWAV(audio_path("sfx_resume.wav"));
 
-	if (m_background_music == nullptr || m_sfx_get_trophy == nullptr || m_sfx_alert == nullptr)
+	if (m_background_music == nullptr ||
+		m_sfx_alert == nullptr ||
+		m_sfx_get_trophy == nullptr ||
+		m_sfx_pause == nullptr ||
+		m_sfx_resume == nullptr
+		)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-				audio_path("music.wav"),
-				audio_path("alert.wav"),
-				audio_path("char_win.wav"));
+		fprintf(stderr, "Failed to load sounds\n");
 		return false;
 	}
 
@@ -179,6 +183,10 @@ void World::destroy()
 		Mix_FreeChunk(m_sfx_alert);
 	if (m_sfx_get_trophy != nullptr)
 		Mix_FreeChunk(m_sfx_get_trophy);
+	if (m_sfx_pause != nullptr)
+		Mix_FreeChunk(m_sfx_pause);
+	if (m_sfx_resume != nullptr)
+		Mix_FreeChunk(m_sfx_resume);
 
 	Mix_CloseAudio();
 
@@ -1009,11 +1017,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = true;
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
+
+				Mix_PlayChannel(-1, m_sfx_pause, 0);
 			}
 			else
 			{
 				m_paused = false;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 		}
 		else
@@ -1042,6 +1054,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 			else if (m_current_pause_state == RESTART)
 			{
