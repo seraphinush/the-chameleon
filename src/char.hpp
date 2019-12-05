@@ -51,6 +51,11 @@ private:
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 
+	// Stealthing Animations
+	bool stealth_animating;
+	int stealth_anim_time;
+	bool stealthed;
+
 public:
 	bool init(vec2 pos);
 	void destroy();

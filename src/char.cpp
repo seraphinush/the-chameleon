@@ -10,6 +10,8 @@ Texture Char::char_texture;
 
 using namespace std;
 
+const int STEALTH_ANIM_DURATION = 1000;
+
 bool Char::init(vec2 spos)
 {
 	// load shared texture
@@ -160,6 +162,23 @@ void Char::update(float ms)
 				change_position({-step, 0.f});
 			if (m_moving_right && !m_wall_right)
 				change_position({step, 0.f});
+		}
+	}
+
+	if (!is_moving() && !stealth_animating && !stealthed)
+	{
+		stealth_animating = true;
+	}
+
+	if (stealth_animating)
+	{
+		if (stealth_anim_time >= STEALTH_ANIM_DURATION)
+		{
+			stealthed = true;
+		}
+		else
+		{
+			stealth_anim_time += ms;
 		}
 	}
 }
