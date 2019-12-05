@@ -27,7 +27,7 @@ class Wanderer : public Entity
 private:
 	// config
 	const float config_scale = 0.30f;
-	const float config_speed = 30.f;
+	const float config_speed = 50.f;
 
 	// direction
 	vec2 direction = {1, 0};
