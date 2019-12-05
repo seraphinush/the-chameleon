@@ -11,6 +11,10 @@
 // stlib
 #include <vector>
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 class Shooter;
 class Spotter;
 class Wanderer;
@@ -51,6 +55,12 @@ private:
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
 
+	// sound
+	Mix_Chunk *m_sfx_bump;
+	Mix_Chunk *m_sfx_color_change;
+	Mix_Chunk *m_sfx_dead;
+	Mix_Chunk *m_sfx_walk;
+
 public:
 	bool init(vec2 pos);
 	void destroy();
@@ -67,6 +77,8 @@ public:
 	bool is_colliding(const Shooter &s);
 	bool is_colliding(const Spotter &s);
 	bool is_colliding(const Wanderer &w);
+	bool is_in_range(Wanderer &w);
+	bool is_in_alert_mode_range(Wanderer &w);
 	vec2 get_bounding_box() const;
 
 	// wall collision

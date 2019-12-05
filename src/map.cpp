@@ -10,6 +10,26 @@ Texture Map::wall_texture;
 Texture Map::corridor_texture;
 Texture Map::wall_light_texture;
 
+/////////////////////////
+// Level: Museum Textures
+/////////////////////////
+Texture Map::museum_bottom_left_corner_texture;
+Texture Map::museum_bottom_right_corner_texture;
+Texture Map::museum_top_left_corner_texture;
+Texture Map::museum_top_right_corner_texture;
+Texture Map::museum_top_wall_texture;
+Texture Map::museum_bottom_wall_texture;
+Texture Map::museum_left_wall_texture;
+Texture Map::museum_right_wall_texture;
+Texture Map::museum_two_walls_texture;
+Texture Map::museum_wall_texture;
+Texture Map::museum_top_u_texture;
+Texture Map::museum_shadow_texture;
+Texture Map::museum_corridor_tile_texture;
+Texture Map::museum_corridor_tile_red_texture;
+Texture Map::museum_corridor_tile_green_texture;
+Texture Map::museum_corridor_tile_blue_texture;
+Texture Map::museum_corridor_tile_yellow_texture;
 
 /////////////////////////
 // Level: Ruins Textures
@@ -25,8 +45,6 @@ Texture Map::ruins_right_wall_texture;
 Texture Map::ruins_two_walls_texture;
 Texture Map::ruins_wall_texture;
 Texture Map::ruins_top_u_texture;
-Texture Map::ruins_left_end_cap_texture;
-Texture Map::ruins_right_end_cap_texture;
 Texture Map::ruins_end_cap_texture;
 Texture Map::ruins_shadow_texture;
 
@@ -83,9 +101,7 @@ char map_test[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
-
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -130,48 +146,47 @@ char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char map_level_1[40][61] = {
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-	"WSSSSSSWSSSSSSSSSWSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSWSSSSSSSSW",
-	"WBBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCCCW",
-	"WBBBBBBSYYYYYYYYYSRRRSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWCCCCCCZCW",
-	"WBBBBBBBYYYYYYYYYRRRRRRRWWWWWWWWWWBWWWWWWWBBWWWWBBSWCCCCCCCW",
-	"WBBBBBBBYYYYYYYYYRRRRRRRSSSSSSSWSSBSSWSSSSBBSSSWBBBWCCCCCCCW",
-	"WBBBBBBWYYYYYYYYYWRRRRRRRRRRRRRWGGGGGWCCCCCCCCCSBBBSWCCCCCCW",
-	"WWWBBWWWWWWWWWWYYWRRRWWWWWWWWRRWGGGGGWCCCCCCCCCCCCCCSCCCCCCW",
-	"WSSBBSSSSSSSSSSYYWRRRWSSSSSSSRRWGGGGGWCCCCCCCCCCCCCCCCCCCCCW",
-	"WRRRRRRRYYYYYYBBBWRRRWGGGGGGGGGWGGGGGWCCCCCCCCCCCCCCCCWCCCCW",
-	"WRRRRRRWYYYYYYWBBWRRRWGGWWWWWWWWGGGGGWCCCCCCCCCCCCCCCCSWWCCW",
-	"WRRRRRRWYYYYYYWBBWRRRSGGSSSSSSSSGGGGGSCCCCCCCCCCCCCCCCCSSWWW",
-	"WRRWWWWWWWWWWWWWWWRRRBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCSSW",
-	"WRRSSSSSSSSSSSSSSWRRRWBBWWWWWWWWWWWBBWCCCCCCCCCCCCCCCCCCCCCW",
-	"WGGGGGGGGGGGGGGGGWRRRWBBSSSWSSSSSSSBBWCCCCCCCCCCCCCCCCCCCCCW",
-	"WWWWWWWWWWWGGWYYYWRRRWRRRRRSWYYYYYYYYSWCCCCCCCCCCCCCCCCCCCCW",
-	"WSSSSSSSSSSGGWYYYWRRWWWWWRRRSWYYYYYYYYSWGGGWWWWWWWWWWWWRRRWW",
-	"WBBBBBBBBBBBBWYYYSRRSSSSSWRRRSWYYYYYYYWSGGWSSSSSSSSSSWSRRRSW",
-	"WBBBBBBBBBBBBWYYYYYYBBBBBSWRRRSWYYYYYWSGGWSRRGGGGGGGGWRRRRRW",
-	"WWWWWWBBWWWWWWYYYYYYBBBBBBSWRRRSYYYYWSGGWSRRWGGGGGGGGWRRRRRW",
-	"WSSSSSBBSSSSSWYYYWWWWWWWWBBSWRRRYYYWSGGWWRRWWGGWWWWGGWWWRWWW",
-	"WCCCCCCCCCCCCWYYYWSSSSSSSWBBSWRRYYWSGGWSSRRSSGGSSSSGGSSSRSSW",
-	"WCCCCCCCCCCCCWYYYWYYYYYYYSWBBSWWWWSGGWSRRRRRRGGGGGGGGBBBBBBW",
-	"WCCCCCCCCCCCCWYYYWYYYYYYYYSWBBSSSSGGWSRRRWWWWGGWWWWGGWWWWWWW",
-	"WCCCCCCCCCCCWSYYYSWYYYYYYYYSWBBBGGGWSRRRWSSSSGGSSSSGGSSSSSSW",
-	"WCCCCCCCCCCWSCCCCCSWYYYYYYYYWBBBGGGWRRRWSYYYYYYYYYYYYYYYYYYW",
-	"WCCCCCCCCCWSCCCCCCCSWYYYYYYYSWWBGWWSRRWSYYYYYYYYYYYYYYYYYYYW",
-	"WCCCCCCCCCWCCCCCCCCCSYYYYYYYYSSBGSSRRRWYYYYYYYYYYYYYYYYYYYYW",
-	"WCCCCCCCCWSCCCCCCCCCCWYYYYYYYYYYRRRRRWSYYYYYYYYYYYYYYYYYYYYW",
-	"WCCCCCCCCWCCCCCCCCCCCWWWWWYYWWWWWWWWWWYYWWWWBBWWWWWGGWWWRRWW",
-	"WCCCCCCCWSCCWWWWWWWCCSWSSSYYSSSWSSSSSWYYWSSSBBSSSWSGGSWSRRSW",
-	"WCCCCCCCWCCCSSSSSSSCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
-	"WCCCCCCCWCCCCCCCCCCCCCSBBBBBBBBSRRRRRSYYSBBBBBBBBSGGGGSRRRRW",
-	"WCCCCCCCWCCCCCCCCCCCCCBBBBBBBBBBRRRRRRYYBBBBBBBBBBGGGGGRRRRW",
-	"WCCCCCCCWCCCWWWWWWWCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRRW",
-	"WCCCCCCCWCCCSSSSSSSCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRWW",
-	"WCCCCCCCWCCCCCCCCCCCCCSSSSBBSSSSRRSSSSYYSSSSBBSSSSSGGSSSRRSW",
-	"WCCCCCCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WCCACCWSCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"7WWWWWW0WWWWWWWWW0WWW0WWWWWWWWWWWWWWWWWWWWWWWWWWWW0WWWWWWWW8",
+	"7BBBBBB0YYYYYYYYY0RRR0BBBBBBBBBBBBBBBBBBBBBBBBBBBB0CCCCCCCC8",
+	"7BBBBBBWYYYYYYYYYWRRRWBBBBBBBBBBBBBBBBBBBBBBBBBBBB0CCCCCCCC8",
+	"7BBBBBBBYYYYYYYYYRRRRRRR3555555554B3555554BB3554BBWUCCCCZCC8",
+	"7BBBBBBBYYYYYYYYYRRRRRRRWWWWWWW0WWBWW0WWWWBBWWW0BBB0CCCCCCC8",
+	"7BBBBBBUYYYYYYYYYURRRRRRRRRRRRR0GGGGG0CCCCCCCCCWBBBWUCCCCCC8",
+	"S54BB35S5555554YY0RRR35555554RR0GGGGG0CCCCCCCCCCCCCCWCCCCCC8",
+	"7WWBBWWWWWWWWWWYY0RRR0WWWWWWWRR0GGGGG0CCCCCCCCCCCCCCCCCCCCC8",
+	"7RRRRRRRYYYYYYBBB0RRR0GGGGGGGGG0GGGGG0CCCCCCCCCCCCCCCCUCCCC8",
+	"7RRRRRRUYYYYYYUBB0RRR0GG35555557GGGGG0CCCCCCCCCCCCCCCCW34CC8",
+	"7RRRRRR0YYYYYY0BB0RRRWGGWWWWWWWWGGGGGWCCCCCCCCCCCCCCCCCWW35S",
+	"7RR3555S555555S557RRRBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCWW8",
+	"7RRWWWWWWWWWWWWWW0RRRUBB35555555554BBUCCCCCCCCCCCCCCCCCCCCC8",
+	"7GGGGGGGGGGGGGGGG0RRR0BBWWW87WWWWWWBB0CCCCCCCCCCCCCCCCCCCCC8",
+	"S5555555554GGUYYY0RRR0RRRRRW0YYYYYYYYWUCCCCCCCCCCCCCCCCCCCC8",
+	"7WWWWWWWWWWGG0YYY0RR3S554RRRWUYYYYYYYY84GGG355555555554RRR3S",
+	"7BBBBBBBBBBBB0YYYWRRWWWWWURRRWUYYYYYYY0WGGUWWWWWWWWWW0WRRRW8",
+	"7BBBBBBBBBBBB0YYYYYYBBBBBWURRRWUYYYYYUWGGUWRRGGGGGGGG0RRRRR8",
+	"S55554BB355557YYYYYYBBBBBBWURRRWYYYYUWGGUWRRUGGGGGGGG0RRRRR8",
+	"7WWWWWBBWWWWW0YYY35555554BBWURRRYYYUWGG37RR37GG3554GG854R35S",
+	"7CCCCCCCCCCCC0YYY0WWWWWWWUBBWURRYYUWGGUWWRRWWGGWWWWGGWWWRWW8",
+	"7CCCCCCCCCCCC0YYY0YYYYYYYWUBBW3554WGGUWRRRRRRGGGGGGGGBBBBBB8",
+	"7CCCCCCCCCCCC0YYY0YYYYYYYYWUBBWWWWGGUWRRR3554GG3554GG355555S",
+	"7CCCCCCCCCCCUWYYYWUYYYYYYYYWUBBBGGGUWRRRUWWWWGGWWWWGGWWWWWW8",
+	"7CCCCCCCCCCUWCCCCCWUYYYYYYYY0BBBGGG0RRRUWYYYYYYYYYYYYYYYYYY8",
+	"7CCCCCCCCCUWCCCCCCCWUYYYYYYYW34BG34WRRUWYYYYYYYYYYYYYYYYYYY8",
+	"7CCCCCCCCC0CCCCCCCCCWYYYYYYYYWWBGWWRRR0YYYYYYYYYYYYYYYYYYYY8",
+	"7CCCCCCCCUWCCCCCCCCCCUYYYYYYYYYYRRRRRUWYYYYYYYYYYYYYYYYYYYY8",
+	"7CCCCCCCC0CCCCCCCCCCC85554YY3555555557YY3554BB35554GG354RR3S",
+	"7CCCCCCCUWCC3555554CCW0WWWYYWWW0WWWWW0YY0WWWBBWWW0WGGW0WRRW8",
+	"7CCCCCCC0CCCWWWWWWWCCC0BBBBBBBB0RRRRR0YY0BBBBBBBB0GGGG0RRRR8",
+	"7CCCCCCC0CCCCCCCCCCCCCWBBBBBBBBWRRRRRWYYWBBBBBBBBWGGGGWRRRR8",
+	"7CCCCCCC0CCCCCCCCCCCCCBBBBBBBBBBRRRRRRYYBBBBBBBBBBGGGGGRRRR8",
+	"7CCCCCCC0CCC3555554CCCUBBBBBBBBURRRRRUYYUBBBBBBBBUGGGGURRRR8",
+	"7CCCCCCC0CCCWWWWWWWCCC8554BB3557RR3557YY8554BB355S4GG3S4RR3S",
+	"7CCCCCCC0CCCCCCCCCCCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRW8",
+	"7CCCCCCUWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
+	"7CCACC37CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
+	"S55555SS555555555555555555555555555555555555555555555555555S"
 };
-
 
 /////////////////////////
 // Level: Ruins Textures
@@ -185,8 +200,6 @@ char map_level_1[40][61] = {
 // left wall - 7
 // right wall - 8
 // end cap - E
-// left end cap - N
-// right end cap - M
 // shadow - S
 // top u - U
 // two walls - 0
@@ -361,6 +374,163 @@ bool Map::init()
 	}
 
 	/////////////////////////
+	// Level: Museum Textures
+	/////////////////////////
+
+	if (!museum_bottom_left_corner_texture.is_valid())
+	{
+		if (!museum_bottom_left_corner_texture.load_from_file(textures_path("museum/bottom_left_corner.png")))
+		{
+			fprintf(stderr, "Failed to load bottom_left_corner_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_bottom_right_corner_texture.is_valid())
+	{
+		if (!museum_bottom_right_corner_texture.load_from_file(textures_path("museum/bottom_right_corner.png")))
+		{
+			fprintf(stderr, "Failed to load bottom_right_corner_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_top_left_corner_texture.is_valid())
+	{
+		if (!museum_top_left_corner_texture.load_from_file(textures_path("museum/top_left_corner.png")))
+		{
+			fprintf(stderr, "Failed to load top_left_corner_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_top_right_corner_texture.is_valid())
+	{
+		if (!museum_top_right_corner_texture.load_from_file(textures_path("museum/top_right_corner.png")))
+		{
+			fprintf(stderr, "Failed to load top_right_corner_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_top_wall_texture.is_valid())
+	{
+		if (!museum_top_wall_texture.load_from_file(textures_path("museum/top_wall.png")))
+		{
+			fprintf(stderr, "Failed to load top_wall_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_bottom_wall_texture.is_valid())
+	{
+		if (!museum_bottom_wall_texture.load_from_file(textures_path("museum/bottom_wall.png")))
+		{
+			fprintf(stderr, "Failed to load bottom_wall_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_left_wall_texture.is_valid())
+	{
+		if (!museum_left_wall_texture.load_from_file(textures_path("museum/left_wall.png")))
+		{
+			fprintf(stderr, "Failed to load left_wall_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_right_wall_texture.is_valid())
+	{
+		if (!museum_right_wall_texture.load_from_file(textures_path("museum/right_wall.png")))
+		{
+			fprintf(stderr, "Failed to load right_wall_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_two_walls_texture.is_valid())
+	{
+		if (!museum_two_walls_texture.load_from_file(textures_path("museum/two_walls.png")))
+		{
+			fprintf(stderr, "Failed to load two_walls_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_wall_texture.is_valid())
+	{
+		if (!museum_wall_texture.load_from_file(textures_path("museum/center_wall.png")))
+		{
+			fprintf(stderr, "Failed to load wall_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_top_u_texture.is_valid())
+	{
+		if (!museum_top_u_texture.load_from_file(textures_path("museum/top_u.png")))
+		{
+			fprintf(stderr, "Failed to load top_u_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_shadow_texture.is_valid())
+	{
+		if (!museum_shadow_texture.load_from_file(textures_path("museum/shadow.png")))
+		{
+			fprintf(stderr, "Failed to load shadow_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_corridor_tile_texture.is_valid())
+	{
+		if (!museum_corridor_tile_texture.load_from_file(textures_path("museum/corridor_tile.png")))
+		{
+			fprintf(stderr, "Failed to load museum_corridor_tile_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_corridor_tile_red_texture.is_valid())
+	{
+		if (!museum_corridor_tile_red_texture.load_from_file(textures_path("museum/corridor_tile_red.png")))
+		{
+			fprintf(stderr, "Failed to load museum_corridor_tile_red_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_corridor_tile_green_texture.is_valid())
+	{
+		if (!museum_corridor_tile_green_texture.load_from_file(textures_path("museum/corridor_tile_green.png")))
+		{
+			fprintf(stderr, "Failed to load museum_corridor_tile_green_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_corridor_tile_blue_texture.is_valid())
+	{
+		if (!museum_corridor_tile_blue_texture.load_from_file(textures_path("museum/corridor_tile_blue.png")))
+		{
+			fprintf(stderr, "Failed to load museum_corridor_tile_blue_texture!");
+			return false;
+		}
+	}
+
+	if (!museum_corridor_tile_yellow_texture.is_valid())
+	{
+		if (!museum_corridor_tile_yellow_texture.load_from_file(textures_path("museum/corridor_tile_yellow.png")))
+		{
+			fprintf(stderr, "Failed to load museum_corridor_tile_yellow_texture!");
+			return false;
+		}
+	}
+
+	/////////////////////////
 	// Level: Ruins Textures
 	/////////////////////////
 
@@ -463,24 +633,6 @@ bool Map::init()
 		}
 	}
 
-	if (!ruins_left_end_cap_texture.is_valid())
-	{
-		if (!ruins_left_end_cap_texture.load_from_file(textures_path("ruins/left_end_cap.png")))
-		{
-			fprintf(stderr, "Failed to load left_end_cap_texture!");
-			return false;
-		}
-	}
-
-	if (!ruins_right_end_cap_texture.is_valid())
-	{
-		if (!ruins_right_end_cap_texture.load_from_file(textures_path("ruins/right_end_cap.png")))
-		{
-			fprintf(stderr, "Failed to load right_end_cap_texture!");
-			return false;
-		}
-	}
-
 	if (!ruins_end_cap_texture.is_valid())
 	{
 		if (!ruins_end_cap_texture.load_from_file(textures_path("ruins/end_cap.png")))
@@ -561,7 +713,6 @@ void Map::destroy()
 
 	effect.release();
 }
-
 
 void Map::draw(const mat3 &projection)
 {
@@ -646,20 +797,58 @@ void Map::draw_level_1(const mat3& projection) {
 		// Increment the row
 		for (int x = 0; x < 61; x++)
 		{
-			if (current_level[y][x] == 'W')
+			if (current_level[y][x] == '1')
 			{
-				// Draw a Wall
-				draw_element(projection, wall_texture);
+				draw_element(projection, museum_bottom_left_corner_texture);
+			}
+			else if (current_level[y][x] == '2')
+			{
+				draw_element(projection, museum_bottom_right_corner_texture);
+			}
+			else if (current_level[y][x] == '3')
+			{
+				draw_element(projection, museum_top_left_corner_texture);
+			}
+			else if (current_level[y][x] == '4')
+			{
+				draw_element(projection, museum_top_right_corner_texture);
+			}
+			else if (current_level[y][x] == '5')
+			{
+				draw_element(projection, museum_top_wall_texture);
+			}
+			else if (current_level[y][x] == '6')
+			{
+				draw_element(projection, museum_bottom_wall_texture);
+			}
+			else if (current_level[y][x] == '7')
+			{
+				draw_element(projection, museum_left_wall_texture);
+			}
+			else if (current_level[y][x] == '8')
+			{
+				draw_element(projection, museum_right_wall_texture);
 			}
 			else if (current_level[y][x] == 'S')
 			{
-				// Draw a Shadow Wall
-				draw_element(projection, wall_light_texture);
+				draw_element(projection, museum_shadow_texture);
+			}
+			else if (current_level[y][x] == 'U')
+			{
+				draw_element(projection, museum_top_u_texture);
+			}
+			else if (current_level[y][x] == '0')
+			{
+				draw_element(projection, museum_two_walls_texture);
+			}
+			else if (current_level[y][x] == 'W')
+			{
+				draw_element(projection, museum_wall_texture);
 			}
 			else if ((current_level[y][x] == 'C') || (current_level[y][x] == 'A'))
 			{
 				// Draw a Corridor
-				draw_element(projection, corridor_texture);
+				draw_element(projection, museum_corridor_tile_texture);
 			}
 			else if ((current_level[y][x] == 'Z'))
 			{
@@ -669,22 +858,22 @@ void Map::draw_level_1(const mat3& projection) {
 			else if (current_level[y][x] == 'R')
 			{
 				// Draw a Corridor
-				draw_element(projection, corridor_texture_red);
+				draw_element(projection, museum_corridor_tile_red_texture);
 			}
 			else if (current_level[y][x] == 'B')
 			{
 				// Draw a Corridor
-				draw_element(projection, corridor_texture_blue);
+				draw_element(projection, museum_corridor_tile_blue_texture);
 			}
 			else if (current_level[y][x] == 'G')
 			{
 				// Draw a Corridor
-				draw_element(projection, corridor_texture_green);
+				draw_element(projection, museum_corridor_tile_green_texture);
 			}
 			else if (current_level[y][x] == 'Y')
 			{
 				// Draw a Corridor
-				draw_element(projection, corridor_texture_yellow);
+				draw_element(projection, museum_corridor_tile_yellow_texture);
 			}
 
 			translation_tile.x += TILE_SIZE;
@@ -894,7 +1083,7 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 	glUniform1iv(flash_map_uloc, 1, &flash_map);
-	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 20.0f) : -1);
+	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -910,7 +1099,7 @@ void Map::check_wall(Char &ch, const float ms)
 		ch.set_wall_collision('R', false);
 		return;
 	}
-	
+
 	// ch info
 	vec2 pos = ch.get_position();
 	vec2 box = ch.get_bounding_box();
@@ -922,7 +1111,7 @@ void Map::check_wall(Char &ch, const float ms)
 	vec2 pos_top_right = {pos.x + box.x, pos.y - box.y};
 	vec2 pos_bottom_left = {pos.x - box.x, pos.y + box.y};
 	vec2 pos_bottom_right = {pos.x + box.x, pos.y + box.y};
-	
+
 	// initialize
 	int tile_x_top_left = 0;
 	int tile_y_top_left = 0;
@@ -1080,7 +1269,7 @@ int Map::get_current_map() {
 
 vec2 Map::get_spawn_pos() const
 {
-	vec2 res = vec2({ 0.f, 0.f });
+	vec2 res = vec2({0.f, 0.f});
 
 	for (int y = 0; y < 40; y++)
 	{
@@ -1166,7 +1355,6 @@ void Map::reset_flash_time()
 	m_flash_time = glfwGetTime();
 }
 
-
 int Map::get_flash()
 {
 	return flash_map;
@@ -1182,14 +1370,14 @@ float Map::get_flash_time() const
 
 vec2 Map::get_tile_center_coords(vec2 tile_indices)
 {
-	return vec2{ (tile_indices.x * TILE_SIZE) + TILE_SIZE / 2, (tile_indices.y * TILE_SIZE) + TILE_SIZE / 2 };
+	return vec2{(tile_indices.x * TILE_SIZE) + TILE_SIZE / 2, (tile_indices.y * TILE_SIZE) + TILE_SIZE / 2};
 }
 
 vec2 Map::get_grid_coords(vec2 position)
 {
 	int truncated_x = (int)position.x / (int)TILE_SIZE;
 	int truncated_y = (int)position.y / (int)TILE_SIZE;
-	return vec2{ (float)truncated_x, (float)truncated_y };
+	return vec2{(float)truncated_x, (float)truncated_y};
 }
 
 bool Map::is_wall(vec2 grid_coords)

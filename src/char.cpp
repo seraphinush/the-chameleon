@@ -12,6 +12,33 @@ using namespace std;
 
 bool Char::init(vec2 spos)
 {
+	// load sound
+	if (SDL_Init(SDL_INIT_AUDIO) < 0)
+	{
+		fprintf(stderr, "Failed to initialize SDL Audio");
+		return false;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+	{
+		fprintf(stderr, "Failed to open audio device");
+		return false;
+	}
+
+	m_sfx_bump = Mix_LoadWAV(audio_path("char_bump.wav"));
+	m_sfx_color_change = Mix_LoadWAV(audio_path("char_color_change.wav"));
+	m_sfx_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
+	m_sfx_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
+	
+	if (m_sfx_bump == nullptr || 
+	  m_sfx_color_change == nullptr || 
+	  m_sfx_dead == nullptr || 
+		m_sfx_walk == nullptr)
+	{
+		fprintf(stderr, "Failed to load char sfx\n");
+		return false;
+	}
+
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
@@ -92,6 +119,15 @@ bool Char::init(vec2 spos)
 // release all graphics resources
 void Char::destroy()
 {
+	if (m_sfx_bump != nullptr)
+		Mix_FreeChunk(m_sfx_bump);
+	if (m_sfx_dead != nullptr)
+		Mix_FreeChunk(m_sfx_dead);
+	if (m_sfx_walk != nullptr)
+		Mix_FreeChunk(m_sfx_walk);
+
+	Mix_CloseAudio();
+
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
 	glDeleteVertexArrays(1, &mesh.vao);
@@ -150,7 +186,7 @@ void Char::update(float ms)
 			if (m_moving_right && !m_wall_left)
 				change_position({-step, 0.f});
 		}
-		else 
+		else
 		{
 			if (m_moving_up && !m_wall_up)
 				change_position({0.f, -step});
@@ -249,6 +285,8 @@ bool Char::is_alive() const
 
 void Char::kill()
 {
+	if (m_is_alive)
+		Mix_PlayChannel(1, m_sfx_dead, 0);
 	m_is_alive = false;
 }
 
@@ -342,6 +380,40 @@ bool Char::is_wall_collision()
 	return m_wall_down || m_wall_left || m_wall_right || m_wall_up;
 }
 
+bool Char::is_in_range(Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
+	float dx = motion.position.x - w.get_position().x;
+	float dy = motion.position.y - w.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 6.f;
+
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
+bool Char::is_in_alert_mode_range(Wanderer &w)
+{
+	vec2 pos = w.get_position();
+	vec2 box = w.get_bounding_box();
+	float dx = motion.position.x - w.get_position().x;
+	float dy = motion.position.y - w.get_position().y;
+	float d_sq = dx * dx + dy * dy;
+	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
+	float my_r = std::max(physics.scale.x, physics.scale.y);
+	float r = std::max(other_r, my_r);
+	r *= 12.f;
+
+	if (d_sq < r * r)
+		return true;
+	return false;
+}
+
 ////////////////////
 // MOVEMENT
 ////////////////////
@@ -389,7 +461,7 @@ float Char::get_speed() const
 vec2 Char::get_velocity()
 {
 	vec2 res = {0.f, 0.f};
-	m_moving_up ?	res.y = -1.f : res.y;
+	m_moving_up ? res.y = -1.f : res.y;
 	m_moving_down ? res.y = 1.f : res.y;
 	m_moving_left ? res.x = -1.f : res.x;
 	m_moving_right ? res.x = 1.f : res.x;
@@ -420,7 +492,11 @@ int Char::get_direction() const
 // 1: red, 2: green; 3: blue; 4: yellow;
 void Char::set_color(int color)
 {
-	m_color = color;
+	if (m_color != color)
+	{
+		Mix_PlayChannel(-1, m_sfx_color_change, 0);
+		m_color = color;
+	}
 }
 
 int Char::get_color() const
@@ -432,13 +508,14 @@ int Char::get_color() const
 // CONSEQUENCE
 ////////////////////
 
-// up: 0, down: 1, left: 2, right: 3
 void Char::set_dash(bool value)
 {
+	if (m_dash && !value)
+		Mix_PlayChannel(-1, m_sfx_bump, 0);
 	m_dash = value;
 
 	if (!value)
-		m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
+		m_dash = m_moving_up = m_moving_down = m_moving_left = m_moving_right = value;
 }
 
 bool Char::is_dashing()

@@ -73,7 +73,10 @@ void Bullets::update(float ms)
 		// s = ut + 1/2at^2
 		if (b.life <= 0)
 		{
-			m_bullets.size() == count ? m_bullets.pop_back() : m_bullets.erase(m_bullets.begin() + count);
+			if (m_bullets.size() == count)
+				m_bullets.pop_back();
+			else
+				m_bullets.erase(m_bullets.begin() + count);
 		}
 		else
 		{
@@ -85,7 +88,7 @@ void Bullets::update(float ms)
 	}
 }
 
-void Bullets::draw(const mat3& projection)
+void Bullets::draw(const mat3 &projection)
 {
 	// set shaders
 	glUseProgram(effect.program);

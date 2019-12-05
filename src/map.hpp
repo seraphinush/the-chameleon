@@ -19,6 +19,24 @@ class Map : public Entity
 	static Texture corridor_texture_green;
 	static Texture corridor_texture_yellow;
 
+	// Level Museum Texture
+	static Texture museum_bottom_left_corner_texture;
+	static Texture museum_bottom_right_corner_texture;
+	static Texture museum_top_left_corner_texture;
+	static Texture museum_top_right_corner_texture;
+	static Texture museum_top_wall_texture;
+	static Texture museum_bottom_wall_texture;
+	static Texture museum_left_wall_texture;
+	static Texture museum_right_wall_texture;
+	static Texture museum_two_walls_texture;
+	static Texture museum_wall_texture;
+	static Texture museum_top_u_texture;
+	static Texture museum_shadow_texture;
+	static Texture museum_corridor_tile_texture;
+	static Texture museum_corridor_tile_red_texture;
+	static Texture museum_corridor_tile_green_texture;
+	static Texture museum_corridor_tile_blue_texture;
+	static Texture museum_corridor_tile_yellow_texture;
 
 	// Level Ruins Textures	
 	static Texture ruins_bottom_left_corner_texture;
@@ -32,8 +50,6 @@ class Map : public Entity
 	static Texture ruins_two_walls_texture;
 	static Texture ruins_wall_texture;
 	static Texture ruins_top_u_texture;
-	static Texture ruins_left_end_cap_texture;
-	static Texture ruins_right_end_cap_texture;
 	static Texture ruins_end_cap_texture;
 	static Texture ruins_shadow_texture;
 
