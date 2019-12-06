@@ -751,6 +751,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -768,6 +770,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -787,6 +791,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -809,6 +815,9 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
+
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -838,6 +847,8 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1165,7 +1176,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
 			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 		{
-					if (!m_paused)
+			if (!m_paused)
 			{
 				m_paused = true;
 				m_level = m_game_state;
