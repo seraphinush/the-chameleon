@@ -63,7 +63,7 @@ bool LevelScreen::init()
 
 	if (!level_4.is_valid())
 	{
-		if (!level_4.load_from_file(textures_path("level_3.png")))
+		if (!level_4.load_from_file(textures_path("level_4.png")))
 		{
 			fprintf(stderr, "Failed to load level_4 texture!");
 			return false;
@@ -72,7 +72,7 @@ bool LevelScreen::init()
 
 	if (!level_5.is_valid())
 	{
-		if (!level_5.load_from_file(textures_path("level_3.png")))
+		if (!level_5.load_from_file(textures_path("level_5.png")))
 		{
 			fprintf(stderr, "Failed to load level_5 texture!");
 			return false;
