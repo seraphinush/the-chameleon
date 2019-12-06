@@ -94,6 +94,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ext/freetype)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
+
 # Find freetype
 find_package(Freetype REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})

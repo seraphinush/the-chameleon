@@ -3,6 +3,9 @@
 // internal
 #include "common.hpp"
 
+//Freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
 // stdlib
 #include <vector>
 
@@ -13,6 +16,7 @@ public:
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;
+	void render_text(const std::string &str, FT_Face face, float x, float y, float sx, float sy);
 
 private:
 	GLuint m_instance_vbo;
