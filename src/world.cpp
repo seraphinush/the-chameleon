@@ -9,37 +9,37 @@
 
 namespace
 {
-// TODO -- need to remove
-const size_t MAX_SPOTTERS = 5;
-const size_t MAX_SHOOTERS = 5;
+	// TODO -- need to remove
+	const size_t MAX_SPOTTERS = 5;
+	const size_t MAX_SHOOTERS = 5;
 
-const size_t MAX_COOLDOWN = 50;
-const size_t MAX_ALERT_MODE_COOLDOWN = 100;
+	const size_t MAX_COOLDOWN = 50;
+	const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
-const float FADE_TIME = 0.7;
-const float FLASH_TIME = 1.5;
+	const float FADE_TIME = 0.7;
+	const float FLASH_TIME = 1.5;
 
-// TODO -- need to remove after settings locs
-vec2 spotter_loc[5];
-vec2 shooter_loc[5];
+	// TODO -- need to remove after settings locs
+	vec2 spotter_loc[5];
+	vec2 shooter_loc[5];
 
-namespace
-{
-void glfw_err_cb(int error, const char *desc)
-{
-	fprintf(stderr, "%d: %s", error, desc);
-}
-} // namespace
+	namespace
+	{
+		void glfw_err_cb(int error, const char* desc)
+		{
+			fprintf(stderr, "%d: %s", error, desc);
+		}
+	} // namespace
 } // namespace
 
 World::World() : m_control(0),
-				 m_current_game_state(0),
-				 m_current_level_state(0),
-				 m_current_pause_state(0),
-				 m_current_game_won_state(2),
-				 m_current_game_over_state(1),
-				 m_paused(false),
-				 m_game_state(START_SCREEN)
+m_current_game_state(0),
+m_current_level_state(0),
+m_current_pause_state(0),
+m_current_game_won_state(2),
+m_current_game_over_state(1),
+m_paused(false),
+m_game_state(START_SCREEN)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -54,18 +54,18 @@ bool World::init()
 {
 	// TODO -- need static spawn of spotters per level
 	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
-	spotter_loc[0] = {100, 100};
-	spotter_loc[1] = {SCREEN_WIDTH - 100, 100};
-	spotter_loc[2] = {100, SCREEN_HEIGHT - 100};
-	spotter_loc[3] = {SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100};
-	spotter_loc[4] = {800, 500};
+	spotter_loc[0] = { 100, 100 };
+	spotter_loc[1] = { SCREEN_WIDTH - 100, 100 };
+	spotter_loc[2] = { 100, SCREEN_HEIGHT - 100 };
+	spotter_loc[3] = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100 };
+	spotter_loc[4] = { 800, 500 };
 
 	// TODO
-	shooter_loc[0] = {100 + 100, 100 + 50};
-	shooter_loc[1] = {SCREEN_WIDTH - 50, 100 + 50};
-	shooter_loc[2] = {150, SCREEN_HEIGHT - 150};
-	shooter_loc[3] = {SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50};
-	shooter_loc[4] = {850, 550};
+	shooter_loc[0] = { 100 + 100, 100 + 50 };
+	shooter_loc[1] = { SCREEN_WIDTH - 50, 100 + 50 };
+	shooter_loc[2] = { 150, SCREEN_HEIGHT - 150 };
+	shooter_loc[3] = { SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50 };
+	shooter_loc[4] = { 850, 550 };
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -98,8 +98,8 @@ bool World::init()
 	// input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) { ((World *)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) { ((World *)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
@@ -160,17 +160,17 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		   m_control_screen.init() &&
-		   m_level_screen.init() &&
-		   m_pause_screen.init() &&
-		   m_cutscene.init() &&
-		   m_hud.init() &&
-		   m_map.init() &&
-		   m_char.init(m_map.get_spawn_pos()) &&
-		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
-		   m_particles_emitter.init() &&
-		   m_complete_screen.init() &&
-		   m_gameover_screen.init();
+		m_control_screen.init() &&
+		m_level_screen.init() &&
+		m_pause_screen.init() &&
+		m_cutscene.init() &&
+		m_hud.init() &&
+		m_map.init() &&
+		m_char.init(m_map.get_spawn_pos()) &&
+		m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		m_particles_emitter.init() &&
+		m_complete_screen.init() &&
+		m_gameover_screen.init();
 }
 
 // release all the associated resources
@@ -195,13 +195,13 @@ void World::destroy()
 	m_map.destroy();
 	m_overlay.destroy();
 	m_particles_emitter.destroy();
-	for (auto &shooter : m_shooters)
+	for (auto& shooter : m_shooters)
 		shooter.destroy();
 	m_wanderers.clear();
-	for (auto &spotter : m_spotters)
+	for (auto& spotter : m_spotters)
 		spotter.destroy();
 	m_spotters.clear();
-	for (auto &wanderer : m_wanderers)
+	for (auto& wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_start_screen.destroy();
@@ -242,14 +242,14 @@ bool World::update(float ms)
 		{
 			bool stay_alert = false;
 			// unalert shooters
-			for (auto &shooter : m_shooters)
+			for (auto& shooter : m_shooters)
 				shooter.set_alert_mode(false);
 
 			// unalert spotters
-			for (auto &spotter : m_spotters)
+			for (auto& spotter : m_spotters)
 				spotter.set_alert_mode(false);
 			// unalert wanderers
-			for (auto &wanderer : m_wanderers)
+			for (auto& wanderer : m_wanderers)
 			{
 				if (m_alert_mode)
 				{
@@ -298,7 +298,7 @@ bool World::update(float ms)
 		m_map.check_wall(m_char, ms);
 
 		// collision, char-wanderer
-		for (const auto &wanderer : m_wanderers)
+		for (const auto& wanderer : m_wanderers)
 		{
 			if (m_char.is_colliding(wanderer) && is_char_detectable())
 			{
@@ -326,7 +326,7 @@ bool World::update(float ms)
 		}
 
 		// collision, char-spotter
-		for (const auto &spotter : m_spotters)
+		for (const auto& spotter : m_spotters)
 		{
 			if (m_char.is_colliding(spotter) && is_char_detectable())
 			{
@@ -340,7 +340,7 @@ bool World::update(float ms)
 		}
 
 		// proximity, char-shooter
-		for (auto &shooter : m_shooters)
+		for (auto& shooter : m_shooters)
 		{
 			if (m_char.is_colliding(shooter) && is_char_detectable())
 			{
@@ -369,7 +369,7 @@ bool World::update(float ms)
 		}
 
 		// proximity, spotter
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters)
 		{
 			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
 			{
@@ -394,7 +394,7 @@ bool World::update(float ms)
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
-		for (auto &wanderer : m_wanderers)
+		for (auto& wanderer : m_wanderers)
 		{
 			wanderer.update(ms * m_current_speed);
 			if (m_alert_mode)
@@ -424,13 +424,13 @@ bool World::update(float ms)
 		}
 
 		// update spotters
-		for (auto &spotter : m_spotters)
+		for (auto& spotter : m_spotters)
 		{
 			spotter.update(ms * m_current_speed);
 		}
 
 		// update shooter
-		for (auto &shooter : m_shooters)
+		for (auto& shooter : m_shooters)
 		{
 			// TODO -- wrong location for proper code flow
 			shooter.set_alert_mode(m_alert_mode);
@@ -450,7 +450,7 @@ bool World::update(float ms)
 				{
 					m_char.set_color(0);
 					m_cooldown = 0;
-					m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
+					m_char.change_position({ 25.f * cos(angle), 25.f * sin(angle) });
 				}
 			}
 		}
@@ -488,13 +488,13 @@ bool World::update(float ms)
 			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
-				m_char.change_position({0.f, 5.f});
+				m_char.change_position({ 0.f, 5.f });
 			else if (m_char.get_direction() == 1)
-				m_char.change_position({0.f, -5.f});
+				m_char.change_position({ 0.f, -5.f });
 			else if (m_char.get_direction() == 2)
-				m_char.change_position({5.f, 0.f});
+				m_char.change_position({ 5.f, 0.f });
 			else if (m_char.get_direction() == 3)
-				m_char.change_position({-5.f, 0.f});
+				m_char.change_position({ -5.f, 0.f });
 		}
 
 		//particles update
@@ -531,8 +531,44 @@ bool World::update(float ms)
 	{
 		reset_game();
 	}
-
 	if (m_game_state == LEVEL_1)
+	{
+
+		//////////////////////
+		// DYNAMIC SPAWN
+		//////////////////////
+		if (!m_paused)
+		{
+			// spawn wanderer
+			//while (m_wanderers.size() < wanderer_paths.size())
+			//{
+			//	if (!spawn_wanderer(wanderer_paths[m_wanderers.size()]))
+			//		return false;
+
+			//	Wanderer& new_wanderer = m_wanderers.back();
+			//}
+		}
+	}
+	else if (m_game_state == LEVEL_2)
+	{
+
+		//////////////////////
+		// DYNAMIC SPAWN
+		//////////////////////
+
+		if (!m_paused)
+		{
+			// spawn wanderer
+			//while (m_wanderers.size() < wanderer_paths.size())
+			//{
+			//	if (!spawn_wanderer(wanderer_paths[m_wanderers.size()]))
+			//		return false;
+
+			//	Wanderer& new_wanderer = m_wanderers.back();
+			//}
+		}
+	}
+	else if (m_game_state == LEVEL_3)
 	{
 
 		//////////////////////
@@ -547,11 +583,11 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths[m_wanderers.size()]))
 					return false;
 
-				Wanderer &new_wanderer = m_wanderers.back();
+				Wanderer& new_wanderer = m_wanderers.back();
 			}
 		}
 	}
-	else if (m_game_state == LEVEL_2)
+	else if (m_game_state == LEVEL_4)
 	{
 
 		//////////////////////
@@ -567,7 +603,7 @@ bool World::update(float ms)
 				if (!spawn_spotter())
 					return false;
 
-				Spotter &new_spotter = m_spotters.back();
+				Spotter& new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 			}
@@ -578,11 +614,11 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths_2[m_wanderers.size()]))
 					return false;
 
-				Wanderer &new_wanderer = m_wanderers.back();
+				Wanderer& new_wanderer = m_wanderers.back();
 			}
 		}
 	}
-	else if (m_game_state == LEVEL_3)
+	else if (m_game_state == LEVEL_5)
 	{
 		//////////////////////
 		// DYNAMIC SPAWN
@@ -597,7 +633,7 @@ bool World::update(float ms)
 				if (!spawn_spotter())
 					return false;
 
-				Spotter &new_spotter = m_spotters.back();
+				Spotter& new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 			}
@@ -607,7 +643,7 @@ bool World::update(float ms)
 			{
 				if (!spawn_shooter())
 					return false;
-				Shooter &new_shooter = m_shooters.back();
+				Shooter& new_shooter = m_shooters.back();
 
 				new_shooter.set_position(shooter_loc[m_shooters.size() - 1]);
 			}
@@ -618,7 +654,7 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths_3[m_wanderers.size()]))
 					return false;
 
-				Wanderer &new_wanderer = m_wanderers.back();
+				Wanderer& new_wanderer = m_wanderers.back();
 			}
 		}
 	}
@@ -650,7 +686,7 @@ void World::draw()
 	// clear backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = {0.3f, 0.3f, 0.3f};
+	const float clear_color[3] = { 0.3f, 0.3f, 0.3f };
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -704,8 +740,6 @@ void World::draw()
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto &wanderer : m_wanderers)
-				wanderer.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
@@ -720,14 +754,9 @@ void World::draw()
 	case LEVEL_2:
 		// draw map
 		m_map.draw(projection_2D);
-
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto &spotter : m_spotters)
-				spotter.draw(projection_2D);
-			for (auto &wanderer : m_wanderers)
-				wanderer.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
@@ -742,15 +771,56 @@ void World::draw()
 	case LEVEL_3:
 		// draw map
 		m_map.draw(projection_2D);
+		if (m_map.get_flash() == 0)
+		{
+			// draw entities
+			for (auto& wanderer : m_wanderers)
+				wanderer.draw(projection_2D);
+			m_char.draw(projection_2D);
+			m_particles_emitter.draw(projection_2D);
+		}
+
+		m_overlay.draw(projection_2D);
+		m_hud.draw(projection_2D);
+
+		// bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+		break;
+	case LEVEL_4:
+		// draw map
+		m_map.draw(projection_2D);
 
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto &spotter : m_spotters)
+			for (auto& spotter : m_spotters)
 				spotter.draw(projection_2D);
-			for (auto &wanderer : m_wanderers)
+			for (auto& wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
-			for (auto &shooter : m_shooters)
+			m_char.draw(projection_2D);
+			m_particles_emitter.draw(projection_2D);
+		}
+
+		m_overlay.draw(projection_2D);
+		m_hud.draw(projection_2D);
+
+		// bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+		break;
+	case LEVEL_5:
+		// draw map
+		m_map.draw(projection_2D);
+
+		if (m_map.get_flash() == 0)
+		{
+			// draw entities
+			for (auto& spotter : m_spotters)
+				spotter.draw(projection_2D);
+			for (auto& wanderer : m_wanderers)
+				wanderer.draw(projection_2D);
+			for (auto& shooter : m_shooters)
 			{
 				shooter.draw(projection_2D);
 				if (shooter.is_in_combat())
@@ -795,7 +865,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float right = 0.f;
 	float bottom = 0.f;
 
-	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3)
+	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
 	{
 		right = (float)width / m_screen_scale;   // *0.5;
 		bottom = (float)height / m_screen_scale; // *0.5;
@@ -811,7 +881,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
-	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
+	return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
 }
 
 bool World::is_over() const
@@ -860,10 +930,11 @@ bool World::spawn_wanderer(std::vector<vec2> path)
 }
 
 // key callback function
-void World::on_key(GLFWwindow *, int key, int, int action, int mod)
+void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
 	// start screen, control screen, story screen
-	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3)
+	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 
+		&& m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
 	{
 		if (m_game_state == START_SCREEN)
 		{
@@ -1055,6 +1126,14 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.set_dialogue_counter(m_game_state, 81);
 					m_current_level_state = 0;
 					break;
+				case 4:
+					m_game_state = LEVEL_4;
+					m_current_level_state = 0;
+					break;
+				case 5:
+					m_game_state = LEVEL_5;
+					m_current_level_state = 0;
+					break;
 				}
 
 				Mix_PlayChannel(-1, m_sfx_click, 0);
@@ -1072,7 +1151,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// ESC: return to start screen or pause screen
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
 	{
-		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
+		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
+			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 		{
 			if (!m_paused)
 			{
@@ -1150,7 +1230,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// movement, set movement
-	if (action == GLFW_PRESS && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL) && !m_char.is_dashing())
+	if (action == GLFW_PRESS && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
+		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL) 
+		&& !m_char.is_dashing())
 	{
 		if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
@@ -1177,7 +1259,9 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// color, set color, consequences
-	if (action == GLFW_PRESS && !m_paused && m_cooldown >= MAX_COOLDOWN && !m_char.is_dashing() && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_PRESS && !m_paused && m_cooldown >= MAX_COOLDOWN && !m_char.is_dashing() && 
+		(m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
+			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
@@ -1214,7 +1298,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// remove movement
-	if (action == GLFW_RELEASE && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_RELEASE && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
+		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);
@@ -1289,10 +1374,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	m_current_speed = fmax(0.f, m_current_speed);
 }
 
-void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 	// TODO -- reference indicator position to get positions instead of hardcoding
-	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3)
+	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
+		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 	{
 		// red tooltip
 		if (xpos >= 1026 && xpos <= 1074 && ypos >= 59 && ypos <= 106)
@@ -1396,6 +1482,12 @@ void World::advance_to_cutscene()
 		m_game_state = LEVEL_3_CUTSCENE;
 		break;
 	case LEVEL_3:
+		m_game_state = LEVEL_4;
+		break;
+	case LEVEL_4:
+		m_game_state = LEVEL_5;
+		break;
+	case LEVEL_5:
 		m_game_state = WIN_SCREEN;
 		break;
 	default:
@@ -1419,7 +1511,7 @@ void World::reset_game()
 	m_overlay.init(m_alert_mode, MAX_COOLDOWN);
 
 	// reset direction for every spotter
-	for (auto &spotter : m_spotters)
+	for (auto& spotter : m_spotters)
 	{
 		spotter.reset_direction();
 	}

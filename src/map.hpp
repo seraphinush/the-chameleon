@@ -74,6 +74,8 @@ public:
 	void draw_level_1(const mat3& projection);
 	void draw_level_2(const mat3& projection);
 	void draw_level_3(const mat3& projection);
+	void draw_level_4(const mat3& projection);
+	void draw_level_5(const mat3& projection);
 	void draw_element(const mat3 &projection, const Texture &texture);
 
 	void set_current_map(int level);

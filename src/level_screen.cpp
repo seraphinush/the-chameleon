@@ -9,6 +9,8 @@ Texture LevelScreen::tutorial;
 Texture LevelScreen::level_1;
 Texture LevelScreen::level_2;
 Texture LevelScreen::level_3;
+Texture LevelScreen::level_4;
+Texture LevelScreen::level_5;
 Texture LevelScreen::pointer;
 
 bool LevelScreen::init()
