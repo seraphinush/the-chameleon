@@ -70,9 +70,10 @@ set(SOURCE_FILES
   src/level_screen.hpp
   src/pause_screen.hpp
   src/gameover_screen.hpp
-  src/timer.cpp
-  src/timer.hpp
 	)
+  #src/timer.cpp
+  #src/timer.hpp
+
 
 if (IS_OS_MAC)
   include_directories(/usr/local/include)
@@ -96,9 +97,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ext/freetype/include)
 find_package(OpenGL REQUIRED)
 
 # Find freetype
-find_package(Freetype REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${FREETYPE_LIBRARIES})
+#find_package(Freetype REQUIRED)
+#target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${FREETYPE_LIBRARIES})
 
 if (OPENGL_FOUND)
    target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})

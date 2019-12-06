@@ -19,7 +19,7 @@
 #include "wanderer.hpp"
 #include "pause_screen.hpp"
 #include "gameover_screen.hpp"
-#include "timer.hpp"
+//#include "timer.hpp"
 
 // stlib
 #include <vector>
@@ -66,7 +66,7 @@ private:
 	Char m_char;
 	Map m_map;
 	Overlay m_overlay;
-	Timer m_timer;
+	//Timer m_timer;
 	Particles m_particles_emitter;
 	std::vector<Shooter> m_shooters;
 	std::vector<Spotter> m_spotters;

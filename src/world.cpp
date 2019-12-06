@@ -171,8 +171,8 @@ bool World::init()
 		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init() &&
-		   m_gameover_screen.init() &&
-		   m_timer.init();
+		   m_gameover_screen.init();
+		   //m_timer.init();
 }
 
 // release all the associated resources
@@ -391,7 +391,7 @@ bool World::update(float ms)
 		// UPDATE
 		//////////////////////
 		//update timer
-		m_timer.update(ms);
+		//m_timer.update(ms);
 		// update char
 		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
@@ -688,7 +688,7 @@ void World::draw()
 
 		m_hud.draw(projection_2D);
 		// draw timer
-		m_timer.draw(projection_2D);
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -718,7 +718,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		m_timer.draw(projection_2D);
+		//m_timer.draw(projection_2D);
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -741,7 +741,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		m_timer.draw(projection_2D);
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -773,7 +773,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		m_timer.draw(projection_2D);
+		//m_timer.draw(projection_2D);
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
