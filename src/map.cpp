@@ -101,8 +101,7 @@ char map_test[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -144,8 +143,7 @@ char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 char map_level_1[40][61] = {
 	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
@@ -187,8 +185,7 @@ char map_level_1[40][61] = {
 	"7CCCCCCC0CCCCCCCCCCCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRW8",
 	"7CCCCCCUWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
 	"7CCACC37CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
-	"S55555SS555555555555555555555555555555555555555555555555555S"
-};
+	"S55555SS555555555555555555555555555555555555555555555555555S"};
 
 /////////////////////////
 // Level: Ruins Textures
@@ -252,8 +249,7 @@ char map_level_2[40][61] = {
 	"S5554RR35557YYYYYYYYYYYYRW0GGEYY3S7BB0GGG854BBYYYYYRRRR854Y8",
 	"7WWWWRRWWWW0YYYYYYYYYYYYRREGGGYYWWWBB0GGGWWWGRRRRRYYYYRWWWY8",
 	"7ACYYRRGGGG0YYYYYYYYYYYYGGGGGGBBBBBBB0GGGGGGGRRRRRRRRRYYYYY8",
-	"S5555555555S5555555555555555555555555S555555555555555555555S"
-};
+	"S5555555555S5555555555555555555555555S555555555555555555555S"};
 
 char map_level_3[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -295,8 +291,7 @@ char map_level_3[40][61] = {
 	"WCCWGGSSSSSSSSSGGWBBSSSWRRWBBSSSSSSSSSSBBSYYWBBSSSSBBBBBBBBW",
 	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
 	"WACWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
 
 bool Map::init()
 {
@@ -719,27 +714,29 @@ void Map::destroy()
 
 void Map::draw(const mat3 &projection)
 {
-	switch (get_current_map()) {
-		case LEVEL_TUTORIAL:
-			draw_level_tutorial(projection);
-			break;
-		case LEVEL_1:
-			draw_level_1(projection);
-			break;
-		case LEVEL_2:
-			draw_level_2(projection);
-			break;
-		case LEVEL_3:
-			draw_level_3(projection);
-			break;
-		default:
-			draw_level_tutorial(projection);
-			break;
+	switch (get_current_map())
+	{
+	case LEVEL_TUTORIAL:
+		draw_level_tutorial(projection);
+		break;
+	case LEVEL_1:
+		draw_level_1(projection);
+		break;
+	case LEVEL_2:
+		draw_level_2(projection);
+		break;
+	case LEVEL_3:
+		draw_level_3(projection);
+		break;
+	default:
+		draw_level_tutorial(projection);
+		break;
 	}
 }
 
-void Map::draw_level_tutorial(const mat3& projection) {
-	translation_tile = vec2({ 0.0, 0.0 });
+void Map::draw_level_tutorial(const mat3 &projection)
+{
+	translation_tile = vec2({0.0, 0.0});
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -760,7 +757,7 @@ void Map::draw_level_tutorial(const mat3& projection) {
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if ((current_level[y][x] == 'Z'))
+			else if (current_level[y][x] == 'Z')
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -793,8 +790,9 @@ void Map::draw_level_tutorial(const mat3& projection) {
 	}
 }
 
-void Map::draw_level_1(const mat3& projection) {
-	translation_tile = vec2({ 0.0, 0.0 });
+void Map::draw_level_1(const mat3 &projection)
+{
+	translation_tile = vec2({0.0, 0.0});
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -853,7 +851,7 @@ void Map::draw_level_1(const mat3& projection) {
 				// Draw a Corridor
 				draw_element(projection, museum_corridor_tile_texture);
 			}
-			else if ((current_level[y][x] == 'Z'))
+			else if (current_level[y][x] == 'Z')
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -886,8 +884,9 @@ void Map::draw_level_1(const mat3& projection) {
 	}
 }
 
-void Map::draw_level_2(const mat3& projection) {
-	translation_tile = vec2({ 0.0, 0.0 });
+void Map::draw_level_2(const mat3 &projection)
+{
+	translation_tile = vec2({0.0, 0.0});
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -950,7 +949,7 @@ void Map::draw_level_2(const mat3& projection) {
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if ((current_level[y][x] == 'Z'))
+			else if (current_level[y][x] == 'Z')
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -983,8 +982,9 @@ void Map::draw_level_2(const mat3& projection) {
 	}
 }
 
-void Map::draw_level_3(const mat3& projection) {
-	translation_tile = vec2({ 0.0, 0.0 });
+void Map::draw_level_3(const mat3 &projection)
+{
+	translation_tile = vec2({0.0, 0.0});
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -1005,7 +1005,7 @@ void Map::draw_level_3(const mat3& projection) {
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if ((current_level[y][x] == 'Z'))
+			else if (current_level[y][x] == 'Z')
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -1267,7 +1267,8 @@ void Map::set_current_map(int level)
 	}
 }
 
-int Map::get_current_map() {
+int Map::get_current_map()
+{
 	return current_level_indicator;
 }
 
@@ -1314,13 +1315,15 @@ int Map::get_tile_type(vec2 pos)
 		return 0;
 }
 
-
-bool Map::is_wall_texture(char tile) {
-	if (tile == '1' || tile == '2' || tile == '3' || tile == '4' || tile == '5' || tile == '6' || tile == '7' || tile == '8' || 
-		tile == 'E' || tile == 'N' || tile == 'M' || tile == 'S' || tile == 'U' || tile == '0' || tile == 'W') {
+bool Map::is_wall_texture(char tile)
+{
+	if (tile == '1' || tile == '2' || tile == '3' || tile == '4' || tile == '5' || tile == '6' || tile == '7' || tile == '8' ||
+		tile == 'E' || tile == 'N' || tile == 'M' || tile == 'S' || tile == 'U' || tile == '0' || tile == 'W')
+	{
 		return true;
 	}
-	else {
+	else
+	{
 		return false;
 	}
 }
@@ -1403,7 +1406,6 @@ bool Map::check_wall(vec2 spotter_pos, vec2 char_pos)
 	int cPosX = (int)char_pos.x / 20;
 	int cPosY = (int)char_pos.y / 20;
 
-
 	if ((sPosX < cPosX) && (sPosY < cPosY))
 	{
 
@@ -1474,10 +1476,9 @@ bool Map::check_wall(vec2 spotter_pos, vec2 char_pos)
 		}
 	}
 
-
 	/*if (is_wall)
 		printf("wall collision works!\n");*/
 
-		//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
+	//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
 	return (top_right || top_left || bottom_right || bottom_left);
 }

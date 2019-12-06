@@ -28,7 +28,6 @@ void Timer::destroy()
 
 void Timer::update(float ms)
 {
-    // TODO Update timer
     if ((int)glfwGetTime() == 0)
     {
         seconds = 0;
