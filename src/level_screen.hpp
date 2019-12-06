@@ -13,6 +13,8 @@ class LevelScreen : public Entity
 	static Texture level_1;
 	static Texture level_2;
 	static Texture level_3;
+	static Texture level_4;
+	static Texture level_5;
 
 private:
 	vec2 m_pointer_pos;

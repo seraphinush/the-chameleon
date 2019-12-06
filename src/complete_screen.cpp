@@ -9,6 +9,7 @@ Texture CompleteScreen::pointer;
 Texture CompleteScreen::game_done;
 Texture CompleteScreen::main_menu;
 Texture CompleteScreen::quit;
+Texture CompleteScreen::piere_win;
 
 bool CompleteScreen::init()
 {
@@ -45,6 +46,15 @@ bool CompleteScreen::init()
 		if (!quit.load_from_file(textures_path("quit.png")))
 		{
 			fprintf(stderr, "Failed to load quit texture!");
+			return false;
+		}
+	}
+
+	if (!piere_win.is_valid())
+	{
+		if (!piere_win.load_from_file(textures_path("piere_win.png")))
+		{
+			fprintf(stderr, "Failed to load piere win texture!");
 			return false;
 		}
 	}
@@ -107,9 +117,9 @@ void CompleteScreen::destroy()
 void CompleteScreen::update(unsigned int state)
 {
 	if (state == 2)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 5.f)});
+		pointer_pos = vec2({SCREEN_WIDTH * 1.3f / 2.5f, 2 * (SCREEN_HEIGHT / 4.f)});
 	else if (state == 3)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 5.f)});
+		pointer_pos = vec2({SCREEN_WIDTH * 1.3f / 2.5f, 3 * (SCREEN_HEIGHT / 4.f)});
 }
 
 // TODO -- remove hardcoded pos
@@ -121,17 +131,22 @@ void CompleteScreen::draw(const mat3 &proj)
 	draw_element(proj, pointer, pointer_pos, pointer_scale);
 
 	// game done
-	vec2 game_done_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
+	vec2 game_done_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 4.f)});
 	vec2 game_done_scale = vec2({game_done.width * 1.5f / (2 * SCREEN_WIDTH), game_done.height * 1.5f / (2 * SCREEN_WIDTH)});
 	draw_element(proj, game_done, game_done_pos, game_done_scale);
 
+	// piere win over
+	vec2 piere_win_scale = vec2({piere_win.width / (2.5f * SCREEN_WIDTH), piere_win.height / (2.5f * SCREEN_WIDTH)});
+	vec2 piere_win_pos = vec2({300.f, SCREEN_HEIGHT / 1.5f});
+	draw_element(proj, piere_win, piere_win_pos, piere_win_scale);
+
 	// main menu
-	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	vec2 main_menu_pos = vec2({850.f, 2 * (SCREEN_HEIGHT / 4.f)});
 	vec2 main_menu_scale = vec2({main_menu.width / (2 * SCREEN_WIDTH), main_menu.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, main_menu, main_menu_pos, main_menu_scale);
 
 	// quit
-	vec2 quit_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
+	vec2 quit_pos = vec2({850.f, 3 * (SCREEN_HEIGHT / 4.f)});
 	vec2 quit_scale = vec2({quit.width / (2 * SCREEN_WIDTH), quit.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, quit, quit_pos, quit_scale);
 }

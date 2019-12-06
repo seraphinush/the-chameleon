@@ -27,7 +27,7 @@ class Char : public Entity
 
 private:
 	// config
-	const float config_scale = 0.02f;
+	const float config_scale = 0.3f;
 
 	bool m_is_alive;
 
@@ -50,10 +50,14 @@ private:
 	bool m_dash;
 	int m_direction_change;
 
-	// ANIMATION
+	// animation
 	int sprite_switch = 1;
-	float sprite_countdown = 200.f;
-	int flip_in_x = 1;
+	float sprite_countdown = 50.f;
+	const float spriteWidth = 34;
+	const float spriteHeight = 67;
+	int frameIndex_x = 1;
+	int frameIndex_y = 1;
+	void reinitialize();
 
 	// Stealthing Animations
 	bool stealth_animating;
@@ -82,7 +86,7 @@ public:
 	bool is_colliding(const Shooter &s);
 	bool is_colliding(const Spotter &s);
 	bool is_colliding(const Wanderer &w);
-	bool is_in_range(Wanderer &w);
+	bool is_in_range(Wanderer &w, Map& map);
 	bool is_in_alert_mode_range(Wanderer &w);
 	vec2 get_bounding_box() const;
 
@@ -112,5 +116,4 @@ public:
 	bool is_dashing();
 
 	void set_rotation(float rad);
-	void flip_char();
 };

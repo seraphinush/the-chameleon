@@ -36,6 +36,11 @@ private:
 	int sprite_switch = 1;
 	float sprite_countdown = 200.f;
 	int flip_in_x = 1;
+	const float spriteWidth = 45.f;
+	const float spriteHeight = 68.f;
+	int frameIndex_x = 0;
+	int frameIndex_y = 11;
+	void reinitiliaze();
 
 	// pathing ai
 	Map *m_map;
