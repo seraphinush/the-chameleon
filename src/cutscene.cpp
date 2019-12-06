@@ -11,9 +11,6 @@ Texture Cutscene::texture_dialogue_box;
 Texture Cutscene::texture_dialogue_box_left;
 Texture Cutscene::texture_dialogue_box_right;
 Texture Cutscene::texture_dialogue_box_mid;
-Texture Cutscene::dialogue_texture;
-Texture Cutscene::left_dialogue_texture;
-Texture Cutscene::right_dialogue_texture;
 Texture Cutscene::enemy_texture;
 Texture Cutscene::skip_texture;
 
@@ -55,33 +52,6 @@ bool Cutscene::init()
 	if (!texture_dialogue_box_mid.is_valid())
 	{
 		if (!texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/dialogue_placeholder.png")))
-		{
-			fprintf(stderr, "Failed to load dialogue texture!");
-			return false;
-		}
-	}
-
-	if (!dialogue_texture.is_valid())
-	{
-		if (!dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png")))
-		{
-			fprintf(stderr, "Failed to load dialogue texture!");
-			return false;
-		}
-	}
-
-	if (!left_dialogue_texture.is_valid())
-	{
-		if (!left_dialogue_texture.load_from_file(textures_path("spotters/3.png")))
-		{
-			fprintf(stderr, "Failed to load dialogue texture!");
-			return false;
-		}
-	}
-
-	if (!right_dialogue_texture.is_valid())
-	{
-		if (!right_dialogue_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
 			fprintf(stderr, "Failed to load dialogue texture!");
 			return false;
@@ -144,11 +114,6 @@ bool Cutscene::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	left_dialogue_position = {350.f, 400.f};
-	right_dialogue_position = {850.f, 400.f};
-
-	left_texture_position = {200.f, 540.f};
-	right_texture_position = {1000.f, 530.f};
 	enemy_texture_position = {598.f, 530.f};
 
 	physics.scale = vec2({1.f, 1.f});
@@ -184,102 +149,41 @@ void Cutscene::draw(const mat3 &proj) {}
 void Cutscene::draw(const mat3 &proj, vec2 wsize, const vec2 wpoint)
 {
 	float wscale = current_cutscene_state == LEVEL_TUTORIAL ? (float)SCREEN_WIDTH * ((float)SCREEN_WIDTH / wsize.x) : (float)SCREEN_WIDTH;
+
+	vec2 d_box_trans = vec2({0.f,0.f});
+	vec2 d_text_trans = vec2({0.f,0.f});
 	vec2 d_face_trans_left = vec2({0.f,0.f});
 	vec2 d_face_trans_right = vec2({0.f,0.f});
-	vec2 d_box_trans = vec2({0.f,0.f});
 
-	vec2 d_face_scale = vec2({(float)texture_dialogue_box_left.width / wscale, (float)texture_dialogue_box_left.height / wscale});
 	vec2 d_box_scale = vec2({(float)texture_dialogue_box.width / wscale, (float)texture_dialogue_box.height / wscale});
+	vec2 d_text_scale = vec2({(float)texture_dialogue_box_mid.width / wscale, (float)texture_dialogue_box_mid.height / wscale});
+	vec2 d_face_scale = vec2({(float)texture_dialogue_box_left.width / wscale, (float)texture_dialogue_box_left.height / wscale});
 
 	if (current_cutscene_state == LEVEL_TUTORIAL)
 	{
-		d_face_trans_left.x = wpoint.x + texture_dialogue_box_left.width * (d_face_scale.x * 3);
-		d_face_trans_left.y = wpoint.y + texture_dialogue_box_left.height * (d_face_scale.y * 3); 
-		d_face_trans_right.x = wpoint.x + wsize.x - texture_dialogue_box_left.width * (d_face_scale.x * 3);
-		d_face_trans_right.y = wpoint.y + texture_dialogue_box_left.height * (d_face_scale.y * 3);
+		d_box_trans.x = wpoint.x + (float)texture_dialogue_box.width * (d_box_scale.x) / 2;
+		d_box_trans.y = wpoint.y + (float)texture_dialogue_box.height * (d_box_scale.y * 3);
 
-		d_box_trans.x = wpoint.x + texture_dialogue_box.width * (d_box_scale.x) / 2;
-		d_box_trans.y = wpoint.y + texture_dialogue_box.height * (d_box_scale.y * 3);
+		d_text_trans.x = wpoint.x + (float)texture_dialogue_box_mid.width * (d_text_scale.x * 1.1250);
+		d_text_trans.y = wpoint.y + (float)texture_dialogue_box_mid.height * (d_text_scale.y * 3);
 
-		draw_element(proj, texture_dialogue_box_left, d_face_trans_left, d_face_scale);
-		draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
-		draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
+		d_face_trans_left.x = wpoint.x + (float)texture_dialogue_box_left.width * (d_face_scale.x * 3);
+		d_face_trans_left.y = wpoint.y + (float)texture_dialogue_box_left.height * (d_face_scale.y * 3); 
+		d_face_trans_right.x = wpoint.x + wsize.x - (float)texture_dialogue_box_left.width * (d_face_scale.x * 3);
+		d_face_trans_right.y = wpoint.y + (float)texture_dialogue_box_left.height * (d_face_scale.y * 3);
 	}
 	else
 	{
 		d_face_trans_left = vec2({(float)(texture_dialogue_box_left.width / 2), (float)(texture_dialogue_box_left.height / 2)});
+		d_text_trans = vec2({(float)(texture_dialogue_box_mid.width / 2) + (float)texture_dialogue_box_left.width, (float)(texture_dialogue_box_mid.height / 2)});
 		d_face_trans_right = vec2({(float)(SCREEN_WIDTH - texture_dialogue_box_right.width / 2), (float)(texture_dialogue_box_right.height / 2)});
-
 		d_box_trans = vec2({(float)(texture_dialogue_box.width / 2), (float)(texture_dialogue_box.height / 2)});
-
-		draw_element(proj, texture_dialogue_box_left, d_face_trans_left, d_face_scale);
-		draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
-		draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
 	}
 
-
-	// OLD
-	// dialogue
-	/* 
-	vec2 dialogue_pos = vec2({0.f, 0.f});
-	vec2 dialogue_scale_temp = vec2({0.2f, 0.2f});
-	if (current_cutscene_state != LEVEL_TUTORIAL)
-	{
-		dialogue_pos = is_left_dialogue() ? left_dialogue_position : right_dialogue_position;
-	}
-	else
-	{
-		dialogue_pos = is_left_dialogue() ? vec2({350.f, 620.f}) : vec2({850.f, 620.f});
-	}
-	draw_element(proj, dialogue_texture, dialogue_pos, physics.scale);
-
-	// dialogue left
-	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == STORY_SCREEN)
-	{
-		draw_element(proj, dialogue_texture, left_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state != STORY_SCREEN)
-	{
-		draw_element(proj, dialogue_texture, left_texture_position, dialogue_scale_temp);
-	}
-
-	// dialogue right
-	if ((dialogue_counter <= 13 || dialogue_counter >= 16) && current_cutscene_state == 4)
-	{
-		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state == LEVEL_TUTORIAL || current_cutscene_state == LEVEL_2_CUTSCENE)
-	{
-		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter <= 66)
-	{
-		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 83)
-	{
-		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
-	}
-
-	// enemy
-	if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter >= 58)
-	{
-		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state == LEVEL_2_CUTSCENE && dialogue_counter >= 76)
-	{
-		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
-	}
-	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 81)
-	{
-		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
-	}
-
-	// skip
-	if (current_cutscene_state != LEVEL_TUTORIAL)
-	{
-		draw_element(proj, skip_texture, {830.f, 760.f}, dialogue_scale_temp);
-	} */
+	draw_element(proj, texture_dialogue_box_left, d_face_trans_left, d_face_scale);
+	draw_element(proj, texture_dialogue_box_mid, d_text_trans, d_text_scale);
+	draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
+	draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
 }
 
 
@@ -349,150 +253,160 @@ bool Cutscene::dialogue_done(unsigned int cutscene_state)
 	return false;
 }
 
-void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
+void Cutscene::increment_dialogue_counter(unsigned int game_state)
 {
 	dialogue_counter++;
-	current_cutscene_state = cutscene_state;
+	current_cutscene_state = game_state;
 
-	if (cutscene_state == 4)
+	if (game_state == STORY_SCREEN)
 	{
 		string temp_str = "data/textures/cutscenes/story/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
 
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(path);
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(path);
 
-		if (dialogue_counter == 4)
+		if (dialogue_counter == 1)
 		{
-			left_dialogue_texture.~Texture();
-			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-			left_scale = {0.1f, 1.f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/spotter.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
 		}
-
-		if (dialogue_counter == 4)
+		else if (dialogue_counter == 4)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("agent_roger.png"));
-			right_scale = {-0.2f, 1.25f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/dialogue_box_face.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/roger.png"));
+		}
+		else if (dialogue_counter == 6)
+		{
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
 		}
 		else if (dialogue_counter == 14)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("intel.png"));
-			right_scale = {0.1f, 0.8f};
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/dialogue_box_face.png"));
 		}
-
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
+		else if (dialogue_counter == 18)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+		}
 	}
-	else if (cutscene_state == LEVEL_TUTORIAL)
+
+	else if (game_state == LEVEL_TUTORIAL)
 	{
 		string temp_str = "data/textures/cutscenes/tutorial/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
 
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(path);
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(path);
 
 		if (dialogue_counter == 28)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("intel.png"));
-			right_scale = {0.1f, 0.8f};
-			left_dialogue_texture.~Texture();
-			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-			left_scale = {0.1f, 1.f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 		}
-
-		left_texture_position = {200.f, 740.f};
-		right_texture_position = {1000.f, 730.f};
 	}
-	else if (cutscene_state == LEVEL_1_CUTSCENE)
+
+	else if (game_state == LEVEL_1_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level1/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
 
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(path);
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(path);
 
 		if (dialogue_counter == 50)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("intel.png"));
-			right_scale = {0.1f, 0.8f};
-			left_dialogue_texture.~Texture();
-			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-			left_scale = {0.1f, 1.f};
-			enemy_texture.~Texture();
-			enemy_texture.load_from_file(textures_path("wanderers/1.png"));
-			enemy_scale = {0.08f, 0.8f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+
 			skip_texture.~Texture();
 			skip_texture.load_from_file(textures_path("skip.png"));
 		}
-
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
+		else if (dialogue_counter == 58)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
+		}
+		else if (dialogue_counter == 59)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+		}
 	}
-	else if (cutscene_state == LEVEL_2_CUTSCENE)
+
+	else if (game_state == LEVEL_2_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level2/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
 		
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(path);
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(path);
 
 		if (dialogue_counter == 70)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("intel.png"));
-			right_scale = {0.1f, 0.8f};
-			left_dialogue_texture.~Texture();
-			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-			left_scale = {0.1f, 1.f};
-			enemy_texture.~Texture();
-			enemy_texture.load_from_file(textures_path("spotters/1.png"));
-			enemy_scale = {0.08f, 0.7f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+
 			skip_texture.~Texture();
 			skip_texture.load_from_file(textures_path("skip.png"));
 		}
-
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
+		else if (dialogue_counter == 76)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/spotter.png"));
+		}
+		else if (dialogue_counter == 77)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+		}
 	}
-	else if (cutscene_state == LEVEL_3_CUTSCENE)
+
+	else if (game_state == LEVEL_3_CUTSCENE)
 	{
 		string temp_str = "data/textures/cutscenes/level3/" + to_string(dialogue_counter) + ".png";
 		string s(PROJECT_SOURCE_DIR);
 		s += temp_str;
 		const char *path = s.c_str();
 
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(path);
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(path);
 
 		if (dialogue_counter == 81)
 		{
-			right_dialogue_texture.~Texture();
-			right_dialogue_texture.load_from_file(textures_path("intel.png"));
-			right_scale = {0.1f, 0.8f};
-			left_dialogue_texture.~Texture();
-			left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-			left_scale = {0.1f, 1.f};
-			enemy_texture.~Texture();
-			enemy_texture.load_from_file(textures_path("survivor-idle_shotgun_0.png"));
-			enemy_scale = {-0.09f, 0.9f};
+			texture_dialogue_box_left.~Texture();
+			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/shooter.png"));
+
 			skip_texture.~Texture();
 			skip_texture.load_from_file(textures_path("skip.png"));
 		}
-
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
+		else if (dialogue_counter == 83)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+		}
 	}
 }
 
@@ -501,84 +415,62 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	dialogue_counter = counter_value;
 	current_cutscene_state = cutscene_state;
 
-	if (cutscene_state == 4 && counter_value == 1)
+	if (cutscene_state == STORY_SCREEN && counter_value == 1)
 	{
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png"));
-		left_dialogue_texture.~Texture();
-		left_dialogue_texture.load_from_file(textures_path("spotters/3.png"));
-		right_dialogue_texture.~Texture();
-		right_dialogue_texture.load_from_file(textures_path("wanderers/1.png"));
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/1.png"));
+		texture_dialogue_box_left.~Texture();
+		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/spotter.png"));
+		texture_dialogue_box_right.~Texture();
+		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
+
 		skip_texture.~Texture();
 		skip_texture.load_from_file(textures_path("skip.png"));
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
 	}
 	else if (cutscene_state == LEVEL_TUTORIAL && counter_value == 28)
 	{
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
-		right_dialogue_texture.~Texture();
-		right_dialogue_texture.load_from_file(textures_path("intel.png"));
-		right_scale = {0.1f, 0.8f};
-		left_dialogue_texture.~Texture();
-		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-		left_scale = {0.1f, 1.f};
-		left_texture_position = {200.f, 740.f};
-		right_texture_position = {1000.f, 730.f};
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/tutorial/28.png"));
+		texture_dialogue_box_left.~Texture();
+		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+		texture_dialogue_box_right.~Texture();
+		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 	}
 	else if (cutscene_state == LEVEL_1_CUTSCENE && counter_value == 50)
 	{
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(textures_path("cutscenes/level1/50.png"));
-		right_dialogue_texture.~Texture();
-		right_dialogue_texture.load_from_file(textures_path("intel.png"));
-		right_scale = {0.1f, 0.8f};
-		left_dialogue_texture.~Texture();
-		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-		left_scale = {0.1f, 1.f};
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/50.png"));
+		texture_dialogue_box_left.~Texture();
+		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+		texture_dialogue_box_right.~Texture();
+		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+
 		skip_texture.~Texture();
 		skip_texture.load_from_file(textures_path("skip.png"));
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
-		enemy_texture.~Texture();
-		enemy_texture.load_from_file(textures_path("wanderers/1.png"));
-		enemy_scale = {0.08f, 0.8f};
 	}
 	else if (cutscene_state == LEVEL_2_CUTSCENE && counter_value == 70)
 	{
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(textures_path("cutscenes/level2/70.png"));
-		right_dialogue_texture.~Texture();
-		right_dialogue_texture.load_from_file(textures_path("intel.png"));
-		right_scale = {0.1f, 0.8f};
-		left_dialogue_texture.~Texture();
-		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-		left_scale = {0.1f, 1.f};
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/70.png"));
+		texture_dialogue_box_left.~Texture();
+		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+		texture_dialogue_box_right.~Texture();
+		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 		skip_texture.~Texture();
 		skip_texture.load_from_file(textures_path("skip.png"));
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
 		enemy_texture.~Texture();
 		enemy_texture.load_from_file(textures_path("spotters/1.png"));
-		enemy_scale = {0.08f, 0.7f};
 	}
 	else if (cutscene_state == LEVEL_3_CUTSCENE && counter_value == 81)
 	{
-		dialogue_texture.~Texture();
-		dialogue_texture.load_from_file(textures_path("cutscenes/level3/81.png"));
-		right_dialogue_texture.~Texture();
-		right_dialogue_texture.load_from_file(textures_path("intel.png"));
-		right_scale = {0.1f, 0.8f};
-		left_dialogue_texture.~Texture();
-		left_dialogue_texture.load_from_file(textures_path("piere_background_less.png"));
-		left_scale = {0.1f, 1.f};
+		texture_dialogue_box_mid.~Texture();
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/81.png"));
+		texture_dialogue_box_left.~Texture();
+		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
+		texture_dialogue_box_right.~Texture();
+		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+
 		skip_texture.~Texture();
 		skip_texture.load_from_file(textures_path("skip.png"));
-		left_texture_position = {200.f, 540.f};
-		right_texture_position = {1000.f, 530.f};
-		enemy_texture.~Texture();
-		enemy_texture.load_from_file(textures_path("survivor-idle_shotgun_0.png"));
-		enemy_scale = {-0.09f, 0.9f};
 	}
 }

@@ -12,9 +12,6 @@ class Cutscene : public Entity
 	static Texture texture_dialogue_box_left;
 	static Texture texture_dialogue_box_right;
 	static Texture texture_dialogue_box_mid;
-	static Texture dialogue_texture;
-	static Texture left_dialogue_texture;
-	static Texture right_dialogue_texture;
 	static Texture enemy_texture;
 	static Texture skip_texture;
 
