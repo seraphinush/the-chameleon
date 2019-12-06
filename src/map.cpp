@@ -101,7 +101,8 @@ char map_test[40][61] = {
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCCCCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
 	"WCCCCCRRRRRRRRRRRRRRRRRRCCCCCACCCCCYYYYYYYYYYYYYYYYYYYCCCCCW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -143,9 +144,97 @@ char level_tutorial[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 char map_level_1[40][61] = {
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7WWWWWWW8SSS7WWWWWWW8SSS7WWWWWWW8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBB8SSS7YYYRYYY8SSS7BBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBB8SSS7YYYRYYY8SSS7BBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBBWWWWWYYYRYYYWWWWWBBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBB35554YYYRYYY35554BBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBB8SSS7YYYRYYY8SSS7BBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRBBB8SSS7YYYRYYY8SSS7BBBRBBB8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSS554R355SSSSS54YRY35SSSSS554R355SSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7YRY8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7YRY8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7YRY8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7WWWRWWW8SSS7WWYRYWW8SSS7WWWRWWW8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7GGGRYYY8SSS7BBYRYYY8SSS7YYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7GGGRYYYWWWWWBBYRYYYWWWWWYYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7GGGRYYYBBBBBBBCCCBBBBBBBYYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7RRRRRRRRRRRRRRCZCRRRRRRRRRRRRRR8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRGGGBBBBBBBCCCBBBBBBBYYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRGGG35554GGGRGBB35554YYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7BBBRGGG8SSS7GGGRGBB8SSS7YYYRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSS554R355SSSSS54GRG35SSSSS554R355SSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7GRG8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7GRG8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSS7R8SSSSSSSS7GRG8SSSSSSSS7R8SSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7WWWRWWW8SSS7WWGRGWW8SSS7WWWRWWW8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CCCRCCC8SSS7YYYRYYY8SSS7YYYRGGG8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CCCRCCC8SSS7YYYRYYY8SSS7YYYRGGG8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CCCRCCCWWWWWYYYRYYYWWWWWYYYRGGG8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CCCRCCC35554YYYRYYY35554GGGRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CACRCCC8SSS7YYYRYYY8SSS7GGGRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SS7CCCRCCC8SSS7YYYRYYY8SSS7GGGRYYY8SSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSS5555555SSSSS5555555SSSSS5555555SSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+};
+
+char map_level_2[40][61] = {
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSS7WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW8SSSSSSSSS",
+	"SSSSSSSSS7RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR8SSSSSSSSS",
+	"SSSSSSSSS7RBBBBBBBBBBBBRRRBBBBBRBBBBBB35554YYYYYYR8SSSSSSSSS",
+	"SSSSSSSSS7RBBBBBBBBB354RRRBBBBBRBBBBBB8SSS7YYYZYYR8SSSSSSSSS",
+	"SSSSSSSSS7RBB34BBBBB8S7RRRBBBBBRB354BBWWWWWYY34YYR8SSSSSSSSS",
+	"SSSSSSSSS7RB3SS4BBBBWWWRRRBBBBBRB8S7RRRRRRRR3SS4YR8SSSSSSSSS",
+	"SSSSSSSSS7RBW87WRRRRRRRRRR354BBRB8S7RRRRRRRRW87WYR8SSSSSSSSS",
+	"SSSSSSSSS7RYYWWRRRRRRRRRRR8S7BBRB8S7GGGR34YYYWWYYR8SSSSSSSSS",
+	"SSSSSSSSS7RYYYYYYYYRRRYYYYWWWBBRB8S7GGGR87RRRRRRRR8SSSSSSSSS",
+	"SSSSSSSSS7R3554YYYYRRRYYYYGGGGGRBWWWGGGR87RRRRRRRR8SSSSSSSSS",
+	"SSSSSSSSS7R8SS7Y354RRR354GGGGGGRGGGGGGGRWWBBBBBBBR8SSSSSSSSS",
+	"SSSSSSSSS7RWWWWY8S7RRR8S7RRRRRRRRRRRRRRRRRR3554BBR8SSSSSSSSS",
+	"SSSSSSSSS7RYYYYY8S7RRR8S7RRRRRRR3555554RYYY8SS7BBR8SSSSSSSSS",
+	"SSSSSSSSS7RYYYYY8S7RRR8S7YYYYYYRWWWWWWWRYYYWWWWBBR8SSSSSSSSS",
+	"SSSSSSSSS7RRRRRR8S7RRR8S7YYY34YRRRRRRRRRRRRRRRRRRR8SSSSSSSSS",
+	"SSSSSSSSS7RRRRRR8S7RRR8S7YYY87YRRRRRRRRRRRRRR3554R8SSSSSSSSS",
+	"SSSSSSSSS7R354GG8S7RRR8S7YYY87YR355554GRYYYRB8SS7R8SSSSSSSSS",
+	"SSSSSSSSS7RWWWGGWWWRRRWWWYYY87YR8SSSS7GR34YRBWWWWR8SSSSSSSSS",
+	"SSSSSSSSS7RBBBBBBBBBBBBBBYYY87YRWWWWWWGR87YRBGGGBR8SSSSSSSSS",
+	"SSSSSSSSS7RBBBBBBBBBBBBBB355S7YRBBBBBBGRWWYRBGGGBR8SSSSSSSSS",
+	"SSSSSSSSS7RBB34BBBBBBBBBBWWWWWYRBBBBBBBRYYYRB34GBR8SSSSSSSSS",
+	"SSSSSSSSS7RB3SS4RRRRRRRRRRRRRRRRRRRRRRRRRRRR3SS4BR8SSSSSSSSS",
+	"SSSSSSSSS7RBW87WGGG354YYYYYYYYYRYY354YY3554RW87WBR8SSSSSSSSS",
+	"SSSSSSSSS7RYYWWGGGG8S7YYYY35554RYY8S7YY8SS7RBWWBBR8SSSSSSSSS",
+	"SSSSSSSSS7RYYGGGGGGWWWYYYY8SSS7RYYWWWYY8SS7RGGBBBR8SSSSSSSSS",
+	"SSSSSSSSS7RYYAYYYYYYYYYYYYWWWWWRYYYYYYYWWWWRGGBBBR8SSSSSSSSS",
+	"SSSSSSSSS7RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR8SSSSSSSSS",
+	"SSSSSSSSSS5555555555555555555555555555555555555555SSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+};
+
+// The Museum
+char map_level_3[40][61] = {
 	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
 	"7WWWWWW0WWWWWWWWW0WWW0WWWWWWWWWWWWWWWWWWWWWWWWWWWW0WWWWWWWW8",
 	"7BBBBBB0YYYYYYYYY0RRR0BBBBBBBBBBBBBBBBBBBBBBBBBBBB0CCCCCCCC8",
@@ -185,7 +274,8 @@ char map_level_1[40][61] = {
 	"7CCCCCCC0CCCCCCCCCCCCCWWWWBBWWWWRRWWWWYYWWWWBBWWWWWGGWWWRRW8",
 	"7CCCCCCUWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
 	"7CCACC37CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC8",
-	"S55555SS555555555555555555555555555555555555555555555555555S"};
+	"S55555SS555555555555555555555555555555555555555555555555555S"
+};
 
 /////////////////////////
 // Level: Ruins Textures
@@ -209,7 +299,7 @@ char map_level_1[40][61] = {
 // blue - B
 // yellow - Y
 // corridor - C
-char map_level_2[40][61] = {
+char map_level_4[40][61] = {
 	"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
 	"7WWWWWWWWWW0WWWWWWWWWWW0WWWWWWWWWWWWW0WWWWWWWWW87WWWWWWWWWW8",
 	"7GGGGGGGGGG0YYYYYYYYYYY0RRYYYYYYYYYYY0BBBBZBBBB87BBBBBBBBBB8",
@@ -249,9 +339,11 @@ char map_level_2[40][61] = {
 	"S5554RR35557YYYYYYYYYYYYRW0GGEYY3S7BB0GGG854BBYYYYYRRRR854Y8",
 	"7WWWWRRWWWW0YYYYYYYYYYYYRREGGGYYWWWBB0GGGWWWGRRRRRYYYYRWWWY8",
 	"7ACYYRRGGGG0YYYYYYYYYYYYGGGGGGBBBBBBB0GGGGGGGRRRRRRRRRYYYYY8",
-	"S5555555555S5555555555555555555555555S555555555555555555555S"};
+	"S5555555555S5555555555555555555555555S555555555555555555555S"
+};
 
-char map_level_3[40][61] = {
+// The Maze
+char map_level_5[40][61] = {
 	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 	"WSSSSSSSSSSSSWSSSSSWSSSSSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSSW",
 	"WBBBBBBBBBBBBWCCCCCWBBGGGGGGGWGGGGGGGGGGGGGGBBBBBBBBBBBBBYYW",
@@ -291,7 +383,8 @@ char map_level_3[40][61] = {
 	"WCCWGGSSSSSSSSSGGWBBSSSWRRWBBSSSSSSSSSSBBSYYWBBSSSSBBBBBBBBW",
 	"WCCWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
 	"WACWGGGGGGGGGGGGGWBBBBBWRRWGGGGGGGGGGGGGGGYYWBBBBBBBBBBBBBBW",
-	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"};
+	"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+};
 
 bool Map::init()
 {
@@ -712,31 +805,36 @@ void Map::destroy()
 	effect.release();
 }
 
+
 void Map::draw(const mat3 &projection)
 {
-	switch (get_current_map())
-	{
-	case LEVEL_TUTORIAL:
-		draw_level_tutorial(projection);
-		break;
-	case LEVEL_1:
-		draw_level_1(projection);
-		break;
-	case LEVEL_2:
-		draw_level_2(projection);
-		break;
-	case LEVEL_3:
-		draw_level_3(projection);
-		break;
-	default:
-		draw_level_tutorial(projection);
-		break;
+	switch (get_current_map()) {
+		case LEVEL_TUTORIAL:
+			draw_level_tutorial(projection);
+			break;
+		case LEVEL_1:
+			draw_level_1(projection);
+			break;
+		case LEVEL_2:
+			draw_level_2(projection);
+			break;
+		case LEVEL_3:
+			draw_level_3(projection);
+			break;
+		case LEVEL_4:
+			draw_level_4(projection);
+			break;
+		case LEVEL_5:
+			draw_level_5(projection);
+			break;
+		default:
+			draw_level_tutorial(projection);
+			break;
 	}
 }
 
-void Map::draw_level_tutorial(const mat3 &projection)
-{
-	translation_tile = vec2({0.0, 0.0});
+void Map::draw_level_tutorial(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -757,7 +855,7 @@ void Map::draw_level_tutorial(const mat3 &projection)
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (current_level[y][x] == 'Z')
+			else if ((current_level[y][x] == 'Z'))
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -790,9 +888,8 @@ void Map::draw_level_tutorial(const mat3 &projection)
 	}
 }
 
-void Map::draw_level_1(const mat3 &projection)
-{
-	translation_tile = vec2({0.0, 0.0});
+void Map::draw_level_1(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -851,7 +948,7 @@ void Map::draw_level_1(const mat3 &projection)
 				// Draw a Corridor
 				draw_element(projection, museum_corridor_tile_texture);
 			}
-			else if (current_level[y][x] == 'Z')
+			else if ((current_level[y][x] == 'Z'))
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -884,9 +981,194 @@ void Map::draw_level_1(const mat3 &projection)
 	}
 }
 
-void Map::draw_level_2(const mat3 &projection)
-{
-	translation_tile = vec2({0.0, 0.0});
+void Map::draw_level_2(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
+	for (int y = 0; y < 40; y++)
+	{
+		// Increment the row
+		for (int x = 0; x < 61; x++)
+		{
+			if (current_level[y][x] == '1')
+			{
+				draw_element(projection, museum_bottom_left_corner_texture);
+			}
+			else if (current_level[y][x] == '2')
+			{
+				draw_element(projection, museum_bottom_right_corner_texture);
+			}
+			else if (current_level[y][x] == '3')
+			{
+				draw_element(projection, museum_top_left_corner_texture);
+			}
+			else if (current_level[y][x] == '4')
+			{
+				draw_element(projection, museum_top_right_corner_texture);
+			}
+			else if (current_level[y][x] == '5')
+			{
+				draw_element(projection, museum_top_wall_texture);
+			}
+			else if (current_level[y][x] == '6')
+			{
+				draw_element(projection, museum_bottom_wall_texture);
+			}
+			else if (current_level[y][x] == '7')
+			{
+				draw_element(projection, museum_left_wall_texture);
+			}
+			else if (current_level[y][x] == '8')
+			{
+				draw_element(projection, museum_right_wall_texture);
+			}
+			else if (current_level[y][x] == 'S')
+			{
+				draw_element(projection, museum_shadow_texture);
+			}
+			else if (current_level[y][x] == 'U')
+			{
+				draw_element(projection, museum_top_u_texture);
+			}
+			else if (current_level[y][x] == '0')
+			{
+				draw_element(projection, museum_two_walls_texture);
+			}
+			else if (current_level[y][x] == 'W')
+			{
+				draw_element(projection, museum_wall_texture);
+			}
+			else if ((current_level[y][x] == 'C') || (current_level[y][x] == 'A'))
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_texture);
+			}
+			else if ((current_level[y][x] == 'Z'))
+			{
+				// Draw a Corridor
+				draw_element(projection, trophy_texture);
+			}
+			else if (current_level[y][x] == 'R')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_red_texture);
+			}
+			else if (current_level[y][x] == 'B')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_blue_texture);
+			}
+			else if (current_level[y][x] == 'G')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_green_texture);
+			}
+			else if (current_level[y][x] == 'Y')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_yellow_texture);
+			}
+
+			translation_tile.x += TILE_SIZE;
+		}
+		translation_tile.x = 0.0;
+		translation_tile.y += TILE_SIZE;
+	}
+}
+
+void Map::draw_level_3(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
+	for (int y = 0; y < 40; y++)
+	{
+		// Increment the row
+		for (int x = 0; x < 61; x++)
+		{
+			if (current_level[y][x] == '1')
+			{
+				draw_element(projection, museum_bottom_left_corner_texture);
+			}
+			else if (current_level[y][x] == '2')
+			{
+				draw_element(projection, museum_bottom_right_corner_texture);
+			}
+			else if (current_level[y][x] == '3')
+			{
+				draw_element(projection, museum_top_left_corner_texture);
+			}
+			else if (current_level[y][x] == '4')
+			{
+				draw_element(projection, museum_top_right_corner_texture);
+			}
+			else if (current_level[y][x] == '5')
+			{
+				draw_element(projection, museum_top_wall_texture);
+			}
+			else if (current_level[y][x] == '6')
+			{
+				draw_element(projection, museum_bottom_wall_texture);
+			}
+			else if (current_level[y][x] == '7')
+			{
+				draw_element(projection, museum_left_wall_texture);
+			}
+			else if (current_level[y][x] == '8')
+			{
+				draw_element(projection, museum_right_wall_texture);
+			}
+			else if (current_level[y][x] == 'S')
+			{
+				draw_element(projection, museum_shadow_texture);
+			}
+			else if (current_level[y][x] == 'U')
+			{
+				draw_element(projection, museum_top_u_texture);
+			}
+			else if (current_level[y][x] == '0')
+			{
+				draw_element(projection, museum_two_walls_texture);
+			}
+			else if (current_level[y][x] == 'W')
+			{
+				draw_element(projection, museum_wall_texture);
+			}
+			else if ((current_level[y][x] == 'C') || (current_level[y][x] == 'A'))
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_texture);
+			}
+			else if ((current_level[y][x] == 'Z'))
+			{
+				// Draw a Corridor
+				draw_element(projection, trophy_texture);
+			}
+			else if (current_level[y][x] == 'R')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_red_texture);
+			}
+			else if (current_level[y][x] == 'B')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_blue_texture);
+			}
+			else if (current_level[y][x] == 'G')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_green_texture);
+			}
+			else if (current_level[y][x] == 'Y')
+			{
+				// Draw a Corridor
+				draw_element(projection, museum_corridor_tile_yellow_texture);
+			}
+
+			translation_tile.x += TILE_SIZE;
+		}
+		translation_tile.x = 0.0;
+		translation_tile.y += TILE_SIZE;
+	}
+}
+
+void Map::draw_level_4(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -949,7 +1231,7 @@ void Map::draw_level_2(const mat3 &projection)
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (current_level[y][x] == 'Z')
+			else if ((current_level[y][x] == 'Z'))
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -982,9 +1264,8 @@ void Map::draw_level_2(const mat3 &projection)
 	}
 }
 
-void Map::draw_level_3(const mat3 &projection)
-{
-	translation_tile = vec2({0.0, 0.0});
+void Map::draw_level_5(const mat3& projection) {
+	translation_tile = vec2({ 0.0, 0.0 });
 	for (int y = 0; y < 40; y++)
 	{
 		// Increment the row
@@ -1005,7 +1286,7 @@ void Map::draw_level_3(const mat3 &projection)
 				// Draw a Corridor
 				draw_element(projection, corridor_texture);
 			}
-			else if (current_level[y][x] == 'Z')
+			else if ((current_level[y][x] == 'Z'))
 			{
 				// Draw a Corridor
 				draw_element(projection, trophy_texture);
@@ -1213,6 +1494,7 @@ void Map::check_wall(Char &ch, const float ms)
 	}
 }
 
+
 void Map::set_current_map(int level)
 {
 	glfwSetTime(0);
@@ -1259,16 +1541,29 @@ void Map::set_current_map(int level)
 		current_level_indicator = LEVEL_3;
 		break;
 	case LEVEL_4:
-		//
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = map_level_4[y][x];
+			}
+		}
+		current_level_indicator = LEVEL_4;
 		break;
 	case LEVEL_5:
-		//
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 61; x++)
+			{
+				current_level[y][x] = map_level_5[y][x];
+			}
+		}
+		current_level_indicator = LEVEL_5;
 		break;
 	}
 }
 
-int Map::get_current_map()
-{
+int Map::get_current_map() {
 	return current_level_indicator;
 }
 
@@ -1479,6 +1774,6 @@ bool Map::check_wall(vec2 spotter_pos, vec2 char_pos)
 	/*if (is_wall)
 		printf("wall collision works!\n");*/
 
-	//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
+		//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
 	return (top_right || top_left || bottom_right || bottom_left);
 }

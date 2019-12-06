@@ -74,6 +74,8 @@ public:
 	void draw_level_1(const mat3& projection);
 	void draw_level_2(const mat3& projection);
 	void draw_level_3(const mat3& projection);
+	void draw_level_4(const mat3& projection);
+	void draw_level_5(const mat3& projection);
 	void draw_element(const mat3 &projection, const Texture &texture);
 
 	void set_current_map(int level);
@@ -85,6 +87,7 @@ public:
 
 	// wall collision
 	void check_wall(Char &ch, const float ms);
+	bool check_wall(vec2 spotter_pos, vec2 char_pos);
 
 	// char dead time getters and setters .. ported over from water
 	void set_char_dead();
@@ -103,5 +106,4 @@ public:
 	bool is_wall(vec2 grid_coords);
 
 	bool is_wall_texture(char tile);
-	bool check_wall(vec2 spotter_pos, vec2 char_pos);
 };
