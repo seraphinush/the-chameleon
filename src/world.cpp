@@ -17,7 +17,7 @@ const size_t MAX_COOLDOWN = 50;
 const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
 const float FADE_TIME = 0.7;
-const float FLASH_TIME = 0.5;
+const float FLASH_TIME = 1.5;
 
 // TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
@@ -131,22 +131,26 @@ bool World::init()
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-	m_char_dead_sound = Mix_LoadWAV(audio_path("char_dead.wav"));
-	m_char_green_sound = Mix_LoadWAV(audio_path("green_sound.wav"));
-	m_char_win_sound = Mix_LoadWAV(audio_path("char_win.wav"));
+	m_sfx_alert = Mix_LoadWAV(audio_path("sfx_alert.wav"));
+	m_sfx_click = Mix_LoadWAV(audio_path("sfx_click.wav"));
+	m_sfx_get_trophy = Mix_LoadWAV(audio_path("sfx_get_trophy.wav"));
+	m_sfx_pause = Mix_LoadWAV(audio_path("sfx_pause.wav"));
+	m_sfx_resume = Mix_LoadWAV(audio_path("sfx_resume.wav"));
 
-	if (m_background_music == nullptr || m_char_dead_sound == nullptr || m_char_win_sound == nullptr || m_char_green_sound == nullptr)
+	if (m_background_music == nullptr ||
+		m_sfx_alert == nullptr ||
+		m_sfx_click == nullptr ||
+		m_sfx_get_trophy == nullptr ||
+		m_sfx_pause == nullptr ||
+		m_sfx_resume == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n %s\n make sure the data directory is present",
-				audio_path("music.wav"),
-				audio_path("char_dead.wav"),
-				audio_path("green_sound.wav"),
-				audio_path("char_win.wav"));
+		fprintf(stderr, "Failed to load sounds\n");
 		return false;
 	}
 
 	// play background music
-	Mix_PlayMusic(m_background_music, -1);
+	Mix_VolumeMusic(60);
+	Mix_FadeInMusic(m_background_music, -1, 1000);
 	fprintf(stderr, "Loaded music\n");
 
 	m_alert_mode_cooldown = MAX_ALERT_MODE_COOLDOWN;
@@ -163,7 +167,7 @@ bool World::init()
 		   m_hud.init() &&
 		   m_map.init() &&
 		   m_char.init(m_map.get_spawn_pos()) &&
-		   m_overlay.init(alert_mode, MAX_COOLDOWN) &&
+		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init() &&
 		   m_gameover_screen.init();
@@ -176,12 +180,14 @@ void World::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
-	if (m_char_dead_sound != nullptr)
-		Mix_FreeChunk(m_char_dead_sound);
-	if (m_char_green_sound != nullptr)
-		Mix_FreeChunk(m_char_green_sound);
-	if (m_char_win_sound != nullptr)
-		Mix_FreeChunk(m_char_win_sound);
+	if (m_sfx_alert != nullptr)
+		Mix_FreeChunk(m_sfx_alert);
+	if (m_sfx_get_trophy != nullptr)
+		Mix_FreeChunk(m_sfx_get_trophy);
+	if (m_sfx_pause != nullptr)
+		Mix_FreeChunk(m_sfx_pause);
+	if (m_sfx_resume != nullptr)
+		Mix_FreeChunk(m_sfx_resume);
 
 	Mix_CloseAudio();
 
@@ -234,8 +240,7 @@ bool World::update(float ms)
 		}
 		else
 		{
-			alert_mode = false;
-
+			bool stay_alert = false;
 			// unalert shooters
 			for (auto &shooter : m_shooters)
 				shooter.set_alert_mode(false);
@@ -243,15 +248,37 @@ bool World::update(float ms)
 			// unalert spotters
 			for (auto &spotter : m_spotters)
 				spotter.set_alert_mode(false);
-
 			// unalert wanderers
 			for (auto &wanderer : m_wanderers)
-				wanderer.set_alert_mode(false);
+			{
+				if (m_alert_mode)
+				{
+					if (m_char.is_in_alert_mode_range(wanderer))
+					{
+						// fprintf(stderr, "alert mode active and in range \n");
+						stay_alert = true;
+					}
+					else
+					{
+						wanderer.set_alert_mode(false);
+					}
+				}
+			}
+
+			// if (stay_alert)
+			// {
+			// 	alert_mode = true;
+			// }
+			// else
+			// {
+			// 	alert_mode = false;
+			// }
+			m_alert_mode = stay_alert;
 		}
 
 		// IF ALERT MODE OVERLAY
-		m_overlay.update_alert_mode(alert_mode);
-		if (alert_mode)
+		m_overlay.update_alert_mode(m_alert_mode);
+		if (m_alert_mode)
 		{
 			m_overlay.oscillation();
 		}
@@ -277,7 +304,6 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -290,7 +316,8 @@ bool World::update(float ms)
 		{
 			if (m_char.is_alive())
 			{
-				Mix_PlayChannel(-1, m_char_win_sound, 0);
+				Mix_HaltMusic();
+				Mix_PlayChannel(-1, m_sfx_get_trophy, 0);
 				advance_to_cutscene();
 				m_char.kill();
 				return true;
@@ -305,7 +332,6 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					Mix_PlayChannel(-1, m_char_dead_sound, 0);
 					m_map.set_char_dead();
 				}
 				m_char.kill();
@@ -320,7 +346,9 @@ bool World::update(float ms)
 			{
 				if (m_char.is_alive())
 				{
-					alert_mode = true;
+					if (!m_alert_mode)
+						Mix_PlayChannel(-1, m_sfx_alert, 0);
+					m_alert_mode = true;
 					m_alert_mode_cooldown = 0;
 
 					// rotate to char
@@ -343,12 +371,14 @@ bool World::update(float ms)
 		// proximity, spotter
 		for (auto &spotter : m_spotters)
 		{
-			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+			if (spotter.is_in_sight(m_char, m_map) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
-					alert_mode = true;
-					spotter.set_alert_mode(alert_mode);
+					if (!m_alert_mode)
+						Mix_PlayChannel(-1, m_sfx_alert, 0);
+					m_alert_mode = true;
+					spotter.set_alert_mode(m_alert_mode);
 					m_alert_mode_cooldown = 0;
 				}
 				break;
@@ -367,7 +397,30 @@ bool World::update(float ms)
 		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(ms * m_current_speed);
-			wanderer.set_alert_mode(alert_mode);
+			if (m_alert_mode)
+			{
+				if (m_char.is_in_alert_mode_range(wanderer))
+				{
+					// fprintf(stderr, "alert mode active and in range \n");
+					wanderer.set_alert_mode(true);
+				}
+				else
+				{
+					wanderer.set_alert_mode(false);
+				}
+			}
+			else
+			{
+				if (m_char.is_in_range(wanderer, m_map) && is_char_detectable())
+				{
+					// fprintf(stderr, "alert mode active and in range \n");
+					wanderer.set_alert_mode(true);
+				}
+				else
+				{
+					wanderer.set_alert_mode(false);
+				}
+			}
 		}
 
 		// update spotters
@@ -380,7 +433,7 @@ bool World::update(float ms)
 		for (auto &shooter : m_shooters)
 		{
 			// TODO -- wrong location for proper code flow
-			shooter.set_alert_mode(alert_mode);
+			shooter.set_alert_mode(m_alert_mode);
 
 			// TODO
 			shooter.update(ms * m_current_speed);
@@ -446,7 +499,6 @@ bool World::update(float ms)
 
 		//particles update
 		m_particles_emitter.update(ms);
-
 		// Spawning new Particles
 		if (m_spawn_particles)
 		{
@@ -578,6 +630,8 @@ bool World::update(float ms)
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void World::draw()
 {
+
+	// fprintf(stderr, "Timer - %f", glfwGetTime());
 	// clear error buffer
 	gl_flush_errors();
 
@@ -862,6 +916,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_TUTORIAL);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -899,6 +955,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_2);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -912,6 +970,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_map.set_current_map(LEVEL_3);
 					m_char.set_position(m_map.get_spawn_pos());
 					m_cutscene.increment_dialogue_counter(m_game_state);
+
+					Mix_VolumeMusic(25);
 				}
 				else
 					m_cutscene.increment_dialogue_counter(m_game_state);
@@ -920,16 +980,18 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			{
 				if (m_current_game_won_state == MAIN_MENU)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = START_SCREEN;
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_won_state == QUIT)
 				{
-					m_current_game_won_state = MAIN_MENU;
 					m_game_state = QUIT;
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_game_state == LOSE_SCREEN)
@@ -941,23 +1003,31 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_cutscene.set_dialogue_counter(m_game_state, 1);
 					m_current_game_state = 0;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 				else if (m_current_game_over_state == RESTART)
 				{
 					m_current_game_over_state = RESTART;
 					m_game_state = m_level;
 					reset_game();
+
+					Mix_PlayChannel(-1, m_sfx_click, 0);
 				}
 			}
 			else if (m_current_game_state == 0)
 			{
 				m_game_state = STORY_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == CONTROL_SCREEN)
 			{
 				m_game_state = START_SCREEN;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_game_state == LEVEL_SCREEN)
 			{
@@ -986,11 +1056,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 					m_current_level_state = 0;
 					break;
 				}
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else
 			{
 				m_game_state = m_current_game_state;
 				m_cutscene.set_dialogue_counter(m_game_state, 1);
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1005,11 +1079,15 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = true;
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
+
+				Mix_PlayChannel(-1, m_sfx_pause, 0);
 			}
 			else
 			{
 				m_paused = false;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 		}
 		else
@@ -1038,6 +1116,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = m_level;
+
+				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 			else if (m_current_pause_state == RESTART)
 			{
@@ -1045,6 +1125,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_paused = !m_paused;
 				m_game_state = m_level;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == MAIN_MENU)
 			{
@@ -1053,12 +1135,16 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 				m_game_state = START_SCREEN;
 				m_current_game_state = 0;
 				reset_game();
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 			else if (m_current_pause_state == QUIT)
 			{
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
 				m_game_state = QUIT;
+
+				Mix_PlayChannel(-1, m_sfx_click, 0);
 			}
 		}
 	}
@@ -1079,13 +1165,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 		{
 			m_char.set_direction('L', true);
-			m_char.flip_char();
 			m_char.change_direction(2);
 		}
 		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 		{
 			m_char.set_direction('R', true);
-			m_char.flip_char();
 			m_char.change_direction(3);
 		}
 	}
@@ -1096,31 +1180,33 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
 		{
-			m_char.set_color(1);
 			m_char.set_dash(true);
+			m_char.set_color(1);
 		}
 		// green
-		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)) && m_char.get_color() != 2)
+		else if (((key == GLFW_KEY_DOWN && m_control == 0) || (key == GLFW_KEY_S && m_control == 1)))
 		{
-			Mix_PlayChannel(-1, m_char_green_sound, 0);
 			m_cooldown = 0;
 			m_char.set_color(2);
-			alert_mode = true;
+			if (!m_alert_mode)
+				Mix_PlayChannel(-1, m_sfx_alert, 0);
+			m_alert_mode = true;
 			m_alert_mode_cooldown = 0;
 		}
 		// blue
-		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)) && m_char.get_color() != 3)
+		else if (((key == GLFW_KEY_LEFT && m_control == 0) || (key == GLFW_KEY_A && m_control == 1)))
 		{
 			m_cooldown = 0;
 			m_char.set_color(3);
 		}
 		// yellow
-		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)) && m_char.get_color() != 4)
+		else if (((key == GLFW_KEY_RIGHT && m_control == 0) || (key == GLFW_KEY_D && m_control == 1)))
 		{
 			m_char.set_color(4);
 			m_map.set_flash(1);
-			alert_mode = true;
-			m_alert_mode_cooldown = 0;
+			// Alert mode removed from yellow
+			// m_alert_mode = true;
+			// m_alert_mode_cooldown = 0;
 			m_cooldown = 0;
 		}
 	}
@@ -1164,6 +1250,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_map.set_current_map(LEVEL_1);
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 50);
+
+			Mix_VolumeMusic(25);
 		}
 		else if (m_game_state == LEVEL_2_CUTSCENE)
 		{
@@ -1181,6 +1269,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			m_char.set_position(m_map.get_spawn_pos());
 			m_cutscene.set_dialogue_counter(m_game_state, 81);
 		}
+		Mix_VolumeMusic(25);
 	}
 
 	// reset
@@ -1289,7 +1378,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable()
 {
-	return m_char.is_moving() || (m_map.get_tile_type(m_char.get_position()) != m_char.get_color() + 1);
+	return !(!m_char.is_moving() && (m_map.get_tile_type(m_char.get_position()) == m_char.get_color() + 1));
 }
 
 void World::advance_to_cutscene()
@@ -1310,6 +1399,8 @@ void World::advance_to_cutscene()
 	default:
 		break;
 	}
+	Mix_VolumeMusic(60);
+	Mix_FadeInMusic(m_background_music, -1, 5000);
 }
 
 void World::reset_game()
@@ -1322,8 +1413,8 @@ void World::reset_game()
 	m_map.reset_char_dead_time();
 	m_current_speed = 1.f;
 	m_overlay.destroy();
-	alert_mode = false;
-	m_overlay.init(alert_mode, MAX_COOLDOWN);
+	m_alert_mode = false;
+	m_overlay.init(m_alert_mode, MAX_COOLDOWN);
 
 	// reset direction for every spotter
 	for (auto &spotter : m_spotters)

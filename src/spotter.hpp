@@ -2,6 +2,11 @@
 
 // internal
 #include "common.hpp"
+#include "map.hpp"
+#include "char.hpp"
+
+class Map;
+class Char;
 
 // guard type 2 : spotter
 class Spotter : public Entity
@@ -16,6 +21,10 @@ private:
 	// animation
 	int spotter_sprite_switch = 1;
 	float spotter_sprite_countdown = 1500.f;
+	const float spriteWidth = 68.f;
+	const float spriteHeight = 67.f;
+	int frameIndex_x = 1;
+	int frameIndex_y = 1;
 
 	// detection
 	float radius = 70.f;
@@ -37,7 +46,7 @@ public:
 	vec2 get_bounding_box() const;
 
 	// detection
-	bool is_in_sight(vec2 pos);
+	bool is_in_sight(Char m_char, Map& m);
 
 	// alert
 	void set_alert_mode(bool val);
