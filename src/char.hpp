@@ -81,7 +81,7 @@ public:
 	bool is_colliding(const Shooter &s);
 	bool is_colliding(const Spotter &s);
 	bool is_colliding(const Wanderer &w);
-	bool is_in_range(Wanderer &w);
+	bool is_in_range(Wanderer &w, Map& map);
 	bool is_in_alert_mode_range(Wanderer &w);
 	vec2 get_bounding_box() const;
 

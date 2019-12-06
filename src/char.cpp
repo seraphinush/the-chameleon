@@ -411,7 +411,7 @@ bool Char::is_wall_collision()
 	return m_wall_down || m_wall_left || m_wall_right || m_wall_up;
 }
 
-bool Char::is_in_range(Wanderer &w)
+bool Char::is_in_range(Wanderer &w, Map& m)
 {
 	vec2 pos = w.get_position();
 	vec2 box = w.get_bounding_box();
@@ -423,7 +423,11 @@ bool Char::is_in_range(Wanderer &w)
 	float r = std::max(other_r, my_r);
 	r *= 6.f;
 
-	if (d_sq < r * r)
+	bool is_wall = false;
+	if (d_sq < r*r)
+		is_wall = m.check_wall(motion.position, w.get_position());
+
+	if ((d_sq < r * r) && !(is_wall))
 		return true;
 	return false;
 }
