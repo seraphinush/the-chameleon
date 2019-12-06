@@ -53,7 +53,7 @@ private:
 	// animation
 	int sprite_switch = 1;
 	float sprite_countdown = 50.f;
-	const float spriteWidth = 31;
+	const float spriteWidth = 34;
 	const float spriteHeight = 67;
 	int frameIndex_x = 1;
 	int frameIndex_y = 1;

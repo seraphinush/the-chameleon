@@ -42,7 +42,7 @@ bool Char::init(vec2 spos)
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
-		if (!char_texture.load_from_file(textures_path("base_undead.png")))
+		if (!char_texture.load_from_file(textures_path("base_undead-1.png.png")))
 		{
 			fprintf(stderr, "Failed to load char texture!\n");
 			return false;
@@ -391,7 +391,7 @@ bool Char::is_colliding(const Wanderer &w)
 
 vec2 Char::get_bounding_box() const
 {
-	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f * 0.10625f, std::fabs(physics.scale.y) * char_texture.height * 0.5f * 0.01046875f };
+	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f * 0.10625f, std::fabs(physics.scale.y) * char_texture.height * 0.5f * 0.07046875f };
 }
 
 void Char::set_wall_collision(char direction, bool value)
@@ -579,7 +579,7 @@ void Char::reinitialize()
 	const float ty = (frameIndex_y / numPerCol) * th;
 
 	float posX = -15.5f;
-	float posY = -35.f;
+	float posY = -40.f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { posX, posY, -0.0f };

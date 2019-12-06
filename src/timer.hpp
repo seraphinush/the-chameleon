@@ -7,6 +7,7 @@
 //Freetype
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
 // stdlib
 #include <vector>
 
