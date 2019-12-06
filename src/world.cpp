@@ -161,18 +161,18 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		   m_control_screen.init() &&
-		   m_level_screen.init() &&
-		   m_pause_screen.init() &&
-		   m_cutscene.init() &&
-		   m_hud.init() &&
-		   m_map.init() &&
-		   m_char.init(m_map.get_spawn_pos()) &&
-		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
-		   m_particles_emitter.init() &&
-		   m_complete_screen.init() &&
-		   m_gameover_screen.init();
-		   //m_timer.init();
+		  m_map.init() &&
+		  m_char.init(m_map.get_spawn_pos()) &&
+		  m_control_screen.init() &&
+		  m_level_screen.init() &&
+		  m_pause_screen.init() &&
+		  m_cutscene.init() &&
+		  m_hud.init() &&
+		  m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		  m_particles_emitter.init() &&
+		  m_complete_screen.init() &&
+		  m_gameover_screen.init();
+		  //m_timer.init();
 }
 
 // release all the associated resources
@@ -228,7 +228,7 @@ bool World::update(float ms)
 	m_level_screen.update(m_current_level_state);
 	m_complete_screen.update(m_current_game_won_state);
 	m_gameover_screen.update(m_current_game_over_state);
-	m_cutscene.update(m_current_game_state);
+	m_cutscene.update();
 	m_pause_screen.update(m_current_pause_state);
 
 	//////////////////////
@@ -534,6 +534,7 @@ bool World::update(float ms)
 	{
 		reset_game();
 	}
+
 	if (m_game_state == LEVEL_1)
 	{
 
@@ -709,12 +710,12 @@ void World::draw()
 		m_level_screen.draw(projection_2D);
 		break;
 	case STORY_SCREEN:
-		m_cutscene.draw(projection_2D);
+		m_cutscene.draw(projection_2D, m_screen_size, m_screen_point);
 		break;
 	case LEVEL_TUTORIAL:
 		// draw map
 		m_map.draw(projection_2D);
-		m_cutscene.draw(projection_2D);
+		m_cutscene.draw(projection_2D, m_screen_size, m_screen_point);
 
 		if (m_map.get_flash() == 0)
 		{
@@ -731,13 +732,13 @@ void World::draw()
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 		break;
 	case LEVEL_1_CUTSCENE:
-		m_cutscene.draw(projection_2D);
+		m_cutscene.draw(projection_2D, m_screen_size, m_screen_point);
 		break;
 	case LEVEL_2_CUTSCENE:
-		m_cutscene.draw(projection_2D);
+		m_cutscene.draw(projection_2D, m_screen_size, m_screen_point);
 		break;
 	case LEVEL_3_CUTSCENE:
-		m_cutscene.draw(projection_2D);
+		m_cutscene.draw(projection_2D, m_screen_size, m_screen_point);
 		break;
 	case LEVEL_1:
 		// draw map
@@ -866,7 +867,6 @@ void World::draw()
 	case QUIT:
 		destroy();
 		exit(0);
-		break;
 	}
 
 	// present
@@ -880,19 +880,23 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float right = 0.f;
 	float bottom = 0.f;
 
-	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 
-		&& m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
+	if (m_game_state != START_SCREEN && m_game_state % 1000 == 0)
+	{
+		left = m_char.get_position().x - ((float)width / (PROJECTION_SCALE * m_screen_scale));
+		top = m_char.get_position().y - ((float)height / (PROJECTION_SCALE * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (PROJECTION_SCALE  * m_screen_scale));
+		bottom = m_char.get_position().y + ((float)height / (PROJECTION_SCALE * m_screen_scale));
+	}
+	else
 	{
 		right = (float)width / m_screen_scale;   // *0.5;
 		bottom = (float)height / m_screen_scale; // *0.5;
 	}
-	else
-	{
-		left = m_char.get_position().x - ((float)width / (9.5 * m_screen_scale));
-		top = m_char.get_position().y - ((float)height / (9.5 * m_screen_scale));
-		right = m_char.get_position().x + ((float)width / (9.5 * m_screen_scale));
-		bottom = m_char.get_position().y + ((float)height / (9.5 * m_screen_scale));
-	}
+
+	// overlay reference info
+	m_screen_size = vec2({right - left, bottom - top});
+	m_screen_point = vec2({left, top});
+
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
@@ -946,7 +950,7 @@ bool World::spawn_wanderer(std::vector<vec2> path)
 }
 
 // key callback function
-void World::on_key(GLFWwindow*, int key, int, int action, int mod)
+void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
 	// start screen, control screen, story screen
 	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 
