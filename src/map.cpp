@@ -1389,3 +1389,94 @@ bool Map::is_wall(vec2 grid_coords)
 	int y = grid_coords.y;
 	return is_wall_texture(current_level[y][x]);
 }
+
+bool Map::check_wall(vec2 spotter_pos, vec2 char_pos)
+{
+	bool top_right = false;
+	bool top_left = false;
+	bool bottom_right = false;
+	bool bottom_left = false;
+	int sPosX = (int)spotter_pos.x / 20;
+	int sPosY = (int)spotter_pos.y / 20;
+
+	int cPosX = (int)char_pos.x / 20;
+	int cPosY = (int)char_pos.y / 20;
+
+
+	if ((sPosX < cPosX) && (sPosY < cPosY))
+	{
+
+		for (int posX = sPosX; posX <= cPosX; posX++)
+		{
+			for (int posY = sPosY; posY <= cPosY; posY++)
+			{
+				top_right = top_right || is_wall_texture(current_level[posY][posX]);
+			}
+		}
+	}
+	else if ((sPosX < cPosX) && (sPosY > cPosY))
+	{
+		for (int posX = sPosX; posX <= cPosX; posX++)
+		{
+			for (int posY = sPosY; posY >= cPosY; posY--)
+			{
+				bottom_left = bottom_left || is_wall_texture(current_level[posY][posX]);
+			}
+		}
+	}
+	else if ((sPosX > cPosX) && (sPosY > cPosY))
+	{
+		for (int posX = sPosX; posX >= cPosX; posX--)
+		{
+			for (int posY = sPosY; posY >= cPosY; posY--)
+			{
+				bottom_right = bottom_right || is_wall_texture(current_level[posY][posX]);
+			}
+		}
+	}
+	else if ((sPosX > cPosX) && (sPosY < cPosY))
+	{
+		for (int posX = sPosX; posX >= cPosX; posX--)
+		{
+			for (int posY = sPosY; posY <= cPosY; posY++)
+			{
+				top_left = top_left || is_wall_texture(current_level[posY][posX]);
+			}
+		}
+	}
+	else if ((sPosX == cPosX) && (sPosY < cPosY))
+	{
+		for (int posY = sPosY; posY <= cPosY; posY++)
+		{
+			top_left = top_left || is_wall_texture(current_level[posY][sPosX]);
+		}
+	}
+	else if ((sPosX == cPosX) && (sPosY > cPosY))
+	{
+		for (int posY = sPosY; posY >= cPosY; posY--)
+		{
+			top_left = top_left || is_wall_texture(current_level[posY][sPosX]);
+		}
+	}
+	else if ((sPosX < cPosX) && (sPosY == cPosY))
+	{
+		for (int posX = sPosX; posX <= cPosY; posX++)
+		{
+			top_left = top_left || is_wall_texture(current_level[sPosY][posX]);
+		}
+	}
+	else if ((sPosX > cPosX) && (sPosY == cPosY))
+	{
+		for (int posX = sPosX; posX >= cPosX; posX--)
+		{
+			top_left = top_left || is_wall_texture(current_level[sPosY][posX]);
+		}
+	}
+
+
+	/*if (is_wall)
+		printf("wall collision works!\n");*/
+
+		//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
+	return (top_right || top_left || bottom_right || bottom_left);
+}

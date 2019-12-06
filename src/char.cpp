@@ -42,7 +42,7 @@ bool Char::init(vec2 spos)
 	// load shared texture
 	if (!char_texture.is_valid())
 	{
-		if (!char_texture.load_from_file(textures_path("piere_background_less.png")))
+		if (!char_texture.load_from_file(textures_path("base_undead.png")))
 		{
 			fprintf(stderr, "Failed to load char texture!\n");
 			return false;
@@ -50,18 +50,27 @@ bool Char::init(vec2 spos)
 	}
 
 	// the position corresponds to the center of the texture
-	float wr = char_texture.width * 0.5f;
-	float hr = char_texture.height * 0.5f;
+	// sprite sheet calculations
+	const float tw = spriteWidth / char_texture.width;
+	const float th = spriteHeight / char_texture.height;
+	const int numPerRow = char_texture.width / spriteWidth;
+	const int numPerCol = char_texture.height / spriteHeight;
+	const float tx = (frameIndex_x % numPerRow - 1) * tw;
+	const float ty = (frameIndex_y / numPerCol) * th;
+
+	float posX = 0.f;
+	float posY = 0.f;
+
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-wr, +hr, -0.0f};
-	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+wr, +hr, -0.0f};
-	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+wr, -hr, -0.0f};
-	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-wr, -hr, -0.0f};
-	vertices[3].texcoord = {0.f, 0.f};
+	vertices[0].position = { posX, posY, -0.0f };
+	vertices[0].texcoord = { tx, ty };
+	vertices[1].position = { posX + spriteWidth, posY, -0.0f };
+	vertices[1].texcoord = { tx + tw, ty };
+	vertices[2].position = { posX + spriteWidth, posY + spriteHeight, -0.0f };
+	vertices[2].texcoord = { tx + tw, ty + th };
+	vertices[3].position = { posX, posY + spriteHeight, -0.0f };
+	vertices[3].texcoord = { tx, ty + th };
 
 	// counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -111,7 +120,6 @@ bool Char::init(vec2 spos)
 
 	m_dash = false;
 
-	flip_in_x = 0;
 
 	return true;
 }
@@ -197,6 +205,39 @@ void Char::update(float ms)
 			if (m_moving_right && !m_wall_right)
 				change_position({step, 0.f});
 		}
+
+		if (m_moving_right)
+		{
+			if (physics.scale.x < 0) {
+				physics.scale.x = -physics.scale.x;
+			}
+		}
+		if (m_moving_left)
+		{
+			if (physics.scale.x > 0) {
+				physics.scale.x = -physics.scale.x;
+			}
+		}
+
+		// sprite change
+		if (m_moving_down || m_moving_up || m_moving_right || m_moving_left)
+		{
+			if (frameIndex_x < 7)
+			{
+				frameIndex_x++;
+			}
+			else
+			{
+				frameIndex_x = 2;
+			}
+			reinitialize();
+		}
+		else
+		{
+			frameIndex_x = 1;
+			frameIndex_y = 1;
+			reinitialize();
+		}
 	}
 }
 
@@ -249,17 +290,7 @@ void Char::draw(const mat3 &projection)
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 
-	if ((sprite_countdown < 0) && (m_moving_right || m_moving_left || m_moving_up || m_moving_down))
-	{
-		string temp_str = "data/textures/person_png/" + to_string(sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char *path = s.c_str();
-
-		char_texture.~Texture();
-		char_texture.load_from_file(path);
-		sprite_countdown = 200.f;
-	}
+	
 	// color
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
@@ -360,7 +391,7 @@ bool Char::is_colliding(const Wanderer &w)
 
 vec2 Char::get_bounding_box() const
 {
-	return {std::fabs(physics.scale.x) * char_texture.width * 0.5f, std::fabs(physics.scale.y) * char_texture.height * 0.5f};
+	return { std::fabs(physics.scale.x) * char_texture.width * 0.5f * 0.10625f, std::fabs(physics.scale.y) * char_texture.height * 0.5f * 0.01046875f };
 }
 
 void Char::set_wall_collision(char direction, bool value)
@@ -532,7 +563,46 @@ void Char::set_rotation(float radians)
 	motion.radians = radians;
 }
 
-void Char::flip_char()
+void Char::reinitialize()
 {
-	flip_in_x = 1;
+	// the position corresponds to the center of the texture
+	// sprite sheet calculations
+	const float tw = spriteWidth / char_texture.width;
+	const float th = spriteHeight / char_texture.height;
+	const int numPerRow = char_texture.width / spriteWidth;
+	const int numPerCol = char_texture.height / spriteHeight;
+	const float tx = (frameIndex_x % numPerRow - 1) * tw;
+	const float ty = (frameIndex_y / numPerCol) * th;
+
+	float posX = -15.5f;
+	float posY = -35.f;
+
+	TexturedVertex vertices[4];
+	vertices[0].position = { posX, posY, -0.0f };
+	vertices[0].texcoord = { tx, ty };
+	vertices[1].position = { posX + spriteWidth, posY, -0.0f };
+	vertices[1].texcoord = { tx + tw, ty };
+	vertices[2].position = { posX + spriteWidth, posY + spriteHeight, -0.0f };
+	vertices[2].texcoord = { tx + tw, ty + th };
+	vertices[3].position = { posX, posY + spriteHeight, -0.0f };
+	vertices[3].texcoord = { tx, ty + th };
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+
+	// clear errors
+	gl_flush_errors();
+
+	// vertex buffer creation
+	glGenBuffers(1, &mesh.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+	// index buffer creation
+	glGenBuffers(1, &mesh.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+	// vertex array (container for vertex + index buffer)
+	glGenVertexArrays(1, &mesh.vao);
 }
+

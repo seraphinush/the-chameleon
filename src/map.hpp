@@ -103,4 +103,5 @@ public:
 	bool is_wall(vec2 grid_coords);
 
 	bool is_wall_texture(char tile);
+	bool check_wall(vec2 spotter_pos, vec2 char_pos);
 };
