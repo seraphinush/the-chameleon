@@ -373,7 +373,7 @@ bool World::update(float ms)
 		// proximity, spotter
 		for (auto &spotter : m_spotters)
 		{
-			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+			if (spotter.is_in_sight(m_char, m_map) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -414,7 +414,7 @@ bool World::update(float ms)
 			}
 			else
 			{
-				if (m_char.is_in_range(wanderer) && is_char_detectable())
+				if (m_char.is_in_range(wanderer, m_map) && is_char_detectable())
 				{
 					// fprintf(stderr, "alert mode active and in range \n");
 					wanderer.set_alert_mode(true);
@@ -1177,13 +1177,11 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 		{
 			m_char.set_direction('L', true);
-			m_char.flip_char();
 			m_char.change_direction(2);
 		}
 		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 		{
 			m_char.set_direction('R', true);
-			m_char.flip_char();
 			m_char.change_direction(3);
 		}
 	}

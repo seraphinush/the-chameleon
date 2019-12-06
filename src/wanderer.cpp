@@ -28,26 +28,36 @@ bool Wanderer::init(vector<vec2> path, Map &map, Char &player)
 	if (!wanderer_texture.is_valid())
 	{
 
-		if (!wanderer_texture.load_from_file(textures_path("wanderers/1.png")))
+		if (!wanderer_texture.load_from_file(textures_path("wanderers/new_wanderers.png")))
 		{
 			fprintf(stderr, "Failed to load wanderer texture!\n");
 			return false;
 		}
 	}
 
-	// the position corresponds to the center of the texture
-	float wr = wanderer_texture.width * 0.5f;
-	float hr = wanderer_texture.height * 0.5f;
+	// sprite sheet calculations
+	const float tw = spriteWidth / wanderer_texture.width;
+	const float th = spriteHeight / wanderer_texture.height;
+	const int numPerRow = wanderer_texture.width / spriteWidth;
+	const int numPerCol = wanderer_texture.height / spriteHeight;
+	const float tx = (frameIndex_x % numPerRow - 1) * tw;
+	const float ty = (frameIndex_y % numPerCol) * th;
+
+
+	float posX = 0.f;
+	float posY = 0.f;
+
+	
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-wr, +hr, -0.00f};
-	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+wr, +hr, -0.00f};
-	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+wr, -hr, -0.00f};
-	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-wr, -hr, -0.00f};
-	vertices[3].texcoord = {0.f, 0.f};
+	vertices[0].position = { posX - spriteWidth / 2, posY + spriteHeight / 2, -0.0f };
+	vertices[0].texcoord = { tx, ty };
+	vertices[1].position = { posX + spriteWidth / 2, posY + spriteHeight / 2, -0.0f };
+	vertices[1].texcoord = { tx + tw, ty };
+	vertices[2].position = { posX + spriteWidth / 2, posY + spriteHeight / 2, -0.0f };
+	vertices[2].texcoord = { tx + tw, ty + th };
+	vertices[3].position = { posX - spriteWidth / 2, posY - spriteHeight / 2, -0.0f };
+	vertices[3].texcoord = { tx, ty + th };
 
 	// counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -130,9 +140,25 @@ void Wanderer::update(float ms)
 
 	// sprite change
 	if (sprite_countdown > 0.f)
-		sprite_countdown -= ms;
+		sprite_countdown -= ms * 2;
 
-	sprite_switch >= 5 ? sprite_switch = 1 : sprite_switch++;
+	if (sprite_countdown < 0) {
+		if (frameIndex_x == 0) {
+			frameIndex_x = 1;
+		}
+		else if (frameIndex_x == 1) {
+			frameIndex_x = 2;
+			frameIndex_y = 10;
+		}
+		else if (frameIndex_x == 2) {
+			frameIndex_x = 0;
+			frameIndex_y = 11;
+
+		}
+		// reinitialize vertex positions
+		reinitiliaze();
+		sprite_countdown = 200.f;
+	}
 }
 
 void Wanderer::draw(const mat3 &projection)
@@ -181,17 +207,7 @@ void Wanderer::draw(const mat3 &projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
 
-	if (sprite_countdown < 0)
-	{
-		string temp_str = "data/textures/wanderers/" + to_string(sprite_switch) + ".png";
-		string s(PROJECT_SOURCE_DIR);
-		s += temp_str;
-		const char *path = s.c_str();
-
-		wanderer_texture.~Texture();
-		wanderer_texture.load_from_file(path);
-		sprite_countdown = 200.f;
-	}
+	
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -211,7 +227,7 @@ vec2 Wanderer::get_position() const
 // collision
 vec2 Wanderer::get_bounding_box() const
 {
-	return {std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f};
+	return { std::fabs(physics.scale.x) * wanderer_texture.width * 0.5f * 0.00175f, std::fabs(physics.scale.y) * wanderer_texture.height * 0.5f * 0.24911032f };
 }
 
 // alert
@@ -219,7 +235,7 @@ void Wanderer::set_alert_mode(bool val)
 {
 	if (!alert_mode && val)
 	{
-		motion.speed += 20.f;
+		motion.speed += 10.f;
 		alert_mode = val;
 		calculate_immediate_path(m_map->get_grid_coords(m_player->get_position()), 10);
 		current_immediate_goal_index = 1;
@@ -418,3 +434,47 @@ bool Wanderer::new_point_has_been_visited(std::vector<vec2> visited_nodes, vec2 
 {
 	return point_collection_contains_point(visited_nodes, new_point);
 }
+
+void Wanderer::reinitiliaze()
+{
+	const float tw = spriteWidth / wanderer_texture.width;
+	const float th = spriteHeight / wanderer_texture.height;
+	const int numPerRow = wanderer_texture.width / spriteWidth;
+	const int numPerCol = wanderer_texture.height / spriteHeight;
+	const float tx = (frameIndex_x % numPerRow - 1) * tw;
+	const float ty = (frameIndex_y / numPerCol) * th;
+
+	float posX = 0.f;
+	float posY = -35.f;
+
+	TexturedVertex vertices[4];
+	vertices[0].position = { posX, posY, -0.0f };
+	vertices[0].texcoord = { tx, ty };
+	vertices[1].position = { posX + spriteWidth, posY, -0.0f };
+	vertices[1].texcoord = { tx + tw, ty };
+	vertices[2].position = { posX + spriteWidth, posY + spriteHeight, -0.0f };
+	vertices[2].texcoord = { tx + tw, ty + th };
+	vertices[3].position = { posX, posY + spriteHeight, -0.0f };
+	vertices[3].texcoord = { tx, ty + th };
+
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+
+	// clear errors
+	gl_flush_errors();
+
+	// vertex buffer creation
+	glGenBuffers(1, &mesh.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_DYNAMIC_DRAW);
+
+	// index buffer creation
+	glGenBuffers(1, &mesh.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_DYNAMIC_DRAW);
+
+	// vertex array (container for vertex + index buffer)
+	glGenVertexArrays(1, &mesh.vao);
+}
+
+

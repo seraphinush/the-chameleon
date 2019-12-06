@@ -9,6 +9,7 @@ Texture GameoverScreen::pointer;
 Texture GameoverScreen::game_over;
 Texture GameoverScreen::retry;
 Texture GameoverScreen::main_menu;
+Texture GameoverScreen::piere_gameover;
 
 bool GameoverScreen::init()
 {
@@ -45,6 +46,15 @@ bool GameoverScreen::init()
 		if (!main_menu.load_from_file(textures_path("main_menu.png")))
 		{
 			fprintf(stderr, "Failed to load main menu texture!");
+			return false;
+		}
+	}
+
+	if (!piere_gameover.is_valid())
+	{
+		if (!piere_gameover.load_from_file(textures_path("piere_gameover.png")))
+		{
+			fprintf(stderr, "Failed to load piere game over texture!");
 			return false;
 		}
 	}
@@ -107,9 +117,9 @@ void GameoverScreen::destroy()
 void GameoverScreen::update(unsigned int state)
 {
 	if (state == 1)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 3 * (SCREEN_HEIGHT / 5.f)});
+		pointer_pos = vec2({SCREEN_WIDTH * 1.3f / 2.5f, 2 * (SCREEN_HEIGHT / 4.f)});
 	else if (state == 2)
-		pointer_pos = vec2({SCREEN_WIDTH / 3.f, 4 * (SCREEN_HEIGHT / 5.f)});
+		pointer_pos = vec2({SCREEN_WIDTH * 1.3f / 2.5f, 3 * (SCREEN_HEIGHT / 4.f)});
 }
 
 // TODO -- remove hardcoded pos
@@ -121,17 +131,22 @@ void GameoverScreen::draw(const mat3 &proj)
 	draw_element(proj, pointer, pointer_pos, pointer_scale);
 
 	// game over
-	vec2 game_over_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 5.f)});
+	vec2 game_over_pos = vec2({SCREEN_WIDTH / 2.f, 1 * (SCREEN_HEIGHT / 4.f)});
 	vec2 game_over_scale = vec2({game_over.width * 1.5f / (2 * SCREEN_WIDTH), game_over.height * 1.5f / (2 * SCREEN_WIDTH)});
 	draw_element(proj, game_over, game_over_pos, game_over_scale);
 
+	// piere game over
+	vec2 piere_gameover_scale = vec2({piere_gameover.width / (1.5f * SCREEN_WIDTH), piere_gameover.height / (1.5f * SCREEN_WIDTH)});
+	vec2 piere_gameover_pos = vec2({300.f, SCREEN_HEIGHT / 1.5f});
+	draw_element(proj, piere_gameover, piere_gameover_pos, piere_gameover_scale);
+
 	// retry
-	vec2 retry_pos = vec2({SCREEN_WIDTH / 2.f, 3 * (SCREEN_HEIGHT / 5.f)});
+	vec2 retry_pos = vec2({850.f, 2 * (SCREEN_HEIGHT / 4.f)});
 	vec2 retry_scale = vec2({retry.width / (2 * SCREEN_WIDTH), retry.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, retry, retry_pos, retry_scale);
 
     // main menu
-	vec2 main_menu_pos = vec2({SCREEN_WIDTH / 2.f, 4 * (SCREEN_HEIGHT / 5.f)});
+	vec2 main_menu_pos = vec2({850.f, 3 * (SCREEN_HEIGHT / 4.f)});
 	vec2 main_menu_scale = vec2({main_menu.width / (2 * SCREEN_WIDTH), main_menu.height / (2 * SCREEN_WIDTH)});
 	draw_element(proj, main_menu, main_menu_pos, main_menu_scale);
 }
