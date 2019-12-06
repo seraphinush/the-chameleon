@@ -804,7 +804,6 @@ void World::draw()
 
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
-
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
@@ -865,7 +864,8 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float right = 0.f;
 	float bottom = 0.f;
 
-	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
+	if (m_game_state != LEVEL_1 && m_game_state != LEVEL_2 
+		&& m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
 	{
 		right = (float)width / m_screen_scale;   // *0.5;
 		bottom = (float)height / m_screen_scale; // *0.5;
@@ -949,7 +949,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		else if (m_game_state == LEVEL_SCREEN)
 		{
 			if (action == GLFW_PRESS && key == GLFW_KEY_DOWN)
-				if (m_current_level_state < 3)
+				if (m_current_level_state < 5)
 					m_current_level_state++;
 
 			if (action == GLFW_PRESS && key == GLFW_KEY_UP)
@@ -1128,10 +1128,16 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 					break;
 				case 4:
 					m_game_state = LEVEL_4;
+					m_level = m_game_state;
+					m_map.set_current_map(LEVEL_4);
+					m_char.set_position(m_map.get_spawn_pos());
 					m_current_level_state = 0;
 					break;
 				case 5:
 					m_game_state = LEVEL_5;
+					m_level = m_game_state;
+					m_map.set_current_map(LEVEL_5);
+					m_char.set_position(m_map.get_spawn_pos());
 					m_current_level_state = 0;
 					break;
 				}
@@ -1483,9 +1489,15 @@ void World::advance_to_cutscene()
 		break;
 	case LEVEL_3:
 		m_game_state = LEVEL_4;
+		m_level = m_game_state;
+		m_map.set_current_map(LEVEL_4);
+		m_char.set_position(m_map.get_spawn_pos());
 		break;
 	case LEVEL_4:
 		m_game_state = LEVEL_5;
+		m_level = m_game_state;
+		m_map.set_current_map(LEVEL_5);
+		m_char.set_position(m_map.get_spawn_pos());
 		break;
 	case LEVEL_5:
 		m_game_state = WIN_SCREEN;

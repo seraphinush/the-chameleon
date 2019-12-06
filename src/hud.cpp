@@ -99,7 +99,7 @@ void Hud::destroy()
 
 void Hud::update(unsigned int game_state, vec2 char_position)
 {
-  if (game_state == LEVEL_1 || game_state == LEVEL_2 || game_state == LEVEL_3)
+  if (game_state == LEVEL_1 || game_state == LEVEL_2 || game_state == LEVEL_3 || game_state == LEVEL_4 || game_state == LEVEL_5)
   {
     motion.position = {char_position.x + 95.f, char_position.y - 55.f};
     physics.scale = {0.035f, 0.035f};
