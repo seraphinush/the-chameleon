@@ -12,6 +12,7 @@ class GameoverScreen : public Entity
 	static Texture game_over;
 	static Texture retry;
 	static Texture main_menu;
+	static Texture piere_gameover;
 
 private:
 	vec2 pointer_pos;

@@ -9,37 +9,38 @@
 
 namespace
 {
-	// TODO -- need to remove
-	const size_t MAX_SPOTTERS = 5;
-	const size_t MAX_SHOOTERS = 5;
+// TODO -- need to remove
+const size_t MAX_SPOTTERS = 5;
+const size_t MAX_SHOOTERS = 5;
 
-	const size_t MAX_COOLDOWN = 50;
-	const size_t MAX_ALERT_MODE_COOLDOWN = 100;
+const size_t MAX_COOLDOWN = 50;
+const size_t MAX_ALERT_MODE_COOLDOWN = 100;
 
-	const float FADE_TIME = 0.7;
-	const float FLASH_TIME = 1.5;
+const float FADE_TIME = 0.7;
+const float FLASH_TIME = 1.5;
+float pause_time = 0.f;
 
-	// TODO -- need to remove after settings locs
-	vec2 spotter_loc[5];
-	vec2 shooter_loc[5];
+// TODO -- need to remove after settings locs
+vec2 spotter_loc[5];
+vec2 shooter_loc[5];
 
-	namespace
-	{
-		void glfw_err_cb(int error, const char* desc)
-		{
-			fprintf(stderr, "%d: %s", error, desc);
-		}
-	} // namespace
+namespace
+{
+void glfw_err_cb(int error, const char *desc)
+{
+	fprintf(stderr, "%d: %s", error, desc);
+}
+} // namespace
 } // namespace
 
 World::World() : m_control(0),
-m_current_game_state(0),
-m_current_level_state(0),
-m_current_pause_state(0),
-m_current_game_won_state(2),
-m_current_game_over_state(1),
-m_paused(false),
-m_game_state(START_SCREEN)
+				 m_current_game_state(0),
+				 m_current_level_state(0),
+				 m_current_pause_state(0),
+				 m_current_game_won_state(2),
+				 m_current_game_over_state(1),
+				 m_paused(false),
+				 m_game_state(START_SCREEN)
 {
 	// send rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -54,18 +55,18 @@ bool World::init()
 {
 	// TODO -- need static spawn of spotters per level
 	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
-	spotter_loc[0] = { 100, 100 };
-	spotter_loc[1] = { SCREEN_WIDTH - 100, 100 };
-	spotter_loc[2] = { 100, SCREEN_HEIGHT - 100 };
-	spotter_loc[3] = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100 };
-	spotter_loc[4] = { 800, 500 };
+	spotter_loc[0] = {100, 100};
+	spotter_loc[1] = {SCREEN_WIDTH - 100, 100};
+	spotter_loc[2] = {100, SCREEN_HEIGHT - 100};
+	spotter_loc[3] = {SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100};
+	spotter_loc[4] = {800, 500};
 
 	// TODO
-	shooter_loc[0] = { 100 + 100, 100 + 50 };
-	shooter_loc[1] = { SCREEN_WIDTH - 50, 100 + 50 };
-	shooter_loc[2] = { 150, SCREEN_HEIGHT - 150 };
-	shooter_loc[3] = { SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50 };
-	shooter_loc[4] = { 850, 550 };
+	shooter_loc[0] = {100 + 100, 100 + 50};
+	shooter_loc[1] = {SCREEN_WIDTH - 50, 100 + 50};
+	shooter_loc[2] = {150, SCREEN_HEIGHT - 150};
+	shooter_loc[3] = {SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50};
+	shooter_loc[4] = {850, 550};
 
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -98,8 +99,8 @@ bool World::init()
 	// input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) { ((World *)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) { ((World *)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
@@ -160,17 +161,18 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		m_control_screen.init() &&
-		m_level_screen.init() &&
-		m_pause_screen.init() &&
-		m_cutscene.init() &&
-		m_hud.init() &&
-		m_map.init() &&
-		m_char.init(m_map.get_spawn_pos()) &&
-		m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
-		m_particles_emitter.init() &&
-		m_complete_screen.init() &&
-		m_gameover_screen.init();
+		   m_control_screen.init() &&
+		   m_level_screen.init() &&
+		   m_pause_screen.init() &&
+		   m_cutscene.init() &&
+		   m_hud.init() &&
+		   m_map.init() &&
+		   m_char.init(m_map.get_spawn_pos()) &&
+		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		   m_particles_emitter.init() &&
+		   m_complete_screen.init() &&
+		   m_gameover_screen.init();
+		   //m_timer.init();
 }
 
 // release all the associated resources
@@ -195,13 +197,13 @@ void World::destroy()
 	m_map.destroy();
 	m_overlay.destroy();
 	m_particles_emitter.destroy();
-	for (auto& shooter : m_shooters)
+	for (auto &shooter : m_shooters)
 		shooter.destroy();
 	m_wanderers.clear();
-	for (auto& spotter : m_spotters)
+	for (auto &spotter : m_spotters)
 		spotter.destroy();
 	m_spotters.clear();
-	for (auto& wanderer : m_wanderers)
+	for (auto &wanderer : m_wanderers)
 		wanderer.destroy();
 	m_wanderers.clear();
 	m_start_screen.destroy();
@@ -242,14 +244,14 @@ bool World::update(float ms)
 		{
 			bool stay_alert = false;
 			// unalert shooters
-			for (auto& shooter : m_shooters)
+			for (auto &shooter : m_shooters)
 				shooter.set_alert_mode(false);
 
 			// unalert spotters
-			for (auto& spotter : m_spotters)
+			for (auto &spotter : m_spotters)
 				spotter.set_alert_mode(false);
 			// unalert wanderers
-			for (auto& wanderer : m_wanderers)
+			for (auto &wanderer : m_wanderers)
 			{
 				if (m_alert_mode)
 				{
@@ -298,7 +300,7 @@ bool World::update(float ms)
 		m_map.check_wall(m_char, ms);
 
 		// collision, char-wanderer
-		for (const auto& wanderer : m_wanderers)
+		for (const auto &wanderer : m_wanderers)
 		{
 			if (m_char.is_colliding(wanderer) && is_char_detectable())
 			{
@@ -326,7 +328,7 @@ bool World::update(float ms)
 		}
 
 		// collision, char-spotter
-		for (const auto& spotter : m_spotters)
+		for (const auto &spotter : m_spotters)
 		{
 			if (m_char.is_colliding(spotter) && is_char_detectable())
 			{
@@ -340,7 +342,7 @@ bool World::update(float ms)
 		}
 
 		// proximity, char-shooter
-		for (auto& shooter : m_shooters)
+		for (auto &shooter : m_shooters)
 		{
 			if (m_char.is_colliding(shooter) && is_char_detectable())
 			{
@@ -357,7 +359,7 @@ bool World::update(float ms)
 
 					// SHOOTING AND COOLDOWN
 					shooter.set_in_combat(true);
-					shooter.bullets.cooldown -= 15.f;
+					shooter.bullets.cooldown -= 30.f;
 					if (shooter.bullets.cooldown < 0.f)
 					{
 						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
@@ -369,9 +371,9 @@ bool World::update(float ms)
 		}
 
 		// proximity, spotter
-		for (auto& spotter : m_spotters)
+		for (auto &spotter : m_spotters)
 		{
-			if (spotter.is_in_sight(m_char.get_position()) && is_char_detectable())
+			if (spotter.is_in_sight(m_char, m_map) && is_char_detectable())
 			{
 				if (m_char.is_alive())
 				{
@@ -388,13 +390,14 @@ bool World::update(float ms)
 		//////////////////////
 		// UPDATE
 		//////////////////////
-
+		//update timer
+		//m_timer.update(ms);
 		// update char
 		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
-		for (auto& wanderer : m_wanderers)
+		for (auto &wanderer : m_wanderers)
 		{
 			wanderer.update(ms * m_current_speed);
 			if (m_alert_mode)
@@ -411,7 +414,7 @@ bool World::update(float ms)
 			}
 			else
 			{
-				if (m_char.is_in_range(wanderer) && is_char_detectable())
+				if (m_char.is_in_range(wanderer, m_map) && is_char_detectable())
 				{
 					// fprintf(stderr, "alert mode active and in range \n");
 					wanderer.set_alert_mode(true);
@@ -424,13 +427,13 @@ bool World::update(float ms)
 		}
 
 		// update spotters
-		for (auto& spotter : m_spotters)
+		for (auto &spotter : m_spotters)
 		{
 			spotter.update(ms * m_current_speed);
 		}
 
 		// update shooter
-		for (auto& shooter : m_shooters)
+		for (auto &shooter : m_shooters)
 		{
 			// TODO -- wrong location for proper code flow
 			shooter.set_alert_mode(m_alert_mode);
@@ -450,7 +453,7 @@ bool World::update(float ms)
 				{
 					m_char.set_color(0);
 					m_cooldown = 0;
-					m_char.change_position({ 25.f * cos(angle), 25.f * sin(angle) });
+					m_char.change_position({15.f * cos(angle), 15.f * sin(angle)});
 				}
 			}
 		}
@@ -488,13 +491,13 @@ bool World::update(float ms)
 			m_cooldown = 0;
 			// fprintf(stderr, "DIRECTION CHANGE - %d", m_char.get_direction());
 			if (m_char.get_direction() == 0)
-				m_char.change_position({ 0.f, 5.f });
+				m_char.change_position({0.f, 5.f});
 			else if (m_char.get_direction() == 1)
-				m_char.change_position({ 0.f, -5.f });
+				m_char.change_position({0.f, -5.f});
 			else if (m_char.get_direction() == 2)
-				m_char.change_position({ 5.f, 0.f });
+				m_char.change_position({5.f, 0.f});
 			else if (m_char.get_direction() == 3)
-				m_char.change_position({ -5.f, 0.f });
+				m_char.change_position({-5.f, 0.f});
 		}
 
 		//particles update
@@ -686,7 +689,7 @@ void World::draw()
 	// clear backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.3f, 0.3f, 0.3f };
+	const float clear_color[3] = {0.3f, 0.3f, 0.3f};
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -720,6 +723,8 @@ void World::draw()
 		}
 
 		m_hud.draw(projection_2D);
+		// draw timer
+		//m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -1160,19 +1165,19 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
 			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 		{
-			if (!m_paused)
+					if (!m_paused)
 			{
 				m_paused = true;
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
-
+				pause_time = glfwGetTime();
 				Mix_PlayChannel(-1, m_sfx_pause, 0);
 			}
 			else
 			{
 				m_paused = false;
 				m_game_state = m_level;
-
+				glfwSetTime(pause_time);
 				Mix_PlayChannel(-1, m_sfx_resume, 0);
 			}
 		}
@@ -1201,6 +1206,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 			{
 				m_current_pause_state = 0;
 				m_paused = !m_paused;
+				glfwSetTime(pause_time);
 				m_game_state = m_level;
 
 				Mix_PlayChannel(-1, m_sfx_resume, 0);
@@ -1234,8 +1240,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 			}
 		}
 	}
-
-	// movement, set movement
+		// movement, set movement
 	if (action == GLFW_PRESS && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
 		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL) 
 		&& !m_char.is_dashing())
@@ -1253,13 +1258,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		else if ((key == GLFW_KEY_A && m_control == 0) || (key == GLFW_KEY_LEFT && m_control == 1))
 		{
 			m_char.set_direction('L', true);
-			m_char.flip_char();
 			m_char.change_direction(2);
 		}
 		else if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 		{
 			m_char.set_direction('R', true);
-			m_char.flip_char();
 			m_char.change_direction(3);
 		}
 	}
@@ -1521,6 +1524,7 @@ void World::reset_game()
 	m_overlay.destroy();
 	m_alert_mode = false;
 	m_overlay.init(m_alert_mode, MAX_COOLDOWN);
+	glfwSetTime(0);
 
 	// reset direction for every spotter
 	for (auto& spotter : m_spotters)

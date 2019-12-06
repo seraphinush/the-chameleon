@@ -87,6 +87,7 @@ public:
 
 	// wall collision
 	void check_wall(Char &ch, const float ms);
+	bool check_wall(vec2 spotter_pos, vec2 char_pos);
 
 	// char dead time getters and setters .. ported over from water
 	void set_char_dead();
