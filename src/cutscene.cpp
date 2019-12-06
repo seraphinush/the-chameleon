@@ -1,9 +1,16 @@
 // header
 #include "cutscene.hpp"
+
+// stdlib
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <iostream>
 
+Texture Cutscene::texture_dialogue_box;
+Texture Cutscene::texture_dialogue_box_left;
+Texture Cutscene::texture_dialogue_box_right;
+Texture Cutscene::texture_dialogue_box_mid;
 Texture Cutscene::dialogue_texture;
 Texture Cutscene::left_dialogue_texture;
 Texture Cutscene::right_dialogue_texture;
@@ -18,6 +25,42 @@ bool Cutscene::init()
 	current_cutscene_state = 4;
 
 	// load shared texture
+	if (!texture_dialogue_box.is_valid())
+	{
+		if (!texture_dialogue_box.load_from_file(textures_path("cutscenes/dialogue_box.png")))
+		{
+			fprintf(stderr, "Failed to load dialogue texture!");
+			return false;
+		}
+	}
+
+	if (!texture_dialogue_box_left.is_valid())
+	{
+		if (!texture_dialogue_box_left.load_from_file(textures_path("cutscenes/dialogue_box_face.png")))
+		{
+			fprintf(stderr, "Failed to load dialogue texture!");
+			return false;
+		}
+	}
+
+	if (!texture_dialogue_box_right.is_valid())
+	{
+		if (!texture_dialogue_box_right.load_from_file(textures_path("cutscenes/dialogue_box_face.png")))
+		{
+			fprintf(stderr, "Failed to load dialogue texture!");
+			return false;
+		}
+	}
+
+	if (!texture_dialogue_box_mid.is_valid())
+	{
+		if (!texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/dialogue_placeholder.png")))
+		{
+			fprintf(stderr, "Failed to load dialogue texture!");
+			return false;
+		}
+	}
+
 	if (!dialogue_texture.is_valid())
 	{
 		if (!dialogue_texture.load_from_file(textures_path("cutscenes/story/1.png")))
@@ -64,17 +107,17 @@ bool Cutscene::init()
 	}
 
 	// the position corresponds to the center of the texture
-	float wr = dialogue_texture.width;
-	float hr = dialogue_texture.height;
+	float wr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
+	float hr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = {-wr, +hr, -0.0f};
+	vertices[0].position = {-wr, +hr, 0.f};
 	vertices[0].texcoord = {0.f, 1.f};
-	vertices[1].position = {+wr, +hr, -0.02f};
+	vertices[1].position = {+wr, +hr, 0.f};
 	vertices[1].texcoord = {1.f, 1.f};
-	vertices[2].position = {+wr, -hr, -0.02f};
+	vertices[2].position = {+wr, -hr, 0.f};
 	vertices[2].texcoord = {1.f, 0.f};
-	vertices[3].position = {-wr, -hr, -0.02f};
+	vertices[3].position = {-wr, -hr, 0.f};
 	vertices[3].texcoord = {0.f, 0.f};
 
 	uint16_t indices[] = {0, 3, 1, 1, 3, 2};
@@ -101,9 +144,6 @@ bool Cutscene::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 200.f;
-
 	left_dialogue_position = {350.f, 400.f};
 	right_dialogue_position = {850.f, 400.f};
 
@@ -111,9 +151,7 @@ bool Cutscene::init()
 	right_texture_position = {1000.f, 530.f};
 	enemy_texture_position = {598.f, 530.f};
 
-	// set initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture.
-	physics.scale = {0.75f, 0.95f};
+	physics.scale = vec2({1.f, 1.f});
 
 	return true;
 }
@@ -128,9 +166,7 @@ void Cutscene::destroy()
 	effect.release();
 }
 
-void Cutscene::update(unsigned int game_state)
-{
-}
+void Cutscene::update() {}
 
 bool Cutscene::is_left_dialogue()
 {
@@ -143,27 +179,116 @@ bool Cutscene::is_left_dialogue()
 	return false;
 }
 
-void Cutscene::draw(const mat3 &projection)
+void Cutscene::draw(const mat3 &proj) {}
+
+void Cutscene::draw(const mat3 &proj, vec2 wsize, const vec2 wpoint)
 {
-	// Dialogues
-	// transformation
-	transform.begin();
-	if (current_cutscene_state != LEVEL_TUTORIAL)
+	float wscale = current_cutscene_state == LEVEL_TUTORIAL ? (float)SCREEN_WIDTH * ((float)SCREEN_WIDTH / wsize.x) : (float)SCREEN_WIDTH;
+	vec2 d_face_trans_left = vec2({0.f,0.f});
+	vec2 d_face_trans_right = vec2({0.f,0.f});
+	vec2 d_box_trans = vec2({0.f,0.f});
+
+	vec2 d_face_scale = vec2({(float)texture_dialogue_box_left.width / wscale, (float)texture_dialogue_box_left.height / wscale});
+	vec2 d_box_scale = vec2({(float)texture_dialogue_box.width / wscale, (float)texture_dialogue_box.height / wscale});
+
+	if (current_cutscene_state == LEVEL_TUTORIAL)
 	{
-		if (is_left_dialogue())
-			transform.translate(left_dialogue_position);
-		else
-			transform.translate(right_dialogue_position);
+		d_face_trans_left.x = wpoint.x + texture_dialogue_box_left.width * (d_face_scale.x * 3);
+		d_face_trans_left.y = wpoint.y + texture_dialogue_box_left.height * (d_face_scale.y * 3); 
+		d_face_trans_right.x = wpoint.x + wsize.x - texture_dialogue_box_left.width * (d_face_scale.x * 3);
+		d_face_trans_right.y = wpoint.y + texture_dialogue_box_left.height * (d_face_scale.y * 3);
+
+		d_box_trans.x = wpoint.x + texture_dialogue_box.width * (d_box_scale.x) / 2;
+		d_box_trans.y = wpoint.y + texture_dialogue_box.height * (d_box_scale.y * 3);
+
+		draw_element(proj, texture_dialogue_box_left, d_face_trans_left, d_face_scale);
+		draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
+		draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
 	}
 	else
 	{
-		if (is_left_dialogue())
-			transform.translate({350.f, 620.f});
-		else
-			transform.translate({850.f, 620.f});
+		d_face_trans_left = vec2({(float)(texture_dialogue_box_left.width / 2), (float)(texture_dialogue_box_left.height / 2)});
+		d_face_trans_right = vec2({(float)(SCREEN_WIDTH - texture_dialogue_box_right.width / 2), (float)(texture_dialogue_box_right.height / 2)});
+
+		d_box_trans = vec2({(float)(texture_dialogue_box.width / 2), (float)(texture_dialogue_box.height / 2)});
+
+		draw_element(proj, texture_dialogue_box_left, d_face_trans_left, d_face_scale);
+		draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
+		draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
 	}
-	transform.rotate(motion.radians);
-	transform.scale(physics.scale);
+
+
+	// OLD
+	// dialogue
+	/* 
+	vec2 dialogue_pos = vec2({0.f, 0.f});
+	vec2 dialogue_scale_temp = vec2({0.2f, 0.2f});
+	if (current_cutscene_state != LEVEL_TUTORIAL)
+	{
+		dialogue_pos = is_left_dialogue() ? left_dialogue_position : right_dialogue_position;
+	}
+	else
+	{
+		dialogue_pos = is_left_dialogue() ? vec2({350.f, 620.f}) : vec2({850.f, 620.f});
+	}
+	draw_element(proj, dialogue_texture, dialogue_pos, physics.scale);
+
+	// dialogue left
+	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == STORY_SCREEN)
+	{
+		draw_element(proj, dialogue_texture, left_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state != STORY_SCREEN)
+	{
+		draw_element(proj, dialogue_texture, left_texture_position, dialogue_scale_temp);
+	}
+
+	// dialogue right
+	if ((dialogue_counter <= 13 || dialogue_counter >= 16) && current_cutscene_state == 4)
+	{
+		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state == LEVEL_TUTORIAL || current_cutscene_state == LEVEL_2_CUTSCENE)
+	{
+		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter <= 66)
+	{
+		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 83)
+	{
+		draw_element(proj, dialogue_texture, right_texture_position, dialogue_scale_temp);
+	}
+
+	// enemy
+	if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter >= 58)
+	{
+		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state == LEVEL_2_CUTSCENE && dialogue_counter >= 76)
+	{
+		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
+	}
+	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 81)
+	{
+		draw_element(proj, dialogue_texture, enemy_texture_position, dialogue_scale_temp);
+	}
+
+	// skip
+	if (current_cutscene_state != LEVEL_TUTORIAL)
+	{
+		draw_element(proj, skip_texture, {830.f, 760.f}, dialogue_scale_temp);
+	} */
+}
+
+
+void Cutscene::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
+{
+	// transformation
+	transform.begin();
+	transform.translate(pos);
+	transform.scale(scale);
 	transform.end();
 
 	// set shaders
@@ -174,7 +299,7 @@ void Cutscene::draw(const mat3 &projection)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// depth
-	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	// get uniform locations for glUniform* calls
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
@@ -196,240 +321,16 @@ void Cutscene::draw(const mat3 &projection)
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, dialogue_texture.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	// set uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
 	float color[] = {1.f, 1.f, 1.f};
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&proj);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
-	// Left Dialogue Texture
-	transform.begin();
-	transform.translate(left_texture_position);
-	transform.rotate(motion.radians);
-	transform.scale(left_scale);
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glDisable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, left_dialogue_texture.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	if (dialogue_counter != 4 && dialogue_counter != 5 && current_cutscene_state == STORY_SCREEN)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state != STORY_SCREEN)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-
-	// Right Dialogue Texture
-	transform.begin();
-	transform.translate(right_texture_position);
-	transform.rotate(motion.radians);
-	transform.scale(right_scale);
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glDisable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, right_dialogue_texture.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	if ((dialogue_counter <= 13 || dialogue_counter >= 16) && current_cutscene_state == 4)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state == LEVEL_TUTORIAL || current_cutscene_state == LEVEL_2_CUTSCENE)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter <= 66)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 83)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-
-	// Enemy Texture
-	transform.begin();
-	transform.translate(enemy_texture_position);
-	transform.rotate(motion.radians);
-	transform.scale(enemy_scale);
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glDisable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, enemy_texture.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	if (current_cutscene_state == LEVEL_1_CUTSCENE && dialogue_counter >= 58)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state == LEVEL_2_CUTSCENE && dialogue_counter >= 76)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-	else if (current_cutscene_state == LEVEL_3_CUTSCENE && dialogue_counter >= 81)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
-
-	// skip texture
-	transform.begin();
-	transform.translate({830.f, 760.f});
-	transform.rotate(motion.radians);
-	transform.scale({0.9f, 0.4f});
-	transform.end();
-
-	// set shaders
-	glUseProgram(effect.program);
-
-	// enable alpha channel for textures
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// depth
-	glDisable(GL_DEPTH_TEST);
-
-	// get uniform locations for glUniform* calls
-	transform_uloc = glGetUniformLocation(effect.program, "transform");
-	color_uloc = glGetUniformLocation(effect.program, "fcolor");
-	projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// set vertices and indices
-	glBindVertexArray(mesh.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	// input data location as in the vertex buffer
-	in_position_loc = glGetAttribLocation(effect.program, "in_position");
-	in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-	glEnableVertexAttribArray(in_position_loc);
-	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
-
-	// enable and binding texture to slot 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, skip_texture.id);
-
-	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
-
-	// draw
-	if (current_cutscene_state != LEVEL_TUTORIAL)
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	}
 }
 
 bool Cutscene::dialogue_done(unsigned int cutscene_state)
@@ -495,7 +396,6 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
-		physics.scale = {0.8f, 0.7f};
 
 		if (dialogue_counter == 28)
 		{
@@ -519,7 +419,6 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
-		physics.scale = {0.8f, 0.8f};
 
 		if (dialogue_counter == 50)
 		{
@@ -548,7 +447,6 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 		
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
-		physics.scale = {0.8f, 0.7f};
 
 		if (dialogue_counter == 70)
 		{
@@ -577,7 +475,6 @@ void Cutscene::increment_dialogue_counter(unsigned int cutscene_state)
 
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(path);
-		physics.scale = {0.8f, 0.7f};
 
 		if (dialogue_counter == 81)
 		{
@@ -621,7 +518,6 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/tutorial/28.png"));
-		physics.scale = {0.8f, 0.7f};
 		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
@@ -635,7 +531,6 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level1/50.png"));
-		physics.scale = {0.8f, 0.8f};
 		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
@@ -654,7 +549,6 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level2/70.png"));
-		physics.scale = {0.8f, 0.7f};
 		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};
@@ -673,7 +567,6 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	{
 		dialogue_texture.~Texture();
 		dialogue_texture.load_from_file(textures_path("cutscenes/level3/81.png"));
-		physics.scale = {0.8f, 0.7f};
 		right_dialogue_texture.~Texture();
 		right_dialogue_texture.load_from_file(textures_path("intel.png"));
 		right_scale = {0.1f, 0.8f};

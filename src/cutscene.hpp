@@ -8,6 +8,10 @@
 class Cutscene : public Entity
 {
 	// shared texture
+	static Texture texture_dialogue_box;
+	static Texture texture_dialogue_box_left;
+	static Texture texture_dialogue_box_right;
+	static Texture texture_dialogue_box_mid;
 	static Texture dialogue_texture;
 	static Texture left_dialogue_texture;
 	static Texture right_dialogue_texture;
@@ -38,10 +42,14 @@ class Cutscene : public Entity
 public:
 	bool init();
 	void destroy();
-	void update(unsigned int game_state);
-	void draw(const mat3& projection) override;
-    bool dialogue_done(unsigned int cutscene_state);
-    void increment_dialogue_counter(unsigned int cutscene_state);
+	void update();
+
+	void draw(const mat3& proj) override;
+	void draw(const mat3& proj, vec2 wsize, const vec2 wpoint);
+	void draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale);
+
+  bool dialogue_done(unsigned int cutscene_state);
+  void increment_dialogue_counter(unsigned int cutscene_state);
 	void set_dialogue_counter(unsigned int cutscene_state, unsigned int counter_value);
 	bool is_left_dialogue();
 };
