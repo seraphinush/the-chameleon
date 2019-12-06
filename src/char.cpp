@@ -12,8 +12,10 @@ using namespace std;
 
 const int STEALTH_ANIM_DURATION = 1000;
 
-bool Char::init(vec2 spos)
+bool Char::init(vec2 spos, Map &map)
 {
+	m_map = &map;
+
 	// load sound
 	if (SDL_Init(SDL_INIT_AUDIO) < 0)
 	{
@@ -244,7 +246,16 @@ void Char::update(float ms)
 
 	if (!is_moving() && !stealth_animating && !stealthed)
 	{
-		stealth_animating = true;
+		if (m_map->get_tile_type(get_position()) == get_color() + 1)
+		{
+			stealth_animating = true;
+		}
+	}
+	else if (is_moving() && (stealthed || stealth_animating))
+	{
+		stealthed = false;
+		stealth_animating = false;
+		stealth_anim_time = 0;
 	}
 
 	if (stealth_animating)
@@ -252,6 +263,8 @@ void Char::update(float ms)
 		if (stealth_anim_time >= STEALTH_ANIM_DURATION)
 		{
 			stealthed = true;
+			stealth_animating = false;
+			stealth_anim_time = 0;
 		}
 		else
 		{
@@ -284,7 +297,10 @@ void Char::draw(const mat3 &projection)
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint color_change_uloc = glGetUniformLocation(effect.program, "color_change");
-	GLint is_alive_uloc = glGetUniformLocation(effect.program, "is_alive");
+	GLint is_alive_uloc = glGetUniformLocation(effect.program, "is_alive");	
+	GLint stealthed_uloc = glGetUniformLocation(effect.program, "stealthed");
+	GLint stealthing_uloc = glGetUniformLocation(effect.program, "stealthing");
+	GLint stealth_anim_time_uloc = glGetUniformLocation(effect.program, "stealthing_anim_time");
 
 	// set vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -319,6 +335,11 @@ void Char::draw(const mat3 &projection)
 	glUniform1f(color_change_uloc, color_change);
 
 	glUniform1f(is_alive_uloc, is_alive());
+
+	//Stealth stuff
+	glUniform1f(stealthed_uloc, stealthed);
+	glUniform1f(stealthing_uloc, stealth_animating);
+	glUniform1f(stealth_anim_time_uloc, stealth_anim_time);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);

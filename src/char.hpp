@@ -19,6 +19,7 @@ class Shooter;
 class Spotter;
 class Wanderer;
 class Bullets;
+class Map;
 
 class Char : public Entity
 {
@@ -60,9 +61,10 @@ private:
 	void reinitialize();
 
 	// Stealthing Animations
-	bool stealth_animating;
-	int stealth_anim_time;
-	bool stealthed;
+	bool stealth_animating = false;
+	int stealth_anim_time = 0;
+	bool stealthed = false;
+	Map* m_map;
 
 	// sound
 	Mix_Chunk *m_sfx_bump;
@@ -71,7 +73,7 @@ private:
 	Mix_Chunk *m_sfx_walk;
 
 public:
-	bool init(vec2 pos);
+	bool init(vec2 pos, Map &map);
 	void destroy();
 	void update(float ms);
 	void draw(const mat3 &projection) override;

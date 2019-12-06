@@ -17,6 +17,11 @@ uniform mat3 projection;
 //
 uniform bool is_alive;
 
+// stealth 
+uniform bool stealthing;
+uniform int stealthing_anim_time;
+uniform bool stealthed;
+
 void main()
 {
 	texcoord = in_texcoord;

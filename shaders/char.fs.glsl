@@ -14,9 +14,20 @@ uniform bool is_alive;
 // output color
 layout(location = 0) out vec4 color;
 
+// stealth
+uniform bool stealthed;
+
 void main()
 {
 	color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
+    if (stealthed)
+    {
+        if (color.w != 0)
+        {
+            color.w = 0.5;
+        }
+    }
+    
 	vec3 char_color = color.xyz;
 	if (is_alive) {
 		if (color_change == 1.0) {

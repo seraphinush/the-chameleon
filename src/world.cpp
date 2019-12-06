@@ -167,7 +167,7 @@ bool World::init()
 		   m_cutscene.init() &&
 		   m_hud.init() &&
 		   m_map.init() &&
-		   m_char.init(m_map.get_spawn_pos()) &&
+		   m_char.init(m_map.get_spawn_pos(), m_map) &&
 		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init() &&
@@ -1526,7 +1526,7 @@ void World::advance_to_cutscene()
 void World::reset_game()
 {
 	m_char.destroy();
-	m_char.init(m_map.get_spawn_pos());
+	m_char.init(m_map.get_spawn_pos(), m_map);
 	m_spotters.clear();
 	m_wanderers.clear();
 	m_shooters.clear();
