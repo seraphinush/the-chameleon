@@ -12,6 +12,7 @@ class CompleteScreen : public Entity
 	static Texture game_done;
 	static Texture main_menu;
 	static Texture quit;
+	static Texture piere_win;
 
 private:
 	vec2 pointer_pos;
