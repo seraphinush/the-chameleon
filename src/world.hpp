@@ -35,6 +35,8 @@ private:
 	// screen handle
 	GLFWwindow *m_window;
 	float m_screen_scale;
+	vec2 m_screen_size;
+	vec2 m_screen_point;
 
 	// screen texture
 	GLuint m_frame_buffer;
