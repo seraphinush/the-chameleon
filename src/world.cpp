@@ -359,7 +359,7 @@ bool World::update(float ms)
 
 					// SHOOTING AND COOLDOWN
 					shooter.set_in_combat(true);
-					shooter.bullets.cooldown -= 15.f;
+					shooter.bullets.cooldown -= 30.f;
 					if (shooter.bullets.cooldown < 0.f)
 					{
 						shooter.bullets.spawn_bullet(shooter.get_position(), angle);
@@ -453,7 +453,7 @@ bool World::update(float ms)
 				{
 					m_char.set_color(0);
 					m_cooldown = 0;
-					m_char.change_position({25.f * cos(angle), 25.f * sin(angle)});
+					m_char.change_position({15.f * cos(angle), 15.f * sin(angle)});
 				}
 			}
 		}
@@ -1086,7 +1086,6 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			if (!m_paused)
 			{
 				m_paused = true;
-				fprintf(stderr, "Pause game \n");
 				m_level = m_game_state;
 				m_game_state = PAUSE_SCREEN;
 				pause_time = glfwGetTime();
@@ -1095,7 +1094,6 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			else
 			{
 				m_paused = false;
-				fprintf(stderr, "unPause game \n");
 				m_game_state = m_level;
 				glfwSetTime(pause_time);
 				Mix_PlayChannel(-1, m_sfx_resume, 0);
