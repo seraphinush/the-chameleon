@@ -11,31 +11,10 @@
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_GLCOREARB
 
-const char *VERTEX_SHADER = ""
-                            "#version 410 core\n"
-                            "in vec4 in_Position;\n"
-                            "out vec2 texCoords;\n"
-                            "void main(void) {\n"
-                            "    gl_Position = vec4(in_Position.xy, 0, 1);\n"
-                            "    texCoords = in_Position.zw;\n"
-                            "}\n";
-
-const char *FRAGMENT_SHADER = ""
-                              "#version 410 core\n"
-                              "precision highp float;\n"
-                              "uniform sampler2D tex;\n"
-                              "uniform vec4 color;\n"
-                              "in vec2 texCoords;\n"
-                              "out vec4 fragColor;\n"
-                              "void main(void) {\n"
-                              "    fragColor = vec4(1, 1, 1, texture(tex, texCoords).r) * color;\n"
-                              "}\n";
-
 bool Timer::init()
 {
     seconds = 0;
     minutes = 0;
-    fprintf(stderr, "Vertex Shader - \n %s", FRAGMENT_SHADER);
     return true;
 }
 
@@ -43,8 +22,7 @@ bool Timer::init()
 void Timer::destroy()
 {
     glDeleteBuffers(1, &mesh.vbo);
-    glDeleteBuffers(1, &m_instance_vbo);
-
+    glDeleteBuffers(1, &mesh.vao);
     effect.release();
 }
 
@@ -67,97 +45,58 @@ void Timer::update(float ms)
 
 void Timer::draw(const mat3 &projection)
 {
-    GLuint texture{0}, sampler{0};
-    GLuint vbo{0}, vao{0};
-    GLuint vs{0}, fs{0}, program{0};
     FT_Library ft_lib{nullptr};
     FT_Face face{nullptr};
 
     auto cleanup = [&]() {
         FT_Done_Face(face);
         FT_Done_FreeType(ft_lib);
-        glDeleteTextures(1, &texture);
-        glDeleteSamplers(1, &sampler);
-        glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &vao);
-        glDeleteShader(vs);
-        glDeleteShader(fs);
-        glDeleteProgram(program);
+
+        glDeleteBuffers(1, &mesh.vbo);
+        glDeleteBuffers(1, &mesh.vao);
+        glDeleteVertexArrays(1, &mesh.vao);
+
+        effect.release();
     };
 
     // Initialize and load our freetype face
     if (FT_Init_FreeType(&ft_lib) != 0)
     {
         std::cerr << "Couldn't initialize FreeType library\n";
-        // cleanup();
+        cleanup();
         // return 1;
     }
 
-    if (FT_New_Face(ft_lib, textures_path("fonts/arcade.TTF"), 0, &face) != 0)
+    if (FT_New_Face(ft_lib, textures_path("fonts/Emulogic.ttf"), 0, &face) != 0)
     {
         std::cerr << "Unable to load FreeSans.ttf\n";
-        // cleanup();
+        cleanup();
         // return 1;
     }
 
-    const int WIDTH = 1200;
-    const int HEIGHT = 800;
-    const double SCALEX = 2.0 / WIDTH;
-    const double SCALEY = 2.0 / HEIGHT;
-
-    // auto window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL Text Rendering", nullptr, nullptr);
-    // glfwMakeContextCurrent(window);
-    // glViewport(0, 0, WIDTH, HEIGHT);
+    const double SCALEX = 2.0 / SCREEN_WIDTH;
+    const double SCALEY = 2.0 / SCREEN_HEIGHT;
 
     // Initialize our texture and VBOs
-    glGenBuffers(1, &vbo);
-    glGenVertexArrays(1, &vao);
-    glGenTextures(1, &texture);
-    glGenSamplers(1, &sampler);
-    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenBuffers(1, &mesh.vbo);
+    glGenVertexArrays(1, &mesh.vao);
 
     // Initialize shader
-    vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &VERTEX_SHADER, 0);
-    glCompileShader(vs);
-
-    fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &FRAGMENT_SHADER, 0);
-    glCompileShader(fs);
-
-    program = glCreateProgram();
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-
-    // Set some initialize GL state
-    glEnable(GL_BLEND);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glClearColor(0, 0, 0.4, 0);
+    if (!effect.load_from_file(shader_path("timer.vs.glsl"), shader_path("timer.fs.glsl")))
+        fprintf(stderr, "Timer Shaders failed to load");
 
     // Get shader uniforms
-    glUseProgram(program);
-    glBindAttribLocation(program, 0, "in_Position");
-    GLuint texUniform = glGetUniformLocation(program, "tex");
-    GLuint colorUniform = glGetUniformLocation(program, "color");
-
-    // while(glfwWindowShouldClose(window) != GL_TRUE) {
-    // glfwMakeContextCurrent(window);
-    // glClear(GL_COLOR_BUFFER_BIT);
+    glBindAttribLocation(effect.program, 0, "in_Position");
+    GLuint texUniform = glGetUniformLocation(effect.program, "tex");
+    GLuint colorUniform = glGetUniformLocation(effect.program, "color");
 
     // Bind stuff
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glBindSampler(0, sampler);
-    glBindVertexArray(vao);
+
+    glBindVertexArray(mesh.vao);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glUseProgram(program);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glUseProgram(effect.program);
     glUniform4f(colorUniform, 1, 1, 1, 0.7);
     glUniform1i(texUniform, 0);
 
@@ -175,9 +114,7 @@ void Timer::draw(const mat3 &projection)
 
     render_text(mins + ":" + secs, face, -0.2, 0.85, SCALEX, SCALEY);
 
-    // glfwSwapBuffers(window);
     glfwPollEvents();
-    // }
 
     cleanup();
 }

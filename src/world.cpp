@@ -171,7 +171,7 @@ bool World::init()
 		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
 		   m_particles_emitter.init() &&
 		   m_complete_screen.init() &&
-		   m_gameover_screen.init() && 
+		   m_gameover_screen.init() &&
 		   m_timer.init();
 }
 
@@ -1429,6 +1429,7 @@ void World::reset_game()
 	m_overlay.destroy();
 	m_alert_mode = false;
 	m_overlay.init(m_alert_mode, MAX_COOLDOWN);
+	glfwSetTime(0);
 
 	// reset direction for every spotter
 	for (auto &spotter : m_spotters)
