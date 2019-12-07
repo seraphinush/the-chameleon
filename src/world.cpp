@@ -454,7 +454,7 @@ bool World::update(float ms)
 				{
 					m_char.set_color(0);
 					m_cooldown = 0;
-					m_char.change_position({15.f * cos(angle), 15.f * sin(angle)});
+					// m_char.change_position({15.f * cos(angle), 15.f * sin(angle)});
 				}
 			}
 		}
