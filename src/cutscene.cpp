@@ -13,6 +13,7 @@ Texture Cutscene::texture_dialogue_box_right;
 Texture Cutscene::texture_dialogue_box_mid;
 Texture Cutscene::enemy_texture;
 //Texture Cutscene::skip_texture;
+Texture Cutscene::texture_background;
 
 using namespace std;
 
@@ -63,6 +64,15 @@ bool Cutscene::init()
 		if (!enemy_texture.load_from_file(textures_path("wanderers/1.png")))
 		{
 			fprintf(stderr, "Failed to load enemy texture!");
+			return false;
+		}
+	}
+
+	if (!texture_background.is_valid())
+	{
+		if (!texture_background.load_from_file(textures_path("cutscenes/bg_story_0.png")))
+		{
+			fprintf(stderr, "Failed to load background texture!");
 			return false;
 		}
 	}
@@ -182,8 +192,10 @@ void Cutscene::draw(const mat3 &proj, vec2 wsize, const vec2 wpoint)
 	draw_element(proj, texture_dialogue_box_mid, d_text_trans, d_text_scale);
 	draw_element(proj, texture_dialogue_box_right, d_face_trans_right, d_face_scale);
 	draw_element(proj, texture_dialogue_box, d_box_trans, d_box_scale);
-}
 
+	if (current_cutscene_state != LEVEL_TUTORIAL)
+		draw_element(proj, texture_background, vec2({(float)(SCREEN_WIDTH / 2), (float)(SCREEN_HEIGHT / 2)}), vec2({1.f,1.f}));
+}
 
 void Cutscene::draw_element(const mat3& proj, const Texture& texture, vec2 pos, vec2 scale)
 {
@@ -272,6 +284,9 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/spotter.png"));
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
+
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_story_0.png"));
 		}
 		else if (dialogue_counter == 4)
 		{
@@ -279,6 +294,9 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/dialogue_box_face.png"));
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/roger.png"));
+
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_story_1.png"));
 		}
 		else if (dialogue_counter == 6)
 		{
@@ -333,8 +351,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 
-			//skip_texture.~Texture();
-			//skip_texture.load_from_file(textures_path("skip.png"));
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_level1_0.png"));
 		}
 		else if (dialogue_counter == 58)
 		{
@@ -372,6 +390,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 
 			//skip_texture.~Texture();
 			//skip_texture.load_from_file(textures_path("skip.png"));
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_level2_0.png"));
 		}
 		else if (dialogue_counter == 76)
 		{
@@ -404,6 +424,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 
 			//skip_texture.~Texture();
 			//skip_texture.load_from_file(textures_path("skip.png"));
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_level3_0.png"));
 		}
 		else if (dialogue_counter == 83)
 		{
@@ -429,6 +451,9 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 
 		//skip_texture.~Texture();
 		//skip_texture.load_from_file(textures_path("skip.png"));
+
+		texture_background.~Texture();
+		texture_background.load_from_file(textures_path("cutscenes/bg_story_0.png"));
 	}
 	else if (cutscene_state == LEVEL_TUTORIAL && counter_value == 28)
 	{
@@ -450,6 +475,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 
 		//skip_texture.~Texture();
 		//skip_texture.load_from_file(textures_path("skip.png"));
+		texture_background.~Texture();
+		texture_background.load_from_file(textures_path("cutscenes/bg_level1_0.png"));
 	}
 	else if (cutscene_state == LEVEL_2_CUTSCENE && counter_value == 70)
 	{
@@ -459,6 +486,9 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
 		texture_dialogue_box_right.~Texture();
 		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
+
+		texture_background.~Texture();
+		texture_background.load_from_file(textures_path("cutscenes/bg_level2_0.png"));
 	}
 	else if (cutscene_state == LEVEL_3_CUTSCENE && counter_value == 81)
 	{
@@ -471,5 +501,7 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 
 		//skip_texture.~Texture();
 		//skip_texture.load_from_file(textures_path("skip.png"));
+		texture_background.~Texture();
+		texture_background.load_from_file(textures_path("cutscenes/bg_level3_0.png"));
 	}
 }
