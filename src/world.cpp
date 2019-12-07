@@ -22,6 +22,7 @@ float pause_time = 0.f;
 
 // TODO -- need to remove after settings locs
 vec2 spotter_loc[5];
+vec2 spotter_loc_level_2[5];
 vec2 shooter_loc[5];
 
 namespace
@@ -60,6 +61,13 @@ bool World::init()
 	spotter_loc[2] = {100, SCREEN_HEIGHT - 100};
 	spotter_loc[3] = {SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100};
 	spotter_loc[4] = {800, 500};
+
+	// Level 2
+	spotter_loc_level_2[0] = { (15 * 20) + 10, (13 * 20) + 10 };
+	spotter_loc_level_2[1] = { (47 * 20) + 10, (15 * 20) + 10 };
+	spotter_loc_level_2[2] = { (29 * 20) + 10, (17 * 20) + 10 };
+	spotter_loc_level_2[3] = { (18 * 20) + 10, (26 * 20) + 10 };
+	spotter_loc_level_2[4] = { (38 * 20) + 10, (26 * 20) + 10 };
 
 	// TODO
 	shooter_loc[0] = {100 + 100, 100 + 50};
@@ -588,6 +596,18 @@ bool World::update(float ms)
 
 		if (!m_paused)
 		{
+			// spawn spotter
+			// TODO -- need static spawns of spotters
+			if (m_spotters.size() < MAX_SPOTTERS)
+			{
+				if (!spawn_spotter())
+					return false;
+
+				Spotter& new_spotter = m_spotters.back();
+
+				new_spotter.set_position(spotter_loc_level_2[m_spotters.size() - 1]);
+			}
+
 			// spawn wanderer
 			while (m_wanderers.size() < wanderer_paths_level_2.size())
 			{
@@ -796,6 +816,8 @@ void World::draw()
 			// draw entities
 			for (auto& wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
+			for (auto& spotter : m_spotters)
+				spotter.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
