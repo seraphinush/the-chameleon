@@ -1487,7 +1487,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 
 bool World::is_char_detectable()
 {
-	return !(!m_char.is_moving() && (m_map.get_tile_type(m_char.get_position()) == m_char.get_color() + 1));
+	return alert_mode || !(!m_char.is_moving() && (m_map.get_tile_type(m_char.get_position()) == m_char.get_color() + 1));
 }
 
 void World::advance_to_cutscene()
