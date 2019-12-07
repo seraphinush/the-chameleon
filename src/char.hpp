@@ -118,4 +118,7 @@ public:
 	bool is_dashing();
 
 	void set_rotation(float rad);
+
+	//stealth helpers
+	void reset_stealth();
 };
