@@ -9,6 +9,8 @@
 Texture Spotter::spotter_texture;
 using namespace std;
 
+const float FOV_RADIANS = 0.39269908169;
+
 bool Spotter::init()
 {
 	// load shared texture
@@ -186,29 +188,25 @@ vec2 Spotter::get_bounding_box() const
 
 // detection
 // TODO
-bool Spotter::is_in_sight(Char m_char, Map& m)
+bool Spotter::is_in_sight(Char &m_char, Map& m)
 {
-	// using euclidean distance rn - FIX LATER
+	vec2 char_pos = m_char.get_position();
+	vec2 char_vector = vec2{ char_pos.x - motion.position.x, char_pos.y - motion.position.y };
 
-	float difference_in_x = motion.position.x - m_char.get_position().x;
-	float difference_in_y = motion.position.y - m_char.get_position().y;
+	float dot_product = dot(char_vector, vec2{ -direction.x, -direction.y});
+	float magnitude_char = sqrt(pow(char_vector.x, 2) + pow(char_vector.y, 2));
+	float magnitude_vision = 1;
 
-	bool in_direction = ((check_sgn(difference_in_x) == direction.x) && (check_sgn(difference_in_y) == direction.y));
+	float angle = acos(dot_product / (magnitude_char));
 
+	bool in_fov = angle <= FOV_RADIANS;
 
 	bool is_wall = true;
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && (in_direction) && (m_char.is_moving())) {
+	if (magnitude_char <= radius && in_fov && !m_char.is_stealthed()) {
 		is_wall = m.check_wall(motion.position, m_char.get_position());
 	}
 
-	/*is_wall = m.check_wall(motion.position, m_char.get_position());*/
-
-	if (((sqrt(pow(difference_in_x, 2) + pow(difference_in_y, 2))) <= radius) && in_direction && !(is_wall)) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (magnitude_char <= radius && in_fov && !(is_wall));
 }
 
 // alert
@@ -225,7 +223,7 @@ void Spotter::reset_direction()
 // a threshold to allow for some more fov collisions to happen
 float Spotter::check_sgn(float value) 
 {
-	if (value >= 10.f) return 1.0f;
-	if (value <= -10.f) return -1.0f;
+	if (value > 0 && value <= 40.f) return 1.0f;
+	if (value < 0 && value >= -40.f) return -1.0f;
 	else return 0.f;
 }

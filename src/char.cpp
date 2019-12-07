@@ -659,3 +659,8 @@ void Char::reset_stealth()
 	stealth_anim_time = 0;
 }
 
+bool Char::is_stealthed()
+{
+	return stealthed || stealth_animating;
+}
+
