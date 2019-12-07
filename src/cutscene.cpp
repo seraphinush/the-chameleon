@@ -272,6 +272,9 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/spotter.png"));
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
+
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_story_0.png"));
 		}
 		else if (dialogue_counter == 4)
 		{
@@ -279,6 +282,9 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_left.load_from_file(textures_path("cutscenes/dialogue_box_face.png"));
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/roger.png"));
+
+			texture_background.~Texture();
+			texture_background.load_from_file(textures_path("cutscenes/bg_story_1.png"));
 		}
 		else if (dialogue_counter == 6)
 		{
