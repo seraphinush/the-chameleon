@@ -100,8 +100,17 @@ void Hud::draw(const mat3 &proj, vec2 wsize, const vec2 wpoint)
 	vec2 hud_trans = vec2({0.f,0.f});
 
 	hud_scale = vec2({(float)(texture_hud.width / 2) / wscale, (float)(texture_hud.height / 2) / wscale});
-  hud_trans.x = wpoint.x + wsize.x - wsize.x / 10;
-  hud_trans.y = wpoint.y + wsize.y - wsize.y / 10;
+
+  if (m_game_state % 1000 == 0)
+  {
+    hud_trans.x = wpoint.x + wsize.x - wsize.x / 10;
+    hud_trans.y = wpoint.y + wsize.y - wsize.y / 10;
+  }
+  else
+  {
+    hud_trans.x = (float)SCREEN_WIDTH - (float)(texture_hud.width / 2);
+    hud_trans.y = (float)SCREEN_HEIGHT - (float)(texture_hud.height / 2);
+  }
 
   draw_element(proj, texture_hud, hud_trans, hud_scale);
 }
