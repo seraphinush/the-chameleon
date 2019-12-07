@@ -71,6 +71,7 @@ private:
 	Mix_Chunk *m_sfx_color_change;
 	Mix_Chunk *m_sfx_dead;
 	Mix_Chunk *m_sfx_walk;
+	Mix_Chunk *m_sfx_yellow;
 
 public:
 	bool init(vec2 pos, Map &map);

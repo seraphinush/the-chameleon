@@ -33,11 +33,13 @@ bool Char::init(vec2 spos, Map &map)
 	m_sfx_color_change = Mix_LoadWAV(audio_path("char_color_change.wav"));
 	m_sfx_dead = Mix_LoadWAV(audio_path("char_dead.wav"));
 	m_sfx_walk = Mix_LoadWAV(audio_path("char_walk.wav"));
+	m_sfx_yellow = Mix_LoadWAV(audio_path("char_yellow.wav"));
 	
 	if (m_sfx_bump == nullptr || 
 	  m_sfx_color_change == nullptr || 
 	  m_sfx_dead == nullptr || 
-		m_sfx_walk == nullptr)
+		m_sfx_walk == nullptr || 
+		m_sfx_yellow == nullptr)
 	{
 		fprintf(stderr, "Failed to load char sfx\n");
 		return false;
@@ -133,10 +135,14 @@ void Char::destroy()
 {
 	if (m_sfx_bump != nullptr)
 		Mix_FreeChunk(m_sfx_bump);
+	if (m_sfx_color_change != nullptr)
+		Mix_FreeChunk(m_sfx_color_change);
 	if (m_sfx_dead != nullptr)
 		Mix_FreeChunk(m_sfx_dead);
 	if (m_sfx_walk != nullptr)
 		Mix_FreeChunk(m_sfx_walk);
+	if (m_sfx_yellow != nullptr)
+		Mix_FreeChunk(m_sfx_yellow);
 
 	Mix_CloseAudio();
 
@@ -574,6 +580,8 @@ void Char::set_color(int color)
 			reset_stealth();
 		}
 	}
+	if (color == 4)
+		Mix_PlayChannel(-1, m_sfx_yellow, 0);
 }
 
 int Char::get_color() const
