@@ -348,6 +348,11 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 		}
+		else if (dialogue_counter == 67)
+		{
+			texture_dialogue_box_right.~Texture();
+			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/dialogue_box_face.png"));
+		}
 	}
 
 	else if (game_state == LEVEL_2_CUTSCENE)
