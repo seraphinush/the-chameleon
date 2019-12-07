@@ -162,7 +162,7 @@ void Char::update(float ms)
 	{
 		// speed up on dash
 		if (m_dash)
-			step *= 2;
+			step *= 3;
 
 		// go in random direction on dash
 		if (m_dash && !m_moving_up && !m_moving_down && !m_moving_left && !m_moving_right)
