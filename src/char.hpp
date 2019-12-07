@@ -62,7 +62,7 @@ private:
 
 	// Stealthing Animations
 	bool stealth_animating = false;
-	int stealth_anim_time = 0;
+	float stealth_anim_time = 0;
 	bool stealthed = false;
 	Map* m_map;
 
