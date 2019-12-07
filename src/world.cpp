@@ -423,7 +423,7 @@ bool World::update(float ms)
 			}
 			else
 			{
-				if (m_char.is_in_range(wanderer, m_map) && is_char_detectable())
+				if (m_char.is_in_range(wanderer, m_map) && is_char_detectable() && !(m_char.is_dashing()))
 				{
 					// fprintf(stderr, "alert mode active and in range \n");
 					wanderer.set_alert_mode(true);
@@ -784,7 +784,7 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		// m_timer.draw(projection_2D);
 
@@ -815,7 +815,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -838,7 +838,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -859,7 +859,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -883,7 +883,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -915,7 +915,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
