@@ -21,8 +21,8 @@ const float FLASH_TIME = 1.5;
 float pause_time = 0.f;
 
 // TODO -- need to remove after settings locs
-vec2 spotter_loc[5];
-vec2 spotter_loc_level_2[5];
+vector<vec2> spotter_loc;
+vector<vec2> spotter_loc_level_2;
 vec2 shooter_loc[5];
 
 namespace
@@ -56,18 +56,18 @@ bool World::init()
 {
 	// TODO -- need static spawn of spotters per level
 	//spotter_loc[0] = m_map.get_tile_center_coords(vec2{ 1, 3 });
-	spotter_loc[0] = {100, 100};
-	spotter_loc[1] = {SCREEN_WIDTH - 100, 100};
-	spotter_loc[2] = {100, SCREEN_HEIGHT - 100};
-	spotter_loc[3] = {SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100};
-	spotter_loc[4] = {800, 500};
+	spotter_loc.push_back({100, 100});
+	spotter_loc.push_back({SCREEN_WIDTH - 100, 100});
+	spotter_loc.push_back({100, SCREEN_HEIGHT - 100});
+	spotter_loc.push_back({SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100});
+	spotter_loc.push_back({800, 500});
 
 	// Level 2
-	spotter_loc_level_2[0] = { (15 * 20) + 10, (13 * 20) + 10 };
-	spotter_loc_level_2[1] = { (47 * 20) + 10, (15 * 20) + 10 };
-	spotter_loc_level_2[2] = { (29 * 20) + 10, (17 * 20) + 10 };
-	spotter_loc_level_2[3] = { (18 * 20) + 10, (26 * 20) + 10 };
-	spotter_loc_level_2[4] = { (38 * 20) + 10, (26 * 20) + 10 };
+	spotter_loc_level_2.push_back({ (15 * 20) + 10, (13 * 20) + 10 });
+	spotter_loc_level_2.push_back({ (47 * 20) + 10, (15 * 20) + 10 });
+	spotter_loc_level_2.push_back({ (29 * 20) + 10, (17 * 20) + 10 });
+	spotter_loc_level_2.push_back({ (18 * 20) + 10, (26 * 20) + 10 });
+	spotter_loc_level_2.push_back({ (38 * 20) + 10, (26 * 20) + 10 });
 
 	// TODO
 	shooter_loc[0] = {100 + 100, 100 + 50};
@@ -598,7 +598,7 @@ bool World::update(float ms)
 		{
 			// spawn spotter
 			// TODO -- need static spawns of spotters
-			if (m_spotters.size() < MAX_SPOTTERS)
+			while (m_spotters.size() < spotter_loc_level_2.size())
 			{
 				if (!spawn_spotter())
 					return false;
@@ -606,6 +606,8 @@ bool World::update(float ms)
 				Spotter& new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc_level_2[m_spotters.size() - 1]);
+
+				if (m_spotter.size() == MAX_Spotter)
 			}
 
 			// spawn wanderer
