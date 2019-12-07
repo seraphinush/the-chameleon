@@ -253,9 +253,7 @@ void Char::update(float ms)
 	}
 	else if (is_moving() && (stealthed || stealth_animating))
 	{
-		stealthed = false;
-		stealth_animating = false;
-		stealth_anim_time = 0;
+		reset_stealth();
 	}
 
 	if (stealth_animating)
@@ -571,6 +569,10 @@ void Char::set_color(int color)
 	{
 		Mix_PlayChannel(-1, m_sfx_color_change, 0);
 		m_color = color;
+		if (stealthed || stealth_animating)
+		{
+			reset_stealth();
+		}
 	}
 }
 
@@ -648,5 +650,12 @@ void Char::reinitialize()
 
 	// vertex array (container for vertex + index buffer)
 	glGenVertexArrays(1, &mesh.vao);
+}
+
+void Char::reset_stealth()
+{
+	stealthed = false;
+	stealth_animating = false;
+	stealth_anim_time = 0;
 }
 

@@ -1528,6 +1528,7 @@ void World::reset_game()
 {
 	m_char.destroy();
 	m_char.init(m_map.get_spawn_pos(), m_map);
+	m_char.reset_stealth();
 	m_spotters.clear();
 	m_wanderers.clear();
 	m_shooters.clear();
