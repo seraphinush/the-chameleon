@@ -465,7 +465,7 @@ bool Char::is_in_range(Wanderer &w, Map& m)
 	float other_r = std::max(w.get_bounding_box().x, w.get_bounding_box().y);
 	float my_r = std::max(physics.scale.x, physics.scale.y);
 	float r = std::max(other_r, my_r);
-	r *= 6.f;
+	r *= 5.f;
 
 	bool is_wall = false;
 	if (d_sq < r*r)
