@@ -10,6 +10,7 @@
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_GLCOREARB
+const size_t GAME_TIME = 180; //in seconds
 
 bool Timer::init()
 {
@@ -28,6 +29,7 @@ void Timer::destroy()
 
 void Timer::update(float ms)
 {
+    // TODO Update timer
     if ((int)glfwGetTime() == 0)
     {
         seconds = 0;
@@ -35,11 +37,23 @@ void Timer::update(float ms)
     }
 
     int secs_in_min = 60;
-    seconds = (int)glfwGetTime();
+    //coundown
+    seconds = (int)(GAME_TIME - glfwGetTime());
+    //count up
+    // seconds = (int)glfwGetTime();
     minutes = seconds / secs_in_min;
     seconds = seconds % secs_in_min;
 
     // fprintf(stderr, " timer - %02i:%02i \n",minutes, seconds);
+}
+bool Timer::is_game_over()
+{
+    // TODO Update timer
+    if (GAME_TIME - glfwGetTime() <= 0)
+    {
+        return true;
+    }
+    return false;
 }
 
 void Timer::draw(const mat3 &projection)

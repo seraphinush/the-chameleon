@@ -161,18 +161,18 @@ bool World::init()
 	m_spawn_particles = false;
 
 	return m_start_screen.init() &&
-		  m_map.init() &&
-		  m_char.init(m_map.get_spawn_pos(), m_map) &&
-		  m_control_screen.init() &&
-		  m_level_screen.init() &&
-		  m_pause_screen.init() &&
-		  m_cutscene.init() &&
-		  m_hud.init() &&
-		  m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
-		  m_particles_emitter.init() &&
-		  m_complete_screen.init() &&
-		  m_gameover_screen.init();
-		  //m_timer.init();
+		   m_map.init() &&
+		   m_char.init(m_map.get_spawn_pos(), m_map) &&
+		   m_control_screen.init() &&
+		   m_level_screen.init() &&
+		   m_pause_screen.init() &&
+		   m_cutscene.init() &&
+		   m_hud.init() &&
+		   m_overlay.init(m_alert_mode, MAX_COOLDOWN) &&
+		   m_particles_emitter.init() &&
+		   m_complete_screen.init() &&
+		   m_gameover_screen.init() &&
+		   m_timer.init();
 }
 
 // release all the associated resources
@@ -391,7 +391,8 @@ bool World::update(float ms)
 		// UPDATE
 		//////////////////////
 		//update timer
-		//m_timer.update(ms);
+		if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
+			m_timer.update(ms);
 		// update char
 		m_char.update(ms);
 		m_hud.update(m_game_state, m_char.get_position());
@@ -529,6 +530,9 @@ bool World::update(float ms)
 	//////////////////////
 	// RESET LEVEL
 	//////////////////////
+	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
+		if (m_timer.is_game_over())
+			m_game_state = LOSE_SCREEN;
 
 	if (!m_char.is_alive() && m_map.get_char_dead_time() > 2)
 	{
@@ -587,7 +591,7 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths[m_wanderers.size()]))
 					return false;
 
-				Wanderer& new_wanderer = m_wanderers.back();
+				Wanderer &new_wanderer = m_wanderers.back();
 			}
 		}
 	}
@@ -607,7 +611,7 @@ bool World::update(float ms)
 				if (!spawn_spotter())
 					return false;
 
-				Spotter& new_spotter = m_spotters.back();
+				Spotter &new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 			}
@@ -618,7 +622,7 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths_2[m_wanderers.size()]))
 					return false;
 
-				Wanderer& new_wanderer = m_wanderers.back();
+				Wanderer &new_wanderer = m_wanderers.back();
 			}
 		}
 	}
@@ -637,7 +641,7 @@ bool World::update(float ms)
 				if (!spawn_spotter())
 					return false;
 
-				Spotter& new_spotter = m_spotters.back();
+				Spotter &new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
 			}
@@ -647,7 +651,7 @@ bool World::update(float ms)
 			{
 				if (!spawn_shooter())
 					return false;
-				Shooter& new_shooter = m_shooters.back();
+				Shooter &new_shooter = m_shooters.back();
 
 				new_shooter.set_position(shooter_loc[m_shooters.size() - 1]);
 			}
@@ -658,7 +662,7 @@ bool World::update(float ms)
 				if (!spawn_wanderer(wanderer_paths_3[m_wanderers.size()]))
 					return false;
 
-				Wanderer& new_wanderer = m_wanderers.back();
+				Wanderer &new_wanderer = m_wanderers.back();
 			}
 		}
 	}
@@ -725,7 +729,7 @@ void World::draw()
 
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		// m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -753,7 +757,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -772,7 +776,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -784,7 +788,7 @@ void World::draw()
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto& wanderer : m_wanderers)
+			for (auto &wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
@@ -793,7 +797,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -806,9 +810,9 @@ void World::draw()
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto& spotter : m_spotters)
+			for (auto &spotter : m_spotters)
 				spotter.draw(projection_2D);
-			for (auto& wanderer : m_wanderers)
+			for (auto &wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
@@ -817,7 +821,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -830,11 +834,11 @@ void World::draw()
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
-			for (auto& spotter : m_spotters)
+			for (auto &spotter : m_spotters)
 				spotter.draw(projection_2D);
-			for (auto& wanderer : m_wanderers)
+			for (auto &wanderer : m_wanderers)
 				wanderer.draw(projection_2D);
-			for (auto& shooter : m_shooters)
+			for (auto &shooter : m_shooters)
 			{
 				shooter.draw(projection_2D);
 				if (shooter.is_in_combat())
@@ -849,7 +853,7 @@ void World::draw()
 		m_overlay.draw(projection_2D);
 		m_hud.draw(projection_2D);
 		// draw timer
-		//m_timer.draw(projection_2D);
+		m_timer.draw(projection_2D);
 
 		// bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
@@ -884,7 +888,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	{
 		left = m_char.get_position().x - ((float)width / (PROJECTION_SCALE * m_screen_scale));
 		top = m_char.get_position().y - ((float)height / (PROJECTION_SCALE * m_screen_scale));
-		right = m_char.get_position().x + ((float)width / (PROJECTION_SCALE  * m_screen_scale));
+		right = m_char.get_position().x + ((float)width / (PROJECTION_SCALE * m_screen_scale));
 		bottom = m_char.get_position().y + ((float)height / (PROJECTION_SCALE * m_screen_scale));
 	}
 	else
@@ -901,7 +905,7 @@ mat3 World::calculateProjectionMatrix(int width, int height)
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
-	return { {sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f} };
+	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
 bool World::is_over() const
@@ -953,8 +957,7 @@ bool World::spawn_wanderer(std::vector<vec2> path)
 void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 {
 	// start screen, control screen, story screen
-	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 
-		&& m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
+	if (m_game_state != PAUSE_SCREEN && m_game_state != LEVEL_1 && m_game_state != LEVEL_2 && m_game_state != LEVEL_3 && m_game_state != LEVEL_4 && m_game_state != LEVEL_5)
 	{
 		if (m_game_state == START_SCREEN)
 		{
@@ -1177,8 +1180,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	// ESC: return to start screen or pause screen
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE)
 	{
-		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
-			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
+		if (m_game_state == PAUSE_SCREEN || m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 		{
 			if (!m_paused)
 			{
@@ -1255,10 +1257,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 			}
 		}
 	}
-		// movement, set movement
-	if (action == GLFW_PRESS && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
-		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL) 
-		&& !m_char.is_dashing())
+	// movement, set movement
+	if (action == GLFW_PRESS && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL) && !m_char.is_dashing())
 	{
 		if ((key == GLFW_KEY_W && m_control == 0) || (key == GLFW_KEY_UP && m_control == 1))
 		{
@@ -1283,9 +1283,8 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// color, set color, consequences
-	if (action == GLFW_PRESS && !m_paused && m_cooldown >= MAX_COOLDOWN && !m_char.is_dashing() && 
-		(m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
-			|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_PRESS && !m_paused && m_cooldown >= MAX_COOLDOWN && !m_char.is_dashing() &&
+		(m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
 	{
 		// red
 		if (((key == GLFW_KEY_UP && m_control == 0) || (key == GLFW_KEY_W && m_control == 1)) && m_char.get_color() != 1)
@@ -1322,8 +1321,7 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	}
 
 	// remove movement
-	if (action == GLFW_RELEASE && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
-		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
+	if (action == GLFW_RELEASE && !m_paused && (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5 || m_game_state == LEVEL_TUTORIAL))
 	{
 		if ((key == GLFW_KEY_D && m_control == 0) || (key == GLFW_KEY_RIGHT && m_control == 1))
 			m_char.set_direction('R', false);
@@ -1398,11 +1396,10 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod)
 	m_current_speed = fmax(0.f, m_current_speed);
 }
 
-void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
+void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos)
 {
 	// TODO -- reference indicator position to get positions instead of hardcoding
-	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 
-		|| m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
+	if (m_game_state == LEVEL_1 || m_game_state == LEVEL_2 || m_game_state == LEVEL_3 || m_game_state == LEVEL_4 || m_game_state == LEVEL_5)
 	{
 		// red tooltip
 		if (xpos >= 1026 && xpos <= 1074 && ypos >= 59 && ypos <= 106)
@@ -1542,7 +1539,7 @@ void World::reset_game()
 	glfwSetTime(0);
 
 	// reset direction for every spotter
-	for (auto& spotter : m_spotters)
+	for (auto &spotter : m_spotters)
 	{
 		spotter.reset_direction();
 	}
