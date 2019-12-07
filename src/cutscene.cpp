@@ -12,7 +12,7 @@ Texture Cutscene::texture_dialogue_box_left;
 Texture Cutscene::texture_dialogue_box_right;
 Texture Cutscene::texture_dialogue_box_mid;
 Texture Cutscene::enemy_texture;
-Texture Cutscene::skip_texture;
+//Texture Cutscene::skip_texture;
 
 using namespace std;
 
@@ -67,14 +67,14 @@ bool Cutscene::init()
 		}
 	}
 
-	if (!skip_texture.is_valid())
+	/* if (!skip_texture.is_valid())
 	{
 		if (!skip_texture.load_from_file(textures_path("skip.png")))
 		{
 			fprintf(stderr, "Failed to load skip texture!");
 			return false;
 		}
-	}
+	} */
 
 	// the position corresponds to the center of the texture
 	float wr = std::max(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.5f;
@@ -113,8 +113,6 @@ bool Cutscene::init()
 	// load shaders
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
-
-	enemy_texture_position = {598.f, 530.f};
 
 	physics.scale = vec2({1.f, 1.f});
 
@@ -335,8 +333,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 
-			skip_texture.~Texture();
-			skip_texture.load_from_file(textures_path("skip.png"));
+			//skip_texture.~Texture();
+			//skip_texture.load_from_file(textures_path("skip.png"));
 		}
 		else if (dialogue_counter == 58)
 		{
@@ -372,8 +370,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 
-			skip_texture.~Texture();
-			skip_texture.load_from_file(textures_path("skip.png"));
+			//skip_texture.~Texture();
+			//skip_texture.load_from_file(textures_path("skip.png"));
 		}
 		else if (dialogue_counter == 76)
 		{
@@ -404,8 +402,8 @@ void Cutscene::increment_dialogue_counter(unsigned int game_state)
 			texture_dialogue_box_right.~Texture();
 			texture_dialogue_box_right.load_from_file(textures_path("cutscenes/shooter.png"));
 
-			skip_texture.~Texture();
-			skip_texture.load_from_file(textures_path("skip.png"));
+			//skip_texture.~Texture();
+			//skip_texture.load_from_file(textures_path("skip.png"));
 		}
 		else if (dialogue_counter == 83)
 		{
@@ -429,8 +427,8 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 		texture_dialogue_box_right.~Texture();
 		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/wanderer.png"));
 
-		skip_texture.~Texture();
-		skip_texture.load_from_file(textures_path("skip.png"));
+		//skip_texture.~Texture();
+		//skip_texture.load_from_file(textures_path("skip.png"));
 	}
 	else if (cutscene_state == LEVEL_TUTORIAL && counter_value == 28)
 	{
@@ -444,38 +442,34 @@ void Cutscene::set_dialogue_counter(unsigned int cutscene_state, unsigned int co
 	else if (cutscene_state == LEVEL_1_CUTSCENE && counter_value == 50)
 	{
 		texture_dialogue_box_mid.~Texture();
-		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/50.png"));
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/level1/50.png"));
 		texture_dialogue_box_left.~Texture();
 		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
 		texture_dialogue_box_right.~Texture();
 		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 
-		skip_texture.~Texture();
-		skip_texture.load_from_file(textures_path("skip.png"));
+		//skip_texture.~Texture();
+		//skip_texture.load_from_file(textures_path("skip.png"));
 	}
 	else if (cutscene_state == LEVEL_2_CUTSCENE && counter_value == 70)
 	{
 		texture_dialogue_box_mid.~Texture();
-		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/70.png"));
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/level2/70.png"));
 		texture_dialogue_box_left.~Texture();
 		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
 		texture_dialogue_box_right.~Texture();
 		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
-		skip_texture.~Texture();
-		skip_texture.load_from_file(textures_path("skip.png"));
-		enemy_texture.~Texture();
-		enemy_texture.load_from_file(textures_path("spotters/1.png"));
 	}
 	else if (cutscene_state == LEVEL_3_CUTSCENE && counter_value == 81)
 	{
 		texture_dialogue_box_mid.~Texture();
-		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/story/81.png"));
+		texture_dialogue_box_mid.load_from_file(textures_path("cutscenes/level3/81.png"));
 		texture_dialogue_box_left.~Texture();
 		texture_dialogue_box_left.load_from_file(textures_path("cutscenes/pierre.png"));
 		texture_dialogue_box_right.~Texture();
 		texture_dialogue_box_right.load_from_file(textures_path("cutscenes/intel.png"));
 
-		skip_texture.~Texture();
-		skip_texture.load_from_file(textures_path("skip.png"));
+		//skip_texture.~Texture();
+		//skip_texture.load_from_file(textures_path("skip.png"));
 	}
 }
