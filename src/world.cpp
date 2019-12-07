@@ -567,13 +567,13 @@ bool World::update(float ms)
 		if (!m_paused)
 		{
 			// spawn wanderer
-			//while (m_wanderers.size() < wanderer_paths.size())
-			//{
-			//	if (!spawn_wanderer(wanderer_paths[m_wanderers.size()]))
-			//		return false;
+			while (m_wanderers.size() < wanderer_paths_level_2.size())
+			{
+				if (!spawn_wanderer(wanderer_paths_level_2[m_wanderers.size()]))
+					return false;
 
-			//	Wanderer& new_wanderer = m_wanderers.back();
-			//}
+				Wanderer& new_wanderer = m_wanderers.back();
+			}
 		}
 	}
 	else if (m_game_state == LEVEL_3)
@@ -772,6 +772,8 @@ void World::draw()
 		if (m_map.get_flash() == 0)
 		{
 			// draw entities
+			for (auto& wanderer : m_wanderers)
+				wanderer.draw(projection_2D);
 			m_char.draw(projection_2D);
 			m_particles_emitter.draw(projection_2D);
 		}
