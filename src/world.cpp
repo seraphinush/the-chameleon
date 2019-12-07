@@ -607,7 +607,10 @@ bool World::update(float ms)
 
 				new_spotter.set_position(spotter_loc_level_2[m_spotters.size() - 1]);
 
-				if (m_spotter.size() == MAX_Spotter)
+				if (m_spotters.size() == spotter_loc_level_2.size())
+				{
+
+				}
 			}
 
 			// spawn wanderer
@@ -650,7 +653,7 @@ bool World::update(float ms)
 		{
 			// spawn spotter
 			// TODO -- need static spawns of spotters
-			if (m_spotters.size() < MAX_SPOTTERS)
+			if (m_spotters.size() < spotter_loc.size())
 			{
 				if (!spawn_spotter())
 					return false;
@@ -658,6 +661,11 @@ bool World::update(float ms)
 				Spotter &new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
+
+				if (m_spotters.size() == spotter_loc.size())
+				{
+
+				}
 			}
 
 			// spawn wanderer
@@ -680,7 +688,7 @@ bool World::update(float ms)
 		{
 			// spawn spotter
 			// TODO -- need static spawn of spotters per level
-			if (m_spotters.size() < MAX_SPOTTERS)
+			if (m_spotters.size() < spotter_loc.size())
 			{
 				if (!spawn_spotter())
 					return false;
@@ -688,6 +696,11 @@ bool World::update(float ms)
 				Spotter &new_spotter = m_spotters.back();
 
 				new_spotter.set_position(spotter_loc[m_spotters.size() - 1]);
+
+				if (m_spotters.size() == spotter_loc.size())
+				{
+
+				}
 			}
 
 			// spawn shooter
