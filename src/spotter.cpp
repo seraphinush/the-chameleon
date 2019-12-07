@@ -199,19 +199,14 @@ bool Spotter::is_in_sight(Char &m_char, Map& m)
 
 	float angle = acos(dot_product / (magnitude_char));
 
-	// using euclidean distance rn - FIX LATER
-
-	float difference_in_x = motion.position.x - m_char.get_position().x;
-	float difference_in_y = motion.position.y - m_char.get_position().y;
-
-	bool in_direction = angle <= FOV_RADIANS;;//((check_sgn(difference_in_x) == direction.x) && (check_sgn(difference_in_y) == direction.y));
+	bool in_fov = angle <= FOV_RADIANS;
 
 	bool is_wall = true;
-	if (magnitude_char <= radius && in_direction && !m_char.is_stealthed()) {
+	if (magnitude_char <= radius && in_fov && !m_char.is_stealthed()) {
 		is_wall = m.check_wall(motion.position, m_char.get_position());
 	}
 
-	return (magnitude_char <= radius && in_direction && !(is_wall));
+	return (magnitude_char <= radius && in_fov && !(is_wall));
 }
 
 // alert
