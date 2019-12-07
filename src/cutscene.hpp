@@ -13,20 +13,9 @@ class Cutscene : public Entity
 	static Texture texture_dialogue_box_right;
 	static Texture texture_dialogue_box_mid;
 	static Texture enemy_texture;
-	static Texture skip_texture;
+	//static Texture skip_texture;
 
-    unsigned int dialogue_counter;
-
-	vec2 left_dialogue_position;
-	vec2 right_dialogue_position;
-
-	vec2 left_texture_position;
-	vec2 right_texture_position;
-	vec2 enemy_texture_position;
-
-	vec2 left_scale = {0.08f, 0.7f};
-	vec2 right_scale = {0.08f, 0.8f};
-	vec2 enemy_scale = {0.08f, 0.8f};
+  unsigned int dialogue_counter;
 
 	int left_dialogues[43] = {
 		1, 3, 6, 7, 10, 14, 15, 17, 19, 20, 26, 27, 30, 31, 34,
