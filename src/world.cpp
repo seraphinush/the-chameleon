@@ -238,7 +238,7 @@ bool World::update(float ms)
 	m_gameover_screen.update(m_current_game_over_state);
 	m_cutscene.update();
 	m_pause_screen.update(m_current_pause_state);
-	m_hud.update(m_game_state);
+	m_hud.update(m_game_state, m_char.get_position());
 
 	//////////////////////
 	// COOLDOWN
@@ -784,7 +784,8 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+		//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		// m_timer.draw(projection_2D);
 
@@ -815,7 +816,8 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -838,7 +840,8 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -859,7 +862,8 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -883,7 +887,8 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -915,7 +920,8 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
+		m_hud.draw(projection_2D);
+//m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
