@@ -136,7 +136,7 @@ void GameoverScreen::draw(const mat3 &proj)
 	draw_element(proj, game_over, game_over_pos, game_over_scale);
 
 	// piere game over
-	vec2 piere_gameover_scale = vec2({piere_gameover.width / (1.5f * SCREEN_WIDTH), piere_gameover.height / (1.5f * SCREEN_WIDTH)});
+	vec2 piere_gameover_scale = vec2({piere_gameover.width / (1.8f * SCREEN_WIDTH), piere_gameover.height / (1.8f * SCREEN_WIDTH)});
 	vec2 piere_gameover_pos = vec2({300.f, SCREEN_HEIGHT / 1.5f});
 	draw_element(proj, piere_gameover, piere_gameover_pos, piere_gameover_scale);
 

@@ -136,7 +136,7 @@ void CompleteScreen::draw(const mat3 &proj)
 	draw_element(proj, game_done, game_done_pos, game_done_scale);
 
 	// piere win over
-	vec2 piere_win_scale = vec2({piere_win.width / (2.5f * SCREEN_WIDTH), piere_win.height / (2.5f * SCREEN_WIDTH)});
+	vec2 piere_win_scale = vec2({piere_win.width / (2.2f * SCREEN_WIDTH), piere_win.height / (2.0f * SCREEN_WIDTH)});
 	vec2 piere_win_pos = vec2({300.f, SCREEN_HEIGHT / 1.5f});
 	draw_element(proj, piere_win, piere_win_pos, piere_win_scale);
 
