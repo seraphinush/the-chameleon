@@ -609,7 +609,7 @@ bool World::update(float ms)
 
 				if (m_spotters.size() == spotter_loc_level_2.size())
 				{
-
+					m_map.set_spotter_list(m_spotters);
 				}
 			}
 
@@ -664,7 +664,7 @@ bool World::update(float ms)
 
 				if (m_spotters.size() == spotter_loc.size())
 				{
-
+					m_map.set_spotter_list(m_spotters);
 				}
 			}
 
@@ -699,7 +699,7 @@ bool World::update(float ms)
 
 				if (m_spotters.size() == spotter_loc.size())
 				{
-
+					m_map.set_spotter_list(m_spotters);
 				}
 			}
 

@@ -1318,7 +1318,7 @@ void Map::draw_level_5(const mat3 &projection)
 	}
 }
 
-void Map::draw_element(const mat3 &projection, const Texture &texture)
+void Map::draw_element(const mat3& projection, const Texture& texture)
 {
 	// transformation
 	transform.begin();
@@ -1342,6 +1342,8 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 	GLint flash_map_uloc = glGetUniformLocation(effect.program, "flash_map");
 	GLuint flash_timer_uloc = glGetUniformLocation(effect.program, "flash_timer");
+	GLint spotter_location_uloc = glGetUniformLocation(effect.program, "spotter_loc");
+	GLint vision_direction_uloc = glGetUniformLocation(effect.program, "vision_direction");
 
 	// set vertices and indices
 	glBindVertexArray(mesh.vao);
@@ -1353,20 +1355,44 @@ void Map::draw_element(const mat3 &projection, const Texture &texture)
 	GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 	glEnableVertexAttribArray(in_position_loc);
 	glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)0);
-	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *)sizeof(vec3));
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
 
 	// enable and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	// set uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *)&transform.out);
-	float color[] = {1.f, 1.f, 1.f};
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float *)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
 	glUniform1iv(flash_map_uloc, 1, &flash_map);
 	glUniform1f(flash_timer_uloc, (m_flash_time > 0) ? (float)((glfwGetTime() - m_flash_time) * 10.0f) : -1);
+
+	float closest_spotter_loc[] = { 0,0,0 };
+	float spotter_look_direction[] = { 0,0,0 };
+	
+	if (m_spotters)
+	{
+		for (int i = 0; i < m_spotters->size(); i++)
+		{
+			vec2 pos = m_spotters->at(i).get_position();
+			if ((abs(pos.x - translation_tile.x) < 100) && (abs(pos.y - translation_tile.y) < 100))
+			{
+				closest_spotter_loc[0] = pos.x;
+				closest_spotter_loc[1] = pos.y;
+
+				vec2 look_dir = m_spotters->at(i).direction;
+				spotter_look_direction[0] = -look_dir.x;
+				spotter_look_direction[1] = -look_dir.y;
+				break;
+			}
+		}
+	}
+
+	glUniform3fv(spotter_location_uloc, 1, closest_spotter_loc);
+	glUniform3fv(vision_direction_uloc, 1, spotter_look_direction);
 
 	// draw
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -1775,4 +1801,9 @@ bool Map::check_wall(vec2 spotter_pos, vec2 char_pos)
 
 	//printf("wall detection : %d\n", (top_right || top_left || bottom_right || bottom_left));
 	return (top_right || top_left || bottom_right || bottom_left);
+}
+
+void Map::set_spotter_list(std::vector<Spotter>& spotters)
+{
+	m_spotters = &spotters;
 }

@@ -195,7 +195,6 @@ bool Spotter::is_in_sight(Char &m_char, Map& m)
 
 	float dot_product = dot(char_vector, vec2{ -direction.x, -direction.y});
 	float magnitude_char = sqrt(pow(char_vector.x, 2) + pow(char_vector.y, 2));
-	float magnitude_vision = 1;
 
 	float angle = acos(dot_product / (magnitude_char));
 

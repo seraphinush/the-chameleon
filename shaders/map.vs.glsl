@@ -11,9 +11,13 @@ out vec2 texcoord;
 uniform mat3 transform;
 uniform mat3 projection;
 
+// Spotter vision
+out vec3 world_coords;
+
 void main()
 {
 	texcoord = in_texcoord;
-	vec3 pos = projection * transform * vec3(in_position.xy, 1.0);
+    world_coords = transform * vec3(in_position.xy, 1.0);
+	vec3 pos = projection * world_coords;
 	gl_Position = vec4(pos.xy, 0.9, 1.0);
 } 

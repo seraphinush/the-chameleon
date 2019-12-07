@@ -3,9 +3,13 @@
 // internal
 #include "common.hpp"
 #include "constants.hpp"
+#include "Spotter.hpp"
+
+#include <vector>
 
 #include "char.hpp"
 class Char;
+class Spotter;
 
 class Map : public Entity
 {
@@ -64,6 +68,9 @@ private:
 
 	int current_level_indicator;
 
+	//Spotters
+	std::vector<Spotter>* m_spotters;
+
 public:
 	bool init();
 	void destroy();
@@ -106,4 +113,6 @@ public:
 	bool is_wall(vec2 grid_coords);
 
 	bool is_wall_texture(char tile);
+
+	void set_spotter_list(std::vector<Spotter>& spotters);
 };
