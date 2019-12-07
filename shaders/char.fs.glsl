@@ -16,6 +16,8 @@ layout(location = 0) out vec4 color;
 
 // stealth
 uniform bool stealthed;
+uniform bool stealthing;
+uniform float stealthing_anim_time;
 
 void main()
 {
@@ -24,7 +26,14 @@ void main()
     {
         if (color.w != 0)
         {
-            color.w = 0.5;
+            color.w = 0.25;
+        }
+    }
+    else if (stealthing)
+    {
+        if (color.w != 0)
+        {
+            color.w = ((1000 - stealthing_anim_time) / 1000) + 0.25;
         }
     }
     
