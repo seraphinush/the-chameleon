@@ -263,7 +263,7 @@ bool World::update(float ms)
 			{
 				if (m_alert_mode)
 				{
-					if (m_char.is_in_alert_mode_range(wanderer))
+					if (m_char.is_in_range(wanderer, m_map))
 					{
 						// fprintf(stderr, "alert mode active and in range \n");
 						stay_alert = true;
