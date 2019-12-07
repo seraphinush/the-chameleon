@@ -46,7 +46,7 @@ public:
 	vec2 get_bounding_box() const;
 
 	// detection
-	bool is_in_sight(Char m_char, Map& m);
+	bool is_in_sight(Char &m_char, Map& m);
 
 	// alert
 	void set_alert_mode(bool val);

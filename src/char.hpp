@@ -121,4 +121,5 @@ public:
 
 	//stealth helpers
 	void reset_stealth();
+	bool is_stealthed();
 };
