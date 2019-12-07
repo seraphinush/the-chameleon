@@ -769,7 +769,7 @@ void World::draw()
 			m_particles_emitter.draw(projection_2D);
 		}
 
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		// m_timer.draw(projection_2D);
 
@@ -800,7 +800,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -823,7 +823,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -844,7 +844,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -868,7 +868,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
@@ -900,7 +900,7 @@ void World::draw()
 		}
 
 		m_overlay.draw(projection_2D);
-		m_hud.draw(projection_2D);
+		m_hud.draw(projection_2D, m_screen_size, m_screen_point);
 		// draw timer
 		m_timer.draw(projection_2D);
 
