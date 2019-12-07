@@ -238,6 +238,7 @@ bool World::update(float ms)
 	m_gameover_screen.update(m_current_game_over_state);
 	m_cutscene.update();
 	m_pause_screen.update(m_current_pause_state);
+	m_hud.update(m_game_state);
 
 	//////////////////////
 	// COOLDOWN
@@ -403,7 +404,6 @@ bool World::update(float ms)
 			m_timer.update(ms);
 		// update char
 		m_char.update(ms);
-		m_hud.update(m_game_state, m_char.get_position());
 
 		// update wanderers
 		for (auto &wanderer : m_wanderers)

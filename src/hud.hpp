@@ -16,10 +16,12 @@ class Hud : public Entity
   bool show_yellow_tooltip;
   bool show_green_tooltip;
 
+	unsigned int m_game_state;
+
 public:
 	bool init();
 	void destroy();
-	void update(unsigned int state, vec2 char_position);
+	void update(unsigned int state);
 
 	void draw(const mat3& proj) override;
 	void draw(const mat3& proj, vec2 wsize, const vec2 wpoint);

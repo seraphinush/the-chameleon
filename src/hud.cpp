@@ -84,9 +84,9 @@ void Hud::destroy()
 	effect.release();
 }
 
-void Hud::update(unsigned int game_state, vec2 char_position)
+void Hud::update(unsigned int game_state)
 {
-  //
+  m_game_state = game_state;
 }
 
 // TODO -- duplicate usage of program
