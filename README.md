@@ -10,17 +10,17 @@ You are Pierre, the one and only remaining agent of Wizard Hazard Avoidance Task
 ### Running the game
 - Configure environment via CMake:
 
-  1. Load the repository as source code via `Browse Source...`
-  2. Make a folder named `build`
-  3. Set newly made folder as the location to build binaries via `Browse Build...`
-  4. `Configure`, then `Generate`
+> 1. Load the repository as source code via `Browse Source...`
+> 2. Make a folder named `build`
+> 3. Set newly made folder as the location to build binaries via `Browse Build...`
+> 4. `Configure`, then `Generate`
 
 - Build via Visual Studio IDE:
 
-  1. Load `chameleon.sln` solution into Visual Studio IDE
-  2. Right click `chameleon` and `Set as StartUp Project`
-  3. Build solution
-  4. Run game via `Debug > Start without debugging`
+> 1. Load `chameleon.sln` solution into Visual Studio IDE
+> 2. Right click `chameleon` and `Set as StartUp Project`
+> 3. Build solution
+> 4. Run game via `Debug > Start without debugging`
 
 ## Built with
 - OpenGL 3.x
