@@ -15,7 +15,12 @@ You are Pierre, the one and only remaining agent of Wizard Hazard Avoidance Task
   3. Set newly made folder as the location to build binaries via `Browse Build...`
   4. `Configure`, then `Generate`
 
-- Build via Visual Studio IDE
+- Build via Visual Studio IDE:
+
+  1. Load `chameleon.sln` solution into Visual Studio IDE
+  2. Right click `chameleon` and `Set as StartUp Project`
+  3. Build solution
+  4. Run game via `Debug > Start without debugging`
 
 ## Built with
 - OpenGL 3.x
